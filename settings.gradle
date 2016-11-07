@@ -1,0 +1,5 @@
+include ':app', ':tango-helper', ':tango-rajawali', ':rajawali-pool', ':rx-realm'
+project(':tango-helper').projectDir = new File(settingsDir, './subtree/tango-helper/library')
+project(':tango-rajawali').projectDir = new File(settingsDir, './subtree/tango-rajawali/library')
+project(':rajawali-pool').projectDir = new File(settingsDir, './subtree/rajawali-pool/library')
+project(':rx-realm').projectDir = new File(settingsDir, './subtree/rx-realm/library')

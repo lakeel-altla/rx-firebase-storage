@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Altla Vision Builder</string>
+    <string name="snackbar_find_plane_not_found">No plane.</string>
+    <string name="snackbar_find_plane_tango_error">Can not detect a plane.</string>
+    <string name="snackbar_find_plane_security_error">Permissions required.</string>
+    <string name="text_view_select_image_in_device">Select image in device</string>
+    <string name="dialog_select_image_methods_title">Select an image method</string>
+    <string name="snackbar_image_file_not_found">Image file not found.</string>
+    <string name="snackbar_unexpected_error_occured">Error.</string>
+    <string name="snackbar_select_image">Select an image.</string>
+    <string name="button_translate_object">TRANSLATE</string>
+    <string name="button_rotate_object">ROTATE</string>
+    <string name="button_scale_object">SCALE</string>
+    <string name="button_translate_object_in_x_axis">X-axis</string>
+    <string name="button_translate_object_in_y_axis">Y-axis</string>
+    <string name="button_translate_object_in_z_axis">Z-axis</string>
+    <string name="button_rotate_object_in_x_axis">X-axis</string>
+    <string name="button_rotate_object_in_y_axis">Y-axis</string>
+    <string name="button_rotate_object_in_z_axis">Z-axis</string>
+    <string-array name="dialog_select_image_methods_items">
+        <item>From your device</item>
+        <item>From URL</item>
+    </string-array>
+</resources>
