@@ -11,6 +11,9 @@ import org.rajawali3d.primitives.Plane;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
+/**
+ * Defines the factory that creates a plane object with a texture.
+ */
 public final class BitmapPlaneFactory {
 
     private static final Log LOG = LogFactory.getLog(BitmapPlaneFactory.class);
@@ -21,6 +24,12 @@ public final class BitmapPlaneFactory {
 
     private int objectCounter;
 
+    /**
+     * Creates the plane object with the specified bitmap as the texture.
+     *
+     * @param bitmap The bitmap that is used as the texture.
+     * @return The plane object.
+     */
     public Plane create(@NonNull Bitmap bitmap) {
         // NOTE:
         // The argument 'textureName' is used as a variable in a fragment shader.

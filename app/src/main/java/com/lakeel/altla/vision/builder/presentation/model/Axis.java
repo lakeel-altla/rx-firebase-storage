@@ -1,5 +1,8 @@
 package com.lakeel.altla.vision.builder.presentation.model;
 
+/**
+ * Defines x/y/z-axis.
+ */
 public enum Axis {
 
     X(0),
@@ -12,6 +15,11 @@ public enum Axis {
         mValue = value;
     }
 
+    /**
+     * Gets the value assigned to this instance.
+     *
+     * @return The value assigned to this instance.
+     */
     public int getValue() {
         return mValue;
     }

@@ -3,6 +3,9 @@ package com.lakeel.altla.vision.builder.presentation.view;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
+/**
+ * Defines the sign in view.
+ */
 public interface SignInView {
 
     void showMainFragment();

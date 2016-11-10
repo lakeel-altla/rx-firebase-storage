@@ -41,6 +41,9 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.exceptions.Exceptions;
 import rx.subscriptions.CompositeSubscription;
 
+/**
+ * Defines the presenter for {@link MainView}.
+ */
 public final class MainPresenter
         implements OnFrameAvailableListener, MainRenderer.OnPickedObjectChangedListener {
 

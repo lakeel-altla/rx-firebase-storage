@@ -23,6 +23,9 @@ import android.support.v7.app.AppCompatActivity;
 
 import javax.inject.Inject;
 
+/**
+ * Defines the presenter for {@link SignInView}.
+ */
 public final class SignInPresenter implements GoogleApiClient.OnConnectionFailedListener {
 
     // NOTE:
