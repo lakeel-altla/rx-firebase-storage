@@ -12,7 +12,6 @@ import com.lakeel.altla.vision.builder.R;
 import com.lakeel.altla.vision.builder.domain.model.ImageReference;
 import com.lakeel.altla.vision.builder.domain.usecase.CreateImageReferenceUseCase;
 import com.lakeel.altla.vision.builder.domain.usecase.FindAllImageReferencesUseCase;
-import com.lakeel.altla.vision.builder.domain.usecase.FindPointCloudPlane;
 import com.lakeel.altla.vision.builder.presentation.di.module.Names;
 import com.lakeel.altla.vision.builder.presentation.helper.DocumentBitmapLoader;
 import com.lakeel.altla.vision.builder.presentation.model.Axis;
@@ -65,9 +64,6 @@ public final class MainPresenter
 
     @Inject
     CreateImageReferenceUseCase createImageReferenceUseCase;
-
-    @Inject
-    FindPointCloudPlane findPointCloudPlane;
 
     @Inject
     DocumentBitmapLoader documentBitmapLoader;

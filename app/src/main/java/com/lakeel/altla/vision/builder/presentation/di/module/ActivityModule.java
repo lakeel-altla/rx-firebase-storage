@@ -4,7 +4,6 @@ import com.google.atap.tango.ux.TangoUx;
 import com.google.atap.tangoservice.Tango;
 import com.google.atap.tangoservice.TangoConfig;
 
-import com.lakeel.altla.tango.PointCloud;
 import com.lakeel.altla.tango.TangoUpdateDispatcher;
 import com.lakeel.altla.tango.TangoUxListener;
 import com.lakeel.altla.vision.builder.presentation.di.ActivityScope;
@@ -104,13 +103,5 @@ public final class ActivityModule {
         config.putBoolean(TangoConfig.KEY_BOOLEAN_DRIFT_CORRECTION, true);
 
         return config;
-    }
-
-    @ActivityScope
-    @Provides
-    public PointCloud providePointCloud(TangoUpdateDispatcher tangoUpdateDispatcher) {
-        PointCloud pointCloud = new PointCloud();
-        tangoUpdateDispatcher.getOnPointCloudAvailableListeners().add(pointCloud);
-        return pointCloud;
     }
 }
