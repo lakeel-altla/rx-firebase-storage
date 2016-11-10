@@ -41,27 +41,27 @@ public final class MainActivity extends AppCompatActivity
     private static final List<TangoCoordinateFramePair> FRAME_PAIRS;
 
     @Inject
-    Tango mTango;
+    Tango tango;
 
     @Inject
-    TangoUx mTangoUx;
+    TangoUx tangoUx;
 
     @Inject
-    TangoUpdateDispatcher mTangoUpdateDispatcher;
+    TangoUpdateDispatcher tangoUpdateDispatcher;
 
     @Inject
-    TangoConfig mTangoConfig;
+    TangoConfig tangoConfig;
 
     @BindView(R.id.toolbar)
-    Toolbar mToolbar;
+    Toolbar toolbar;
 
     @BindView(R.id.drawer_layout)
-    DrawerLayout mDrawerLayout;
+    DrawerLayout drawerLayout;
 
     @BindView(R.id.navigation_view)
-    NavigationView mNavigationView;
+    NavigationView navigationView;
 
-    private ActivityComponent mActivityComponent;
+    private ActivityComponent activityComponent;
 
     static {
         FRAME_PAIRS = new ArrayList<>();
@@ -75,22 +75,22 @@ public final class MainActivity extends AppCompatActivity
         //
         // Any injection must be done before super.onCreate()
         // because fragments are already attached to an activity when they are resumed or instant-run.
-        mActivityComponent = MyApplication.getApplicationComponent(this)
-                                          .activityComponent(new ActivityModule(this));
-        mActivityComponent.inject(this);
+        activityComponent = MyApplication.getApplicationComponent(this)
+                                         .activityComponent(new ActivityModule(this));
+        activityComponent.inject(this);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        setSupportActionBar(mToolbar);
+        setSupportActionBar(toolbar);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        mDrawerLayout.addDrawerListener(toggle);
+                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        mNavigationView.setNavigationItemSelectedListener(this);
+        navigationView.setNavigationItemSelectedListener(this);
 
         SignInFragment fragment = SignInFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
@@ -109,8 +109,8 @@ public final class MainActivity extends AppCompatActivity
         // このため、開発効率のために TangoUX を OFF にする場合には、TangoUx#start も止めなければならない。
 //        mTangoUx.start(new TangoUx.StartParams());
 
-        mTango.connectListener(FRAME_PAIRS, mTangoUpdateDispatcher);
-        mTango.connect(mTangoConfig);
+        tango.connectListener(FRAME_PAIRS, tangoUpdateDispatcher);
+        tango.connect(tangoConfig);
 
         TangoSupport.initialize();
     }
@@ -119,13 +119,13 @@ public final class MainActivity extends AppCompatActivity
     protected void onPause() {
         super.onPause();
 
-        mTango.disconnect();
-        mTangoUx.stop();
+        tango.disconnect();
+        tangoUx.stop();
     }
 
     @Override
     public ActivityComponent getActivityComponent() {
-        return mActivityComponent;
+        return activityComponent;
     }
 
     @Override
@@ -151,7 +151,7 @@ public final class MainActivity extends AppCompatActivity
 //            mFragmentController.showAppSpaceAdListFragment();
 //        }
 
-        mDrawerLayout.closeDrawer(GravityCompat.START);
+        drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 }

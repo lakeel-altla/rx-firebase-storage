@@ -49,94 +49,94 @@ public final class MainPresenter
 
     @Named(Names.ACTIVITY_CONTEXT)
     @Inject
-    Context mContext;
+    Context context;
 
     @Inject
-    Tango mTango;
+    Tango tango;
 
     @Inject
-    TangoUx mTangoUx;
+    TangoUx tangoUx;
 
     @Inject
-    TangoUpdateDispatcher mTangoUpdateDispatcher;
+    TangoUpdateDispatcher tangoUpdateDispatcher;
 
     @Inject
-    FindAllImageReferencesUseCase mFindAllImageReferencesUseCase;
+    FindAllImageReferencesUseCase findAllImageReferencesUseCase;
 
     @Inject
-    CreateImageReferenceUseCase mCreateImageReferenceUseCase;
+    CreateImageReferenceUseCase createImageReferenceUseCase;
 
     @Inject
-    FindPointCloudPlane mFindPointCloudPlane;
+    FindPointCloudPlane findPointCloudPlane;
 
     @Inject
-    DocumentBitmapLoader mDocumentBitmapLoader;
+    DocumentBitmapLoader documentBitmapLoader;
 
-    private final CompositeSubscription mCompositeSubscription = new CompositeSubscription();
+    private final CompositeSubscription compositeSubscription = new CompositeSubscription();
 
-    private final List<BitmapModel> mModels = new ArrayList<>();
+    private final List<BitmapModel> models = new ArrayList<>();
 
-    private MainView mView;
+    private MainView view;
 
-    private MainRenderer mRenderer;
+    private MainRenderer renderer;
 
-    private int mLastSelectedPosition = -1;
+    private int lastSelectedPosition = -1;
 
-    private boolean mIsModelPaneVisible;
+    private boolean isModelPaneVisible;
 
-    private boolean mHasPickedObject;
+    private boolean hasPickedObject;
 
-    private ObjectEditMode mObjectEditMode = ObjectEditMode.NONE;
+    private ObjectEditMode objectEditMode = ObjectEditMode.NONE;
 
     @Inject
     public MainPresenter() {
     }
 
     public void onCreateView(@NonNull MainView view) {
-        mView = view;
+        this.view = view;
 
-        mView.setTangoUxLayout(mTangoUx);
+        this.view.setTangoUxLayout(tangoUx);
 
-        mRenderer = new MainRenderer(mContext);
-        mRenderer.setOnPickedObjectChangedListener(this);
-        mView.setSurfaceRenderer(mRenderer);
+        renderer = new MainRenderer(context);
+        renderer.setOnPickedObjectChangedListener(this);
+        this.view.setSurfaceRenderer(renderer);
 
-        mView.setModelPaneVisible(false);
-        mView.setObjectMenuVisible(false);
-        mView.setTranslateObjectSelected(false);
-        mView.setRotateObjectSelected(false);
-        mView.setTranslateObjectMenuVisible(false);
-        mView.setRotateObjectMenuVisible(false);
-        mView.setTranslateObjectAxisSelected(Axis.X, true);
-        mView.setRotateObjectAxisSelected(Axis.Y, true);
+        this.view.setModelPaneVisible(false);
+        this.view.setObjectMenuVisible(false);
+        this.view.setTranslateObjectSelected(false);
+        this.view.setRotateObjectSelected(false);
+        this.view.setTranslateObjectMenuVisible(false);
+        this.view.setRotateObjectMenuVisible(false);
+        this.view.setTranslateObjectAxisSelected(Axis.X, true);
+        this.view.setRotateObjectAxisSelected(Axis.Y, true);
     }
 
     public void onStart() {
-        mModels.clear();
+        models.clear();
 
-        Subscription subscription = mFindAllImageReferencesUseCase
+        Subscription subscription = findAllImageReferencesUseCase
                 .execute()
                 .map(this::loadBitmapModel)
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(imageModels -> {
                     LOG.v("Image models exist: count = %d", imageModels.size());
-                    mModels.addAll(imageModels);
-                    mView.updateModels();
+                    models.addAll(imageModels);
+                    view.updateModels();
                 });
-        mCompositeSubscription.add(subscription);
+        compositeSubscription.add(subscription);
     }
 
     public void onResume() {
-        mRenderer.connectToTangoCamera(mTango);
-        mTangoUpdateDispatcher.getOnFrameAvailableListeners().add(this);
+        renderer.connectToTangoCamera(tango);
+        tangoUpdateDispatcher.getOnFrameAvailableListeners().add(this);
     }
 
     private BitmapModel loadBitmapModel(ImageReference imageReference) {
         Uri uri = Uri.parse(imageReference.uri);
 
         try {
-            Bitmap bitmap = mDocumentBitmapLoader.load(uri);
+            Bitmap bitmap = documentBitmapLoader.load(uri);
             return new BitmapModel(uri, bitmap);
         } catch (IOException e) {
             throw Exceptions.propagate(e);
@@ -144,90 +144,90 @@ public final class MainPresenter
     }
 
     public void onPause() {
-        mTangoUpdateDispatcher.getOnFrameAvailableListeners().remove(this);
-        mRenderer.disconnectFromTangoCamera();
+        tangoUpdateDispatcher.getOnFrameAvailableListeners().remove(this);
+        renderer.disconnectFromTangoCamera();
     }
 
     public void onStop() {
-        mCompositeSubscription.clear();
+        compositeSubscription.clear();
     }
 
     @Override
     public void onFrameAvailable(int cameraId) {
         if (cameraId == TangoCameraIntrinsics.TANGO_CAMERA_COLOR) {
-            mRenderer.onFrameAvailable();
-            mView.requestRender();
+            renderer.onFrameAvailable();
+            view.requestRender();
         }
     }
 
     @Override
     public void onPickedObjectChanged(String oldName, String newName) {
-        mHasPickedObject = (newName != null);
-        mView.setObjectMenuVisible(mHasPickedObject);
+        hasPickedObject = (newName != null);
+        view.setObjectMenuVisible(hasPickedObject);
     }
 
     public void onClickFabToggleModelPane() {
-        mIsModelPaneVisible = !mIsModelPaneVisible;
-        mView.setModelPaneVisible(mIsModelPaneVisible);
+        isModelPaneVisible = !isModelPaneVisible;
+        view.setModelPaneVisible(isModelPaneVisible);
     }
 
     public void onClickImageButtonAddModel() {
-        mView.showSelectImageMethodDialog(R.array.dialog_select_image_methods_items);
+        view.showSelectImageMethodDialog(R.array.dialog_select_image_methods_items);
     }
 
     public void onTouchButtonTranslateObject() {
-        mObjectEditMode = ObjectEditMode.TRANSLATE;
-        mRenderer.setObjectEditMode(mObjectEditMode);
+        objectEditMode = ObjectEditMode.TRANSLATE;
+        renderer.setObjectEditMode(objectEditMode);
 
-        mView.setTranslateObjectSelected(true);
-        mView.setTranslateObjectMenuVisible(true);
-        mView.setRotateObjectSelected(false);
-        mView.setRotateObjectMenuVisible(false);
-        mView.setScaleObjectSelected(false);
+        view.setTranslateObjectSelected(true);
+        view.setTranslateObjectMenuVisible(true);
+        view.setRotateObjectSelected(false);
+        view.setRotateObjectMenuVisible(false);
+        view.setScaleObjectSelected(false);
     }
 
     public void onTouchButtonRotateObject() {
-        mObjectEditMode = ObjectEditMode.ROTATE;
-        mRenderer.setObjectEditMode(mObjectEditMode);
+        objectEditMode = ObjectEditMode.ROTATE;
+        renderer.setObjectEditMode(objectEditMode);
 
-        mView.setTranslateObjectSelected(false);
-        mView.setTranslateObjectMenuVisible(false);
-        mView.setRotateObjectSelected(true);
-        mView.setRotateObjectMenuVisible(true);
-        mView.setScaleObjectSelected(false);
+        view.setTranslateObjectSelected(false);
+        view.setTranslateObjectMenuVisible(false);
+        view.setRotateObjectSelected(true);
+        view.setRotateObjectMenuVisible(true);
+        view.setScaleObjectSelected(false);
     }
 
     public void onTouchButtonTranslateObjectAxis(Axis axis) {
-        mRenderer.setTranslateObjectAxis(axis);
+        renderer.setTranslateObjectAxis(axis);
 
-        mView.setTranslateObjectAxisSelected(Axis.X, axis == Axis.X);
-        mView.setTranslateObjectAxisSelected(Axis.Y, axis == Axis.Y);
-        mView.setTranslateObjectAxisSelected(Axis.Z, axis == Axis.Z);
+        view.setTranslateObjectAxisSelected(Axis.X, axis == Axis.X);
+        view.setTranslateObjectAxisSelected(Axis.Y, axis == Axis.Y);
+        view.setTranslateObjectAxisSelected(Axis.Z, axis == Axis.Z);
     }
 
     public void onTouchButtonRotateObjectAxis(Axis axis) {
-        mRenderer.setRotateObjectAxis(axis);
+        renderer.setRotateObjectAxis(axis);
 
-        mView.setRotateObjectAxisSelected(Axis.X, axis == Axis.X);
-        mView.setRotateObjectAxisSelected(Axis.Y, axis == Axis.Y);
-        mView.setRotateObjectAxisSelected(Axis.Z, axis == Axis.Z);
+        view.setRotateObjectAxisSelected(Axis.X, axis == Axis.X);
+        view.setRotateObjectAxisSelected(Axis.Y, axis == Axis.Y);
+        view.setRotateObjectAxisSelected(Axis.Z, axis == Axis.Z);
     }
 
     public void onTouchButtonScaleObject() {
-        mObjectEditMode = ObjectEditMode.SCALE;
-        mRenderer.setObjectEditMode(mObjectEditMode);
+        objectEditMode = ObjectEditMode.SCALE;
+        renderer.setObjectEditMode(objectEditMode);
 
-        mView.setTranslateObjectSelected(false);
-        mView.setTranslateObjectMenuVisible(false);
-        mView.setRotateObjectSelected(false);
-        mView.setRotateObjectMenuVisible(false);
-        mView.setScaleObjectSelected(true);
+        view.setTranslateObjectSelected(false);
+        view.setTranslateObjectMenuVisible(false);
+        view.setRotateObjectSelected(false);
+        view.setRotateObjectMenuVisible(false);
+        view.setScaleObjectSelected(true);
     }
 
     public void onSelectImageMethodSelected(int index) {
         switch (index) {
             case 0:
-                mView.showImagePicker();
+                view.showImagePicker();
                 break;
             case 1:
                 // TODO
@@ -238,37 +238,37 @@ public final class MainPresenter
     public void onImagePicked(Uri uri) {
         LOG.d("Image picked: %s", uri);
 
-        Subscription subscription = mDocumentBitmapLoader
+        Subscription subscription = documentBitmapLoader
                 .loadAsSingle(uri)
                 .flatMap(bitmap -> saveBitmap(uri, bitmap))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(bitmap -> {
                     BitmapModel model = new BitmapModel(uri, bitmap);
-                    mModels.add(model);
-                    mView.updateModels();
+                    models.add(model);
+                    view.updateModels();
                 }, e -> {
                     if (e instanceof FileNotFoundException) {
-                        mView.showSnackbar(R.string.snackbar_image_file_not_found);
+                        view.showSnackbar(R.string.snackbar_image_file_not_found);
                     } else if (e instanceof IOException) {
                         // close に対する I/O エラーなのでログを出して無視する
                         LOG.w("Closing file failed.", e);
                     } else {
-                        mView.showSnackbar(R.string.snackbar_unexpected_error_occured);
+                        view.showSnackbar(R.string.snackbar_unexpected_error_occured);
                         LOG.e("Unexpected error occured.", e);
                     }
                 });
 
-        mCompositeSubscription.add(subscription);
+        compositeSubscription.add(subscription);
     }
 
     private Single<Bitmap> saveBitmap(Uri uri, Bitmap bitmap) {
         ImageReference imageReference = new ImageReference(uri.toString());
-        return mCreateImageReferenceUseCase.execute(imageReference)
-                                           .map(ir -> bitmap);
+        return createImageReferenceUseCase.execute(imageReference)
+                                          .map(ir -> bitmap);
     }
 
     public int getModelCount() {
-        return mModels.size();
+        return models.size();
     }
 
     public void onCreateItemView(@NonNull ModelListItemView itemView) {
@@ -280,35 +280,35 @@ public final class MainPresenter
     public void onDropModel() {
         LOG.v("onDropModel");
 
-        BitmapModel bitmapModel = mModels.get(mLastSelectedPosition);
-        mRenderer.addPlaneBitmap(bitmapModel.bitmap);
-        mLastSelectedPosition = -1;
+        BitmapModel bitmapModel = models.get(lastSelectedPosition);
+        renderer.addPlaneBitmap(bitmapModel.bitmap);
+        lastSelectedPosition = -1;
     }
 
     public boolean onSingleTapUp(MotionEvent e) {
-        mRenderer.tryPickObject(e.getX(), e.getY());
+        renderer.tryPickObject(e.getX(), e.getY());
         return true;
     }
 
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        if (mHasPickedObject) {
-            if (mObjectEditMode == ObjectEditMode.TRANSLATE) {
+        if (hasPickedObject) {
+            if (objectEditMode == ObjectEditMode.TRANSLATE) {
                 if (Math.abs(distanceY) < Math.abs(distanceX)) {
-                    mRenderer.setTranslateObjectDistance(distanceX);
+                    renderer.setTranslateObjectDistance(distanceX);
                 } else {
-                    mRenderer.setTranslateObjectDistance(distanceY);
+                    renderer.setTranslateObjectDistance(distanceY);
                 }
-            } else if (mObjectEditMode == ObjectEditMode.ROTATE) {
+            } else if (objectEditMode == ObjectEditMode.ROTATE) {
                 if (Math.abs(distanceY) < Math.abs(distanceX)) {
-                    mRenderer.setRotateObjectAngle(distanceX);
+                    renderer.setRotateObjectAngle(distanceX);
                 } else {
-                    mRenderer.setRotateObjectAngle(distanceY);
+                    renderer.setRotateObjectAngle(distanceY);
                 }
-            } else if (mObjectEditMode == ObjectEditMode.SCALE) {
+            } else if (objectEditMode == ObjectEditMode.SCALE) {
                 if (Math.abs(distanceY) < Math.abs(distanceX)) {
-                    mRenderer.setScaleObjectSize(distanceX);
+                    renderer.setScaleObjectSize(distanceX);
                 } else {
-                    mRenderer.setScaleObjectSize(distanceY);
+                    renderer.setScaleObjectSize(distanceY);
                 }
             }
 
@@ -326,14 +326,14 @@ public final class MainPresenter
         }
 
         public void onBind(int position) {
-            BitmapModel model = mModels.get(position);
+            BitmapModel model = models.get(position);
             mItemView.showModel(model);
         }
 
         public void onStartDrag(int position) {
             LOG.v("Starting drag: position = %d", position);
 
-            mLastSelectedPosition = position;
+            lastSelectedPosition = position;
             mItemView.startDrag();
         }
     }

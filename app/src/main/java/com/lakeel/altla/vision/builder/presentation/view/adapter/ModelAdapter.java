@@ -25,23 +25,23 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
 
     private static final ClipData CLIP_DATA_DUMMY = ClipData.newPlainText("", "");
 
-    private final MainPresenter mPresenter;
+    private final MainPresenter presenter;
 
     public ModelAdapter(MainPresenter presenter) {
-        mPresenter = presenter;
+        this.presenter = presenter;
     }
 
-    private LayoutInflater mInflater;
+    private LayoutInflater inflater;
 
     @Override
     public final ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (mInflater == null) {
-            mInflater = LayoutInflater.from(parent.getContext());
+        if (inflater == null) {
+            inflater = LayoutInflater.from(parent.getContext());
         }
 
-        View view = mInflater.inflate(R.layout.item_model, parent, false);
+        View view = inflater.inflate(R.layout.item_model, parent, false);
         ViewHolder holder = new ViewHolder(view);
-        mPresenter.onCreateItemView(holder);
+        presenter.onCreateItemView(holder);
         return holder;
     }
 
@@ -52,40 +52,40 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return mPresenter.getModelCount();
+        return presenter.getModelCount();
     }
 
     public final class ViewHolder extends RecyclerView.ViewHolder implements ModelListItemView {
 
         @BindView(R.id.view_top)
-        View mViewTop;
+        View viewTop;
 
         @BindView(R.id.image_view)
-        ImageView mImageView;
+        ImageView imageView;
 
         @BindColor(R.color.background_model_pane)
-        int mBackgroundModelPane;
+        int backgroundModelPane;
 
         @BindColor(R.color.background_model_pane_drag)
-        int mBackgroundModelPaneDrag;
+        int backgroundModelPaneDrag;
 
-        private final View.DragShadowBuilder mDragShadowBuilder;
+        private final View.DragShadowBuilder dragShadowBuilder;
 
-        private MainPresenter.ModelItemPresenter mItemPresenter;
+        private MainPresenter.ModelItemPresenter itemPresenter;
 
         private ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
 
-            mDragShadowBuilder = new View.DragShadowBuilder(mImageView);
+            dragShadowBuilder = new View.DragShadowBuilder(imageView);
 
-            mImageView.setOnDragListener((view, dragEvent) -> {
+            imageView.setOnDragListener((view, dragEvent) -> {
                 switch (dragEvent.getAction()) {
                     case DragEvent.ACTION_DRAG_STARTED:
                         // darkenss the icon & the background to indicate dragging.
-                        mViewTop.setBackgroundColor(mBackgroundModelPaneDrag);
-                        mImageView.setColorFilter(mBackgroundModelPaneDrag, PorterDuff.Mode.MULTIPLY);
-                        mImageView.invalidate();
+                        viewTop.setBackgroundColor(backgroundModelPaneDrag);
+                        imageView.setColorFilter(backgroundModelPaneDrag, PorterDuff.Mode.MULTIPLY);
+                        imageView.invalidate();
                         // returns true to accept a drag event.
                         return true;
                     case DragEvent.ACTION_DRAG_ENTERED:
@@ -97,9 +97,9 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
                         return false;
                     case DragEvent.ACTION_DRAG_ENDED:
                         // restores colors.
-                        mViewTop.setBackgroundColor(mBackgroundModelPane);
-                        mImageView.setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
-                        mImageView.invalidate();
+                        viewTop.setBackgroundColor(backgroundModelPane);
+                        imageView.setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
+                        imageView.invalidate();
                         return true;
                 }
 
@@ -108,27 +108,27 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
         }
 
         public void onBind(int position) {
-            mItemPresenter.onBind(position);
+            itemPresenter.onBind(position);
         }
 
         @Override
         public void setItemPresenter(@NonNull MainPresenter.ModelItemPresenter itemPresenter) {
-            mItemPresenter = itemPresenter;
+            this.itemPresenter = itemPresenter;
         }
 
         @Override
         public void showModel(@NonNull BitmapModel model) {
-            mImageView.setImageBitmap(model.bitmap);
+            imageView.setImageBitmap(model.bitmap);
         }
 
         @Override
         public void startDrag() {
-            mImageView.startDrag(CLIP_DATA_DUMMY, mDragShadowBuilder, null, 0);
+            imageView.startDrag(CLIP_DATA_DUMMY, dragShadowBuilder, null, 0);
         }
 
         @OnLongClick(R.id.view_top)
         boolean onLongClickViewTop() {
-            mItemPresenter.onStartDrag(getAdapterPosition());
+            itemPresenter.onStartDrag(getAdapterPosition());
             return true;
         }
     }

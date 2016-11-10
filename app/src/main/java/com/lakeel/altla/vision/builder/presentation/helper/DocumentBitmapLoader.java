@@ -16,17 +16,17 @@ import rx.schedulers.Schedulers;
 
 public final class DocumentBitmapLoader {
 
-    public final ContentResolver mContentResolver;
+    public final ContentResolver contentResolver;
 
     public DocumentBitmapLoader(@NonNull ContentResolver contentResolver) {
-        mContentResolver = contentResolver;
+        this.contentResolver = contentResolver;
     }
 
     @NonNull
     public Bitmap load(@NonNull Uri uri) throws IOException {
-        mContentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-        try (ParcelFileDescriptor descriptor = mContentResolver.openFileDescriptor(uri, "r")) {
+        try (ParcelFileDescriptor descriptor = contentResolver.openFileDescriptor(uri, "r")) {
             if (descriptor == null) {
                 throw new LoadFailedException("Opening file descriptor failed: uri = " + uri);
             }

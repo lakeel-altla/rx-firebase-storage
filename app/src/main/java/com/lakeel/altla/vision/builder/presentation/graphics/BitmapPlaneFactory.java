@@ -19,7 +19,7 @@ public final class BitmapPlaneFactory {
 
     private static final String NAME_PREFIX = "BitmapPlane_";
 
-    private int mObjectCounter;
+    private int objectCounter;
 
     public Plane create(@NonNull Bitmap bitmap) {
         // NOTE:
@@ -45,8 +45,8 @@ public final class BitmapPlaneFactory {
         // Enable the back face rendering to understand how models rotate.
         plane.setDoubleSided(true);
 
-        mObjectCounter++;
-        plane.setName(NAME_PREFIX + mObjectCounter);
+        objectCounter++;
+        plane.setName(NAME_PREFIX + objectCounter);
 
         return plane;
     }

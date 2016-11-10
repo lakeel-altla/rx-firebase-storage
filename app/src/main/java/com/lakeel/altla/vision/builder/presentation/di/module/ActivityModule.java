@@ -22,41 +22,41 @@ import dagger.Provides;
 @Module
 public final class ActivityModule {
 
-    private final AppCompatActivity mActivity;
+    private final AppCompatActivity activity;
 
     public ActivityModule(@NonNull AppCompatActivity activity) {
-        mActivity = activity;
+        this.activity = activity;
     }
 
     @ActivityScope
     @Provides
     public AppCompatActivity provideActivity() {
-        return mActivity;
+        return activity;
     }
 
     @Named(Names.ACTIVITY_CONTEXT)
     @ActivityScope
     @Provides
     public Context provideContext() {
-        return mActivity;
+        return activity;
     }
 
     @ActivityScope
     @Provides
     public ContentResolver provideContentResolver() {
-        return mActivity.getContentResolver();
+        return activity.getContentResolver();
     }
 
     @ActivityScope
     @Provides
     public Tango provideTango() {
-        return new Tango(mActivity);
+        return new Tango(activity);
     }
 
     @ActivityScope
     @Provides
     public TangoUx provideTangoUx() {
-        return new TangoUx(mActivity);
+        return new TangoUx(activity);
     }
 
     @ActivityScope

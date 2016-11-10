@@ -14,11 +14,11 @@ import rx.Single;
 
 public final class RealmImageReferenceRepository implements ImageReferenceRepository {
 
-    private final RealmImageReferenceMapper mMapper = new RealmImageReferenceMapper();
+    private final RealmImageReferenceMapper mapper = new RealmImageReferenceMapper();
 
     @Override
     public Single<ImageReference> create(ImageReference imageReference) {
-        RealmImageReference realmImageReference = mMapper.map(imageReference);
+        RealmImageReference realmImageReference = mapper.map(imageReference);
         return RxRealmSingle.transaction(realm -> Single.create(subscriber -> {
             realm.copyToRealm(realmImageReference);
             subscriber.onSuccess(imageReference);
@@ -37,6 +37,6 @@ public final class RealmImageReferenceRepository implements ImageReferenceReposi
             }
 
             subscriber.onCompleted();
-        }).map(mMapper::map));
+        }).map(mapper::map));
     }
 }

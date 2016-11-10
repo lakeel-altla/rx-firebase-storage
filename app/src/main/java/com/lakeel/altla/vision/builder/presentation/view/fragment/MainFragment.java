@@ -53,55 +53,55 @@ public final class MainFragment extends Fragment implements MainView {
     private static final int REQUEST_CODE_ACTION_OPEN_DOCUMENT = 0;
 
     @Inject
-    MainPresenter mPresenter;
+    MainPresenter presenter;
 
     @BindView(R.id.view_top)
-    View mViewTop;
+    View viewTop;
 
 //    @BindView(R.id.layout_tango_ux)
-//    TangoUxLayout mTangoUxLayout;
+//    TangoUxLayout tangoUxLayout;
 
     @BindView(R.id.texture_view)
-    TextureView mTextureView;
+    TextureView textureView;
 
     @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
+    RecyclerView recyclerView;
 
     @BindView(R.id.view_group_model_pane)
-    ViewGroup mViewGroupModelPane;
+    ViewGroup viewGroupModelPane;
 
     @BindView(R.id.fab_toggle_model_pane)
-    FloatingActionButton mFabToggleModelPane;
+    FloatingActionButton fabToggleModelPane;
 
     @BindView(R.id.view_group_object_menu)
-    ViewGroup mViewGroupObjectMenu;
+    ViewGroup viewGroupObjectMenu;
 
     @BindView(R.id.view_group_translate_object_menu)
-    ViewGroup mViewGroupTranslateObjectMenu;
+    ViewGroup viewGroupTranslateObjectMenu;
 
     @BindView(R.id.view_group_rotate_object_menu)
-    ViewGroup mViewGroupRotateObjectMenu;
+    ViewGroup viewGroupRotateObjectMenu;
 
     @BindView(R.id.button_translate_object)
-    Button mButtonTranslateObject;
+    Button buttonTranslateObject;
 
     @BindViews({ R.id.button_translate_object_in_x_axis, R.id.button_translate_object_in_y_axis,
                  R.id.button_translate_object_in_z_axis })
-    Button[] mButtonsTranslateObjectAxes;
+    Button[] buttonsTranslateObjectAxes;
 
     @BindView(R.id.button_rotate_object)
-    Button mButtonRotateObject;
+    Button buttonRotateObject;
 
     @BindViews({ R.id.button_rotate_object_in_x_axis, R.id.button_rotate_object_in_y_axis,
                  R.id.button_rotate_object_in_z_axis })
-    Button[] mButtonsRotateObjectAxes;
+    Button[] buttonsRotateObjectAxes;
 
     @BindView(R.id.button_scale_object)
-    Button mButtonScaleObject;
+    Button buttonScaleObject;
 
-    private GestureDetectorCompat mGestureDetector;
+    private GestureDetectorCompat gestureDetector;
 
-    private AlertDialog mDialog;
+    private AlertDialog alertDialog;
 
     public static MainFragment newInstance() {
         return new MainFragment();
@@ -113,7 +113,7 @@ public final class MainFragment extends Fragment implements MainView {
 
         ActivityScopeContext.class.cast(context).getActivityComponent().inject(this);
 
-        mGestureDetector = new GestureDetectorCompat(getContext(), new GestureDetector.SimpleOnGestureListener() {
+        gestureDetector = new GestureDetectorCompat(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onDown(MotionEvent e) {
                 LOG.d("onDown");
@@ -124,13 +124,13 @@ public final class MainFragment extends Fragment implements MainView {
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
                 LOG.d("onScroll");
-                return mPresenter.onScroll(e1, e2, distanceX, distanceY);
+                return presenter.onScroll(e1, e2, distanceX, distanceY);
             }
 
             @Override
             public boolean onSingleTapUp(MotionEvent e) {
                 LOG.d("onSingleTapUp");
-                return mPresenter.onSingleTapUp(e);
+                return presenter.onSingleTapUp(e);
             }
         });
     }
@@ -140,14 +140,14 @@ public final class MainFragment extends Fragment implements MainView {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, view);
 
-        mPresenter.onCreateView(this);
+        presenter.onCreateView(this);
 
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        mRecyclerView.setAdapter(new ModelAdapter(mPresenter));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        recyclerView.setAdapter(new ModelAdapter(presenter));
 
-        mTextureView.setFrameRate(60d);
-        mTextureView.setRenderMode(ISurface.RENDERMODE_WHEN_DIRTY);
-        mTextureView.setOnDragListener((v, dragEvent) -> {
+        textureView.setFrameRate(60d);
+        textureView.setRenderMode(ISurface.RENDERMODE_WHEN_DIRTY);
+        textureView.setOnDragListener((v, dragEvent) -> {
             switch (dragEvent.getAction()) {
                 case DragEvent.ACTION_DRAG_STARTED:
                     // returns true to accept a drag event.
@@ -159,7 +159,7 @@ public final class MainFragment extends Fragment implements MainView {
                 case DragEvent.ACTION_DRAG_EXITED:
                     return true;
                 case DragEvent.ACTION_DROP:
-                    mPresenter.onDropModel();
+                    presenter.onDropModel();
                     return true;
                 case DragEvent.ACTION_DRAG_ENDED:
                     return true;
@@ -167,7 +167,7 @@ public final class MainFragment extends Fragment implements MainView {
 
             return false;
         });
-        mTextureView.setOnTouchListener((v, event) -> mGestureDetector.onTouchEvent(event));
+        textureView.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
 
         return view;
     }
@@ -176,74 +176,74 @@ public final class MainFragment extends Fragment implements MainView {
     public void onStart() {
         super.onStart();
 
-        mPresenter.onStart();
+        presenter.onStart();
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        mPresenter.onStop();
+        presenter.onStop();
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        mPresenter.onResume();
-        mTextureView.onResume();
+        presenter.onResume();
+        textureView.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        mPresenter.onPause();
-        mTextureView.onPause();
+        presenter.onPause();
+        textureView.onPause();
     }
 
     @Override
     public void setTangoUxLayout(TangoUx tangoUx) {
-//        tangoUx.setLayout(mTangoUxLayout);
+//        tangoUx.setLayout(tangoUxLayout);
     }
 
     @Override
     public void setSurfaceRenderer(ISurfaceRenderer renderer) {
-        mTextureView.setSurfaceRenderer(renderer);
+        textureView.setSurfaceRenderer(renderer);
     }
 
     @Override
     public void requestRender() {
-        mTextureView.requestRenderUpdate();
+        textureView.requestRenderUpdate();
     }
 
     @Override
     public void showSnackbar(@StringRes int resId) {
-        Snackbar.make(mViewTop, resId, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(viewTop, resId, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void setModelPaneVisible(boolean visible) {
         if (visible) {
-            mViewGroupModelPane.setVisibility(View.VISIBLE);
-            mFabToggleModelPane.setImageResource(R.drawable.ic_expand_more_black_24dp);
+            viewGroupModelPane.setVisibility(View.VISIBLE);
+            fabToggleModelPane.setImageResource(R.drawable.ic_expand_more_black_24dp);
         } else {
-            mViewGroupModelPane.setVisibility(View.GONE);
-            mFabToggleModelPane.setImageResource(R.drawable.ic_expand_less_black_24dp);
+            viewGroupModelPane.setVisibility(View.GONE);
+            fabToggleModelPane.setImageResource(R.drawable.ic_expand_less_black_24dp);
         }
     }
 
     @Override
     public void showSelectImageMethodDialog(@ArrayRes int itemsId) {
-        if (mDialog == null) {
-            mDialog = new AlertDialog.Builder(getContext())
+        if (alertDialog == null) {
+            alertDialog = new AlertDialog.Builder(getContext())
                     .setTitle(R.string.dialog_select_image_methods_title)
                     .setItems(itemsId, (dialogInterface, i) -> {
-                        mPresenter.onSelectImageMethodSelected(i);
+                        presenter.onSelectImageMethodSelected(i);
                     })
                     .create();
         }
-        mDialog.show();
+        alertDialog.show();
     }
 
     @Override
@@ -257,51 +257,51 @@ public final class MainFragment extends Fragment implements MainView {
 
     @Override
     public void updateModels() {
-        mRecyclerView.getAdapter().notifyDataSetChanged();
+        recyclerView.getAdapter().notifyDataSetChanged();
     }
 
     @Override
     public void setObjectMenuVisible(boolean visible) {
         if (visible) {
-            mViewGroupObjectMenu.setVisibility(View.VISIBLE);
+            viewGroupObjectMenu.setVisibility(View.VISIBLE);
         } else {
-            mViewGroupObjectMenu.setVisibility(View.GONE);
+            viewGroupObjectMenu.setVisibility(View.GONE);
         }
     }
 
     @Override
     public void setTranslateObjectSelected(boolean selected) {
-        mButtonTranslateObject.setPressed(selected);
+        buttonTranslateObject.setPressed(selected);
     }
 
     @Override
     public void setTranslateObjectMenuVisible(boolean visible) {
-        mViewGroupTranslateObjectMenu.setVisibility(visible ? View.VISIBLE : View.GONE);
+        viewGroupTranslateObjectMenu.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     @Override
     public void setTranslateObjectAxisSelected(Axis axis, boolean selected) {
-        mButtonsTranslateObjectAxes[axis.getValue()].setPressed(selected);
+        buttonsTranslateObjectAxes[axis.getValue()].setPressed(selected);
     }
 
     @Override
     public void setRotateObjectSelected(boolean selected) {
-        mButtonRotateObject.setPressed(selected);
+        buttonRotateObject.setPressed(selected);
     }
 
     @Override
     public void setRotateObjectMenuVisible(boolean visible) {
-        mViewGroupRotateObjectMenu.setVisibility(visible ? View.VISIBLE : View.GONE);
+        viewGroupRotateObjectMenu.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     @Override
     public void setRotateObjectAxisSelected(Axis axis, boolean selected) {
-        mButtonsRotateObjectAxes[axis.getValue()].setPressed(selected);
+        buttonsRotateObjectAxes[axis.getValue()].setPressed(selected);
     }
 
     @Override
     public void setScaleObjectSelected(boolean selected) {
-        mButtonScaleObject.setPressed(selected);
+        buttonScaleObject.setPressed(selected);
     }
 
     @Override
@@ -310,7 +310,7 @@ public final class MainFragment extends Fragment implements MainView {
             if (Activity.RESULT_OK == resultCode) {
                 Uri uri = (data != null) ? data.getData() : null;
                 if (uri != null) {
-                    mPresenter.onImagePicked(uri);
+                    presenter.onImagePicked(uri);
                 }
             }
         } else {
@@ -320,12 +320,12 @@ public final class MainFragment extends Fragment implements MainView {
 
     @OnClick(R.id.image_button_add_model)
     void onClickImageButtonAddModel() {
-        mPresenter.onClickImageButtonAddModel();
+        presenter.onClickImageButtonAddModel();
     }
 
     @OnClick(R.id.fab_toggle_model_pane)
     void onClickFabToggleModelPane() {
-        mPresenter.onClickFabToggleModelPane();
+        presenter.onClickFabToggleModelPane();
     }
 
     //
@@ -338,8 +338,8 @@ public final class MainFragment extends Fragment implements MainView {
     @OnTouch(R.id.button_translate_object)
     boolean onTouchButtonTranslateObject(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            mButtonTranslateObject.setPressed(true);
-            mPresenter.onTouchButtonTranslateObject();
+            buttonTranslateObject.setPressed(true);
+            presenter.onTouchButtonTranslateObject();
         }
         return true;
     }
@@ -347,8 +347,8 @@ public final class MainFragment extends Fragment implements MainView {
     @OnTouch(R.id.button_translate_object_in_x_axis)
     boolean onTouchButtonTranslateObjectInXAxis(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            mButtonsTranslateObjectAxes[Axis.X.getValue()].setPressed(true);
-            mPresenter.onTouchButtonTranslateObjectAxis(Axis.X);
+            buttonsTranslateObjectAxes[Axis.X.getValue()].setPressed(true);
+            presenter.onTouchButtonTranslateObjectAxis(Axis.X);
         }
         return true;
     }
@@ -356,8 +356,8 @@ public final class MainFragment extends Fragment implements MainView {
     @OnTouch(R.id.button_translate_object_in_y_axis)
     boolean onTouchButtonTranslateObjectInYAxis(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            mButtonsTranslateObjectAxes[Axis.Y.getValue()].setPressed(true);
-            mPresenter.onTouchButtonTranslateObjectAxis(Axis.Y);
+            buttonsTranslateObjectAxes[Axis.Y.getValue()].setPressed(true);
+            presenter.onTouchButtonTranslateObjectAxis(Axis.Y);
         }
         return true;
     }
@@ -365,8 +365,8 @@ public final class MainFragment extends Fragment implements MainView {
     @OnTouch(R.id.button_translate_object_in_z_axis)
     boolean onTouchButtonTranslateObjectInZAxis(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            mButtonsTranslateObjectAxes[Axis.Z.getValue()].setPressed(true);
-            mPresenter.onTouchButtonTranslateObjectAxis(Axis.Z);
+            buttonsTranslateObjectAxes[Axis.Z.getValue()].setPressed(true);
+            presenter.onTouchButtonTranslateObjectAxis(Axis.Z);
         }
         return true;
     }
@@ -374,8 +374,8 @@ public final class MainFragment extends Fragment implements MainView {
     @OnTouch(R.id.button_rotate_object)
     boolean onTouchButtonRotateObject(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            mButtonRotateObject.setPressed(true);
-            mPresenter.onTouchButtonRotateObject();
+            buttonRotateObject.setPressed(true);
+            presenter.onTouchButtonRotateObject();
         }
         return true;
     }
@@ -383,8 +383,8 @@ public final class MainFragment extends Fragment implements MainView {
     @OnTouch(R.id.button_rotate_object_in_x_axis)
     boolean onTouchButtonRotateObjectInXAxis(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            mButtonsRotateObjectAxes[Axis.X.getValue()].setPressed(true);
-            mPresenter.onTouchButtonRotateObjectAxis(Axis.X);
+            buttonsRotateObjectAxes[Axis.X.getValue()].setPressed(true);
+            presenter.onTouchButtonRotateObjectAxis(Axis.X);
         }
         return true;
     }
@@ -392,8 +392,8 @@ public final class MainFragment extends Fragment implements MainView {
     @OnTouch(R.id.button_rotate_object_in_y_axis)
     boolean onTouchkButtonRotateObjectInYAxis(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            mButtonsRotateObjectAxes[Axis.Y.getValue()].setPressed(true);
-            mPresenter.onTouchButtonRotateObjectAxis(Axis.Y);
+            buttonsRotateObjectAxes[Axis.Y.getValue()].setPressed(true);
+            presenter.onTouchButtonRotateObjectAxis(Axis.Y);
         }
         return true;
     }
@@ -401,8 +401,8 @@ public final class MainFragment extends Fragment implements MainView {
     @OnTouch(R.id.button_rotate_object_in_z_axis)
     boolean onTouchButtonRotateObjectInZAxis(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            mButtonsRotateObjectAxes[Axis.Z.getValue()].setPressed(true);
-            mPresenter.onTouchButtonRotateObjectAxis(Axis.Z);
+            buttonsRotateObjectAxes[Axis.Z.getValue()].setPressed(true);
+            presenter.onTouchButtonRotateObjectAxis(Axis.Z);
         }
         return true;
     }
@@ -410,8 +410,8 @@ public final class MainFragment extends Fragment implements MainView {
     @OnTouch(R.id.button_scale_object)
     boolean onTouchButtonScaleObject(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            mButtonScaleObject.setPressed(true);
-            mPresenter.onTouchButtonScaleObject();
+            buttonScaleObject.setPressed(true);
+            presenter.onTouchButtonScaleObject();
         }
         return true;
     }

@@ -10,7 +10,7 @@ import rx.schedulers.Schedulers;
 public final class FindPointCloudPlane {
 
     @Inject
-    PointCloud mPointCloud;
+    PointCloud pointCloud;
 
     @Inject
     public FindPointCloudPlane() {
@@ -18,7 +18,7 @@ public final class FindPointCloudPlane {
 
     public Single<PointCloud.Plane> execute(double timestamp, float u, float v) {
         return Single.<PointCloud.Plane>create(subscriber -> {
-            PointCloud.Plane plane = mPointCloud.findPlane(timestamp, u, v);
+            PointCloud.Plane plane = pointCloud.findPlane(timestamp, u, v);
             subscriber.onSuccess(plane);
         }).subscribeOn(Schedulers.io());
     }

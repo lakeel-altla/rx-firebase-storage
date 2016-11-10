@@ -41,33 +41,33 @@ public final class MainRenderer extends TangoCameraRenderer implements OnObjectP
 
     private static final float SCALE_OBJECT_SIZE_SCALE = 0.5f;
 
-    private final Handler mMainHandler = new Handler(Looper.getMainLooper());
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
-    private final Queue<Bitmap> mPlaneBitmapQueue = new LinkedList<>();
+    private final Queue<Bitmap> planeBitmapQueue = new LinkedList<>();
 
-    private final BitmapPlaneFactory mBitmapPlaneFactory = new BitmapPlaneFactory();
+    private final BitmapPlaneFactory bitmapPlaneFactory = new BitmapPlaneFactory();
 
-    private final Object mModeLock = new Object();
+    private final Object modeLock = new Object();
 
-    private ObjectColorPicker mPicker;
+    private ObjectColorPicker picker;
 
-    private Line3D mAxes;
+    private Line3D axes;
 
-    private Object3D mPickedObject;
+    private Object3D pickedObject;
 
-    private OnPickedObjectChangedListener mOnPickedObjectChangedListener;
+    private OnPickedObjectChangedListener onPickedObjectChangedListener;
 
-    private ObjectEditMode mObjectEditMode = ObjectEditMode.NONE;
+    private ObjectEditMode objectEditMode = ObjectEditMode.NONE;
 
-    private Axis mTranslateObjectAxis = Axis.X;
+    private Axis translateObjectAxis = Axis.X;
 
-    private Axis mRotateObjectAxis = Axis.Y;
+    private Axis rotateObjectAxis = Axis.Y;
 
-    private float mTranslateObjectDistance;
+    private float translateObjectDistance;
 
-    private float mRotateObjectAngle;
+    private float rotateObjectAngle;
 
-    private float mScaleObjectSize;
+    private float scaleObjectSize;
 
     public MainRenderer(Context context) {
         super(context);
@@ -75,22 +75,22 @@ public final class MainRenderer extends TangoCameraRenderer implements OnObjectP
 
     @Override
     protected void initSceneOverride() {
-        mPicker = new ObjectColorPicker(this);
-        mPicker.setOnObjectPickedListener(this);
+        picker = new ObjectColorPicker(this);
+        picker.setOnObjectPickedListener(this);
 
         // Build axes model indicating a pose of a picked object.
-        mAxes = new XyzAxesBuilder().setThickness(5)
-                                    .setLength(0.25f)
-                                    .build();
+        axes = new XyzAxesBuilder().setThickness(5)
+                                   .setLength(0.25f)
+                                   .build();
         // Shift the axes model to a little camera beside.
-        mAxes.setPosition(0, 0, -0.001f);
-        mAxes.setVisible(false);
-        getCurrentScene().addChild(mAxes);
+        axes.setPosition(0, 0, -0.001f);
+        axes.setVisible(false);
+        getCurrentScene().addChild(axes);
     }
 
     @Override
     protected void onRender(long ellapsedRealtime, double deltaTime) {
-        synchronized (mPlaneBitmapQueue) {
+        synchronized (planeBitmapQueue) {
             while (true) {
                 // NOTE:
                 //
@@ -99,64 +99,64 @@ public final class MainRenderer extends TangoCameraRenderer implements OnObjectP
                 // So we queue a data indicating a primitive in a non-OpenGL,
                 // Renderer#onRender invoked in OpenGL thread instantiates an actual primitive.
                 //
-                Bitmap bitmap = mPlaneBitmapQueue.poll();
+                Bitmap bitmap = planeBitmapQueue.poll();
                 if (bitmap == null) {
                     break;
                 }
 
-                Plane plane = mBitmapPlaneFactory.create(bitmap);
+                Plane plane = bitmapPlaneFactory.create(bitmap);
                 position(plane, getCurrentCamera(), getCurrentCameraForward());
 
                 getCurrentScene().addChild(plane);
-                mPicker.registerObject(plane);
+                picker.registerObject(plane);
             }
         }
 
-        if (mPickedObject != null) {
-            if (mObjectEditMode == ObjectEditMode.TRANSLATE && mTranslateObjectDistance != 0) {
+        if (pickedObject != null) {
+            if (objectEditMode == ObjectEditMode.TRANSLATE && translateObjectDistance != 0) {
 
                 // Scale.
-                float scaledDistance = mTranslateObjectDistance * TRANSLATE_OBJECT_DISTANCE_SCALE;
+                float scaledDistance = translateObjectDistance * TRANSLATE_OBJECT_DISTANCE_SCALE;
 
                 // Ensure the selected axis in this thread.
                 Axis axis;
-                synchronized (mModeLock) {
-                    axis = mTranslateObjectAxis;
+                synchronized (modeLock) {
+                    axis = translateObjectAxis;
                 }
 
                 // Translate.
-                translate(mPickedObject, axis, scaledDistance);
-                translate(mAxes, axis, scaledDistance);
+                translate(pickedObject, axis, scaledDistance);
+                translate(axes, axis, scaledDistance);
 
                 // Clear.
-                mTranslateObjectDistance = 0;
-            } else if (mObjectEditMode == ObjectEditMode.ROTATE && mRotateObjectAngle != 0) {
+                translateObjectDistance = 0;
+            } else if (objectEditMode == ObjectEditMode.ROTATE && rotateObjectAngle != 0) {
 
                 // Scale.
-                float scaledAngle = mRotateObjectAngle * ROTATE_OBJECT_ANGLE_SCALE;
+                float scaledAngle = rotateObjectAngle * ROTATE_OBJECT_ANGLE_SCALE;
 
                 // Ensure the selected axis in this thread.
                 Axis axis;
-                synchronized (mModeLock) {
-                    axis = mRotateObjectAxis;
+                synchronized (modeLock) {
+                    axis = rotateObjectAxis;
                 }
 
                 // Rotate.
-                rotate(mPickedObject, axis, scaledAngle);
-                rotate(mAxes, axis, scaledAngle);
+                rotate(pickedObject, axis, scaledAngle);
+                rotate(axes, axis, scaledAngle);
 
                 // Clear.
-                mRotateObjectAngle = 0;
-            } else if (mObjectEditMode == ObjectEditMode.SCALE && mScaleObjectSize != 0) {
+                rotateObjectAngle = 0;
+            } else if (objectEditMode == ObjectEditMode.SCALE && scaleObjectSize != 0) {
 
                 // Scale the raw value.
-                float scaledSize = mScaleObjectSize * SCALE_OBJECT_SIZE_SCALE;
+                float scaledSize = scaleObjectSize * SCALE_OBJECT_SIZE_SCALE;
 
                 // Scale the object.
-                scale(mPickedObject, scaledSize);
+                scale(pickedObject, scaledSize);
 
                 // Clear.
-                mScaleObjectSize = 0;
+                scaleObjectSize = 0;
             }
         }
 
@@ -285,7 +285,7 @@ public final class MainRenderer extends TangoCameraRenderer implements OnObjectP
     public void onObjectPicked(@NonNull Object3D object) {
         LOG.d("onObjectPicked: %s", object.getName());
 
-        if (mPickedObject == object) {
+        if (pickedObject == object) {
             // Unpick.
             changePickedObject(null);
         } else {
@@ -304,9 +304,9 @@ public final class MainRenderer extends TangoCameraRenderer implements OnObjectP
 
     private void changePickedObject(Object3D object) {
         String oldName = null;
-        if (mPickedObject != null) {
+        if (pickedObject != null) {
             // Unpick
-            oldName = mPickedObject.getName();
+            oldName = pickedObject.getName();
         }
 
         String newName = null;
@@ -314,15 +314,15 @@ public final class MainRenderer extends TangoCameraRenderer implements OnObjectP
             newName = object.getName();
         }
 
-        mPickedObject = object;
+        pickedObject = object;
 
-        if (mPickedObject != null) {
+        if (pickedObject != null) {
             // The axes model uses the same pose with the picked object.
-            mAxes.setPosition(mPickedObject.getPosition().clone());
-            mAxes.setOrientation(mPickedObject.getOrientation().clone());
-            mAxes.setVisible(true);
+            axes.setPosition(pickedObject.getPosition().clone());
+            axes.setOrientation(pickedObject.getOrientation().clone());
+            axes.setVisible(true);
         } else {
-            mAxes.setVisible(false);
+            axes.setVisible(false);
         }
 
         raiseOnPickedObjectChanged(oldName, newName);
@@ -330,58 +330,58 @@ public final class MainRenderer extends TangoCameraRenderer implements OnObjectP
 
     // Non-threa-safe.
     public void setOnPickedObjectChangedListener(OnPickedObjectChangedListener onPickedObjectChangedListener) {
-        mOnPickedObjectChangedListener = onPickedObjectChangedListener;
+        this.onPickedObjectChangedListener = onPickedObjectChangedListener;
     }
 
     private void raiseOnPickedObjectChanged(String oldName, String newName) {
-        if (mOnPickedObjectChangedListener != null) {
-            mMainHandler.post(() -> mOnPickedObjectChangedListener.onPickedObjectChanged(oldName, newName));
+        if (onPickedObjectChangedListener != null) {
+            mainHandler.post(() -> onPickedObjectChangedListener.onPickedObjectChanged(oldName, newName));
         }
     }
 
     public void addPlaneBitmap(@NonNull Bitmap bitmap) {
-        synchronized (mPlaneBitmapQueue) {
-            mPlaneBitmapQueue.offer(bitmap);
+        synchronized (planeBitmapQueue) {
+            planeBitmapQueue.offer(bitmap);
         }
     }
 
     public void tryPickObject(float x, float y) {
         LOG.d("tryPickObject: x = %f, y = %f", x, y);
-        mPicker.getObjectAt(x, y);
+        picker.getObjectAt(x, y);
     }
 
     public void setObjectEditMode(ObjectEditMode mode) {
         LOG.d("setObjectEditMode: mode = %s", mode);
-        mObjectEditMode = mode;
+        objectEditMode = mode;
     }
 
     public void setTranslateObjectAxis(Axis axis) {
         LOG.d("setTranslateObjectAxis: axis = %s", axis);
-        synchronized (mModeLock) {
-            mTranslateObjectAxis = axis;
+        synchronized (modeLock) {
+            translateObjectAxis = axis;
         }
     }
 
     public void setTranslateObjectDistance(float distance) {
         LOG.d("setTranslateObjectDistance: distance = %f", distance);
-        mTranslateObjectDistance = distance;
+        translateObjectDistance = distance;
     }
 
     public void setRotateObjectAxis(Axis axis) {
         LOG.d("setRotateObjectAxis: axis = %s", axis);
-        synchronized (mModeLock) {
-            mRotateObjectAxis = axis;
+        synchronized (modeLock) {
+            rotateObjectAxis = axis;
         }
     }
 
     public void setRotateObjectAngle(float angle) {
         LOG.d("setRotateObjectAngle: angle = %f", angle);
-        mRotateObjectAngle = angle;
+        rotateObjectAngle = angle;
     }
 
     public void setScaleObjectSize(float size) {
         LOG.d("setScaleObjectSize: size = %f", size);
-        mScaleObjectSize = size;
+        scaleObjectSize = size;
     }
 
     public interface OnPickedObjectChangedListener {

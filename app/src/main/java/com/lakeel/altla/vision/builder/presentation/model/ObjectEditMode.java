@@ -7,13 +7,13 @@ public enum ObjectEditMode {
     ROTATE(2),
     SCALE(3);
 
-    private final int mValue;
+    private final int value;
 
     ObjectEditMode(int value) {
-        mValue = value;
+        this.value = value;
     }
 
     public int getValue() {
-        return mValue;
+        return value;
     }
 }
