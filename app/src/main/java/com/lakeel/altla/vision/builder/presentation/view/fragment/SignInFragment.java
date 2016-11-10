@@ -11,6 +11,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -88,18 +89,8 @@ public final class SignInFragment extends Fragment implements SignInView {
     }
 
     @Override
-    public void showGoogleApiClientConnectionFailedSnackbar() {
-        Snackbar.make(viewTop, R.string.snackbar_google_api_client_connection_failed, Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void showGoogleSignInFailedSnackbar() {
-        Snackbar.make(viewTop, R.string.snackbar_google_sign_in_failed, Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void showGoogleSignInRequiredSnackbar() {
-        Snackbar.make(viewTop, R.string.snackbar_google_sign_in_reqiured, Snackbar.LENGTH_SHORT).show();
+    public void showSnackbar(@StringRes int resId) {
+        Snackbar.make(viewTop, resId, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
