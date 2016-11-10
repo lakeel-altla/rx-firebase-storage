@@ -109,7 +109,7 @@ public final class SignInPresenter implements GoogleApiClient.OnConnectionFailed
         if (resultCode == Activity.RESULT_OK) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
-                LOG.d("Google Sign-In succeeded.");
+                LOG.i("Google Sign-In succeeded.");
                 LOG.d("Authenticating with Firebase...");
 
                 view.showProgressDialog();
@@ -130,11 +130,11 @@ public final class SignInPresenter implements GoogleApiClient.OnConnectionFailed
                     view.showGoogleSignInFailedSnackbar();
                 }
             } else {
-                LOG.d("Google Sign-In failed.");
+                LOG.e("Google Sign-In failed.");
                 view.showGoogleSignInFailedSnackbar();
             }
         } else if (resultCode == Activity.RESULT_CANCELED) {
-            LOG.d("Google Sign-In canceled.");
+            LOG.i("Google Sign-In canceled.");
             view.showGoogleSignInRequiredSnackbar();
         }
 
