@@ -48,6 +48,10 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.4.0'
     compile 'io.reactivex:rxjava:1.1.10'
     compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'com.google.android.gms:play-services-auth:9.6.1'
+    compile 'com.google.firebase:firebase-auth:9.6.1'
+    compile 'com.google.firebase:firebase-storage:9.6.1'
+    compile 'com.google.firebase:firebase-database:9.6.1'
     compile 'com.lakeel.altla:android-log:0.0.2@aar'
 
     debugCompile project(path: ':tango-helper', configuration: 'debug')
@@ -62,3 +66,6 @@ dependencies {
     releaseCompile project(path: ':rx-realm', configuration: 'release')
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4'
 }
+
+// google-services plugin to use firebase.
+apply plugin: 'com.google.gms.google-services'

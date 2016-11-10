@@ -14,4 +14,7 @@
     <dimen name="item_model_image_height">96dp</dimen>
     <dimen name="model_pane_height">128dp</dimen>
 
+    <dimen name="nav_header_vertical_spacing">16dp</dimen>
+    <dimen name="nav_header_height">160dp</dimen>
+
 </resources>
