@@ -16,9 +16,12 @@ import android.support.annotation.NonNull;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
+/**
+ * Defines our application class.
+ */
 public final class MyApplication extends Application {
 
-    private ApplicationComponent mApplicationComponent;
+    private ApplicationComponent applicationComponent;
 
     @Override
     public void onCreate() {
@@ -28,7 +31,7 @@ public final class MyApplication extends Application {
         LeakCanary.install(this);
 
         // Dagger 2
-        mApplicationComponent = DaggerApplicationComponent
+        applicationComponent = DaggerApplicationComponent
                 .builder()
                 .applicationModule(new ApplicationModule(this))
                 .build();
@@ -49,7 +52,13 @@ public final class MyApplication extends Application {
         Realm.setDefaultConfiguration(realmConfiguration);
     }
 
+    /**
+     * Gets the {@link ApplicationComponent} instance that is managed in the specified activity.
+     *
+     * @param activity The activity that manages the {@link ApplicationComponent} instance.
+     * @return The {@link ApplicationComponent} instance that is managed in the specified activity.
+     */
     public static ApplicationComponent getApplicationComponent(@NonNull Activity activity) {
-        return ((MyApplication) activity.getApplication()).mApplicationComponent;
+        return ((MyApplication) activity.getApplication()).applicationComponent;
     }
 }

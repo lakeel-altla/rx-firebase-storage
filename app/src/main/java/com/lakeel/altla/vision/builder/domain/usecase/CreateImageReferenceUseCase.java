@@ -11,14 +11,14 @@ import rx.schedulers.Schedulers;
 public final class CreateImageReferenceUseCase {
 
     @Inject
-    ImageReferenceRepository mImageReferenceRepository;
+    ImageReferenceRepository imageReferenceRepository;
 
     @Inject
     public CreateImageReferenceUseCase() {
     }
 
     public Single<ImageReference> execute(ImageReference imageReference) {
-        return mImageReferenceRepository.create(imageReference)
-                                        .subscribeOn(Schedulers.io());
+        return imageReferenceRepository.create(imageReference)
+                                       .subscribeOn(Schedulers.io());
     }
 }

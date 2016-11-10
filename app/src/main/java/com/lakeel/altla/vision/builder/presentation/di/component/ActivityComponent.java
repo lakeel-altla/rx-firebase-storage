@@ -10,13 +10,31 @@ import com.lakeel.altla.vision.builder.presentation.view.fragment.SignInFragment
 
 import dagger.Subcomponent;
 
+/**
+ * Defines the dagger component that manages objects per activity.
+ */
 @ActivityScope
 @Subcomponent(modules = { ActivityModule.class, PresenterModule.class, RepositoryModule.class })
 public interface ActivityComponent {
 
+    /**
+     * Injects objects into the specified activity.
+     *
+     * @param activity The activity.
+     */
     void inject(MainActivity activity);
 
+    /**
+     * Injects objects into the specified fragment.
+     *
+     * @param fragment The fragment.
+     */
     void inject(MainFragment fragment);
 
+    /**
+     * Injects objects into the specified fragment.
+     *
+     * @param fragment The fragment.
+     */
     void inject(SignInFragment fragment);
 }

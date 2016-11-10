@@ -11,6 +11,9 @@ import org.rajawali3d.primitives.Plane;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
+/**
+ * Defines the factory that creates a plane object with a texture.
+ */
 public final class BitmapPlaneFactory {
 
     private static final Log LOG = LogFactory.getLog(BitmapPlaneFactory.class);
@@ -19,8 +22,14 @@ public final class BitmapPlaneFactory {
 
     private static final String NAME_PREFIX = "BitmapPlane_";
 
-    private int mObjectCounter;
+    private int objectCounter;
 
+    /**
+     * Creates the plane object with the specified bitmap as the texture.
+     *
+     * @param bitmap The bitmap that is used as the texture.
+     * @return The plane object.
+     */
     public Plane create(@NonNull Bitmap bitmap) {
         // NOTE:
         // The argument 'textureName' is used as a variable in a fragment shader.
@@ -45,8 +54,8 @@ public final class BitmapPlaneFactory {
         // Enable the back face rendering to understand how models rotate.
         plane.setDoubleSided(true);
 
-        mObjectCounter++;
-        plane.setName(NAME_PREFIX + mObjectCounter);
+        objectCounter++;
+        plane.setName(NAME_PREFIX + objectCounter);
 
         return plane;
     }

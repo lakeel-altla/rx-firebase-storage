@@ -11,14 +11,14 @@ import rx.schedulers.Schedulers;
 public final class FindAllImageReferencesUseCase {
 
     @Inject
-    ImageReferenceRepository mImageReferenceRepository;
+    ImageReferenceRepository imageReferenceRepository;
 
     @Inject
     public FindAllImageReferencesUseCase() {
     }
 
     public Observable<ImageReference> execute() {
-        return mImageReferenceRepository.findAll()
-                                        .subscribeOn(Schedulers.io());
+        return imageReferenceRepository.findAll()
+                                       .subscribeOn(Schedulers.io());
     }
 }

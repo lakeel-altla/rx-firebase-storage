@@ -13,6 +13,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.vision.builder.R;
 import com.lakeel.altla.vision.builder.presentation.view.SignInView;
 
 import android.app.Activity;
@@ -23,6 +24,9 @@ import android.support.v7.app.AppCompatActivity;
 
 import javax.inject.Inject;
 
+/**
+ * Defines the presenter for {@link SignInView}.
+ */
 public final class SignInPresenter implements GoogleApiClient.OnConnectionFailedListener {
 
     // NOTE:
@@ -74,7 +78,7 @@ public final class SignInPresenter implements GoogleApiClient.OnConnectionFailed
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         LOG.e("onConnectionFailed: %s", connectionResult);
-        view.showGoogleApiClientConnectionFailedSnackbar();
+        view.showSnackbar(R.string.snackbar_google_api_client_connection_failed);
     }
 
     public void onCreateView(@NonNull SignInView view) {
@@ -127,15 +131,15 @@ public final class SignInPresenter implements GoogleApiClient.OnConnectionFailed
                                 });
                 } else {
                     LOG.e("GoogleSignInAccount is null.");
-                    view.showGoogleSignInFailedSnackbar();
+                    view.showSnackbar(R.string.snackbar_google_sign_in_failed);
                 }
             } else {
                 LOG.e("Google Sign-In failed.");
-                view.showGoogleSignInFailedSnackbar();
+                view.showSnackbar(R.string.snackbar_google_sign_in_failed);
             }
         } else if (resultCode == Activity.RESULT_CANCELED) {
             LOG.i("Google Sign-In canceled.");
-            view.showGoogleSignInRequiredSnackbar();
+            view.showSnackbar(R.string.snackbar_google_sign_in_reqiured);
         }
 
     }

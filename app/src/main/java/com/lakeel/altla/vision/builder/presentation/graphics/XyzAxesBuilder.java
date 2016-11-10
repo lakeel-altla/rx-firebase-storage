@@ -11,90 +11,90 @@ import java.util.Stack;
 
 public final class XyzAxesBuilder {
 
-    private float mThickness = 1;
+    private float thickness = 1;
 
-    private float mLengthX = 1;
+    private float lengthX = 1;
 
-    private float mLengthY = 1;
+    private float lengthY = 1;
 
-    private float mLengthZ = 1;
+    private float lengthZ = 1;
 
-    private int mColorX = Color.RED;
+    private int colorX = Color.RED;
 
-    private int mColorY = Color.GREEN;
+    private int colorY = Color.GREEN;
 
-    private int mColorZ = Color.BLUE;
+    private int colorZ = Color.BLUE;
 
     public XyzAxesBuilder setThickness(float value) {
-        mThickness = value;
+        thickness = value;
         return this;
     }
 
     public XyzAxesBuilder setLength(float value) {
-        mLengthX = value;
-        mLengthY = value;
-        mLengthZ = value;
+        lengthX = value;
+        lengthY = value;
+        lengthZ = value;
         return this;
     }
 
     public XyzAxesBuilder setLengthX(float value) {
-        mLengthX = value;
+        lengthX = value;
         return this;
     }
 
     public XyzAxesBuilder setLengthY(float value) {
-        mLengthY = value;
+        lengthY = value;
         return this;
     }
 
     public XyzAxesBuilder setLengthZ(float value) {
-        mLengthZ = value;
+        lengthZ = value;
         return this;
     }
 
     public XyzAxesBuilder setColor(int value) {
-        mColorX = value;
-        mColorY = value;
-        mColorZ = value;
+        colorX = value;
+        colorY = value;
+        colorZ = value;
         return this;
     }
 
     public XyzAxesBuilder setColorX(int value) {
-        mColorX = value;
+        colorX = value;
         return this;
     }
 
     public XyzAxesBuilder setColorY(int value) {
-        mColorY = value;
+        colorY = value;
         return this;
     }
 
     public XyzAxesBuilder setColorZ(int value) {
-        mColorZ = value;
+        colorZ = value;
         return this;
     }
 
     public Line3D build() {
         Vector3 o = new Vector3(0, 0, 0);
-        Vector3 x = new Vector3(mLengthX, 0, 0);
-        Vector3 y = new Vector3(0, mLengthY, 0);
-        Vector3 z = new Vector3(0, 0, mLengthZ);
+        Vector3 x = new Vector3(lengthX, 0, 0);
+        Vector3 y = new Vector3(0, lengthY, 0);
+        Vector3 z = new Vector3(0, 0, lengthZ);
 
         Stack<Vector3> points = new Stack<>();
         Collections.addAll(points, o, x, o, y, o, z);
 
         int[] colors = new int[6];
-        colors[0] = mColorX;
-        colors[1] = mColorX;
-        colors[2] = mColorY;
-        colors[3] = mColorY;
-        colors[4] = mColorZ;
-        colors[5] = mColorZ;
+        colors[0] = colorX;
+        colors[1] = colorX;
+        colors[2] = colorY;
+        colors[3] = colorY;
+        colors[4] = colorZ;
+        colors[5] = colorZ;
 
         Material material = new Material();
         material.useVertexColors(true);
 
-        Line3D line3D = new Line3D(points, mThickness, colors);
+        Line3D line3D = new Line3D(points, thickness, colors);
         line3D.setMaterial(material);
 
         return line3D;

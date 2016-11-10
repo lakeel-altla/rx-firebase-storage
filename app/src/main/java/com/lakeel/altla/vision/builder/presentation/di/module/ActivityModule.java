@@ -4,7 +4,6 @@ import com.google.atap.tango.ux.TangoUx;
 import com.google.atap.tangoservice.Tango;
 import com.google.atap.tangoservice.TangoConfig;
 
-import com.lakeel.altla.tango.PointCloud;
 import com.lakeel.altla.tango.TangoUpdateDispatcher;
 import com.lakeel.altla.tango.TangoUxListener;
 import com.lakeel.altla.vision.builder.presentation.di.ActivityScope;
@@ -22,41 +21,41 @@ import dagger.Provides;
 @Module
 public final class ActivityModule {
 
-    private final AppCompatActivity mActivity;
+    private final AppCompatActivity activity;
 
     public ActivityModule(@NonNull AppCompatActivity activity) {
-        mActivity = activity;
+        this.activity = activity;
     }
 
     @ActivityScope
     @Provides
     public AppCompatActivity provideActivity() {
-        return mActivity;
+        return activity;
     }
 
     @Named(Names.ACTIVITY_CONTEXT)
     @ActivityScope
     @Provides
     public Context provideContext() {
-        return mActivity;
+        return activity;
     }
 
     @ActivityScope
     @Provides
     public ContentResolver provideContentResolver() {
-        return mActivity.getContentResolver();
+        return activity.getContentResolver();
     }
 
     @ActivityScope
     @Provides
     public Tango provideTango() {
-        return new Tango(mActivity);
+        return new Tango(activity);
     }
 
     @ActivityScope
     @Provides
     public TangoUx provideTangoUx() {
-        return new TangoUx(mActivity);
+        return new TangoUx(activity);
     }
 
     @ActivityScope
@@ -104,13 +103,5 @@ public final class ActivityModule {
         config.putBoolean(TangoConfig.KEY_BOOLEAN_DRIFT_CORRECTION, true);
 
         return config;
-    }
-
-    @ActivityScope
-    @Provides
-    public PointCloud providePointCloud(TangoUpdateDispatcher tangoUpdateDispatcher) {
-        PointCloud pointCloud = new PointCloud();
-        tangoUpdateDispatcher.getOnPointCloudAvailableListeners().add(pointCloud);
-        return pointCloud;
     }
 }

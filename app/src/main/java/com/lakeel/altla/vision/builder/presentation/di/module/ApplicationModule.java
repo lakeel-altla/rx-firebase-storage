@@ -18,23 +18,23 @@ import dagger.Provides;
 @Module
 public class ApplicationModule {
 
-    private final MyApplication mApplication;
+    private final MyApplication application;
 
     public ApplicationModule(@NonNull MyApplication application) {
-        mApplication = application;
+        this.application = application;
     }
 
     @Named(Names.APPLICATION_CONTEXT)
     @Singleton
     @Provides
     public Context provideContext() {
-        return mApplication;
+        return application;
     }
 
     @Singleton
     @Provides
     public Resources provideResources() {
-        return mApplication.getResources();
+        return application.getResources();
     }
 
     @Singleton

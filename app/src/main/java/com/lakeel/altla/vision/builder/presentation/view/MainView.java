@@ -9,6 +9,9 @@ import org.rajawali3d.renderer.ISurfaceRenderer;
 import android.support.annotation.ArrayRes;
 import android.support.annotation.StringRes;
 
+/**
+ * Defines the main view.
+ */
 public interface MainView {
 
     void setTangoUxLayout(TangoUx tangoUx);
