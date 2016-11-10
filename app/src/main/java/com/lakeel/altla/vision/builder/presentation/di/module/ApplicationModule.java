@@ -1,5 +1,8 @@
 package com.lakeel.altla.vision.builder.presentation.di.module;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+
+import com.lakeel.altla.vision.builder.R;
 import com.lakeel.altla.vision.builder.presentation.app.MyApplication;
 
 import android.content.Context;
@@ -32,5 +35,16 @@ public class ApplicationModule {
     @Provides
     public Resources provideResources() {
         return mApplication.getResources();
+    }
+
+    @Singleton
+    @Provides
+    public GoogleSignInOptions provideGoogleSignInOptions(Resources resources) {
+        return new GoogleSignInOptions
+                .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(resources.getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
     }
 }

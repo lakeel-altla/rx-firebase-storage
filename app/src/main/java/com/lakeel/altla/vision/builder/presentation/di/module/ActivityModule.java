@@ -9,10 +9,10 @@ import com.lakeel.altla.tango.TangoUpdateDispatcher;
 import com.lakeel.altla.tango.TangoUxListener;
 import com.lakeel.altla.vision.builder.presentation.di.ActivityScope;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 
 import javax.inject.Named;
 
@@ -22,10 +22,16 @@ import dagger.Provides;
 @Module
 public final class ActivityModule {
 
-    private final Activity mActivity;
+    private final AppCompatActivity mActivity;
 
-    public ActivityModule(@NonNull Activity activity) {
+    public ActivityModule(@NonNull AppCompatActivity activity) {
         mActivity = activity;
+    }
+
+    @ActivityScope
+    @Provides
+    public AppCompatActivity provideActivity() {
+        return mActivity;
     }
 
     @Named(Names.ACTIVITY_CONTEXT)

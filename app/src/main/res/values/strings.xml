@@ -21,4 +21,13 @@
         <item>From your device</item>
         <item>From URL</item>
     </string-array>
+
+    <string name="snackbar_google_api_client_connection_failed">Google Play Services error.</string>
+    <string name="snackbar_google_sign_in_failed">Google Sign-In failed.</string>
+    <string name="snackbar_google_sign_in_reqiured">Sign-in required.</string>
+    <string name="progress_dialog_signin_in">Signing in...</string>
+    <string name="nav_sign_out">Sign out</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
 </resources>
