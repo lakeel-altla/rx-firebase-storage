@@ -29,5 +29,8 @@
     <string name="nav_sign_out">Sign out</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="progress_dialog_upload">Uploading...</string>
+    <string name="snackbar_upload_failed">Upload failed.</string>
+    <string name="snackbar_uploaded">Uploaded.</string>
 
 </resources>

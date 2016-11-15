@@ -37,6 +37,8 @@ public final class RegisterSceneObjectPresenter {
 
     private Uri uri;
 
+    private long mPrevBytesTransferred;
+
     @Inject
     public RegisterSceneObjectPresenter() {
     }
@@ -78,16 +80,21 @@ public final class RegisterSceneObjectPresenter {
     }
 
     public void onClickButtonRegister() {
+        view.showUploadProgressDialog();
+
         Subscription subscription = uploadFileUseCase
                 .execute(uri.toString(), (totalBytes, bytesTransferred) -> {
-                    // TODO
+                    long increment = bytesTransferred - mPrevBytesTransferred;
+                    mPrevBytesTransferred = bytesTransferred;
+                    view.setUploadProgressDialogProgress(totalBytes, increment);
                 }).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(uuid -> {
-                    // TODO
-                    view.closeRegisterSceneObjectFragment();
+                    view.hideUploadProgressDialog();
+                    view.showSnackbar(R.string.snackbar_uploaded);
                 }, e -> {
-                    // TODO
                     LOG.e("Uploading file failed.", e);
+                    view.hideUploadProgressDialog();
+                    view.showSnackbar(R.string.snackbar_upload_failed);
                 });
         compositeSubscription.add(subscription);
     }

@@ -143,10 +143,10 @@ final class ScreenQuad extends Object3D {
 
     public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix,
                        final Matrix4 vMatrix, final Matrix4 parentMatrix, Material sceneMaterial) {
-        final Matrix4 pMatrix = camera.getProjectionMatrix();
-        final Matrix4 viewMatrix = camera.getViewMatrix();
+        final Matrix4 pMatrix = this.camera.getProjectionMatrix();
+        final Matrix4 viewMatrix = this.camera.getViewMatrix();
         viewProjection.setAll(pMatrix).multiply(viewMatrix);
-        super.render(camera, viewProjection, projMatrix, viewMatrix, null, sceneMaterial);
+        super.render(this.camera, viewProjection, projMatrix, viewMatrix, null, sceneMaterial);
     }
 
     @Override

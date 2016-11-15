@@ -6,6 +6,7 @@ import com.lakeel.altla.vision.builder.presentation.view.RegisterSceneObjectView
 import com.lakeel.altla.vision.builder.presentation.view.activity.ActivityScopeContext;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -40,7 +41,7 @@ public final class RegisterSceneObjectFragment extends Fragment implements Regis
     @BindView(R.id.image_view)
     ImageView imageView;
 
-    private InteractionListener interactionListener;
+    private ProgressDialog progressDialog;
 
     public static RegisterSceneObjectFragment newInstance(boolean editMode) {
         RegisterSceneObjectFragment fragment = new RegisterSceneObjectFragment();
@@ -55,7 +56,6 @@ public final class RegisterSceneObjectFragment extends Fragment implements Regis
         super.onAttach(context);
 
         ActivityScopeContext.class.cast(context).getActivityComponent().inject(this);
-        interactionListener = InteractionListener.class.cast(context);
     }
 
     @Override
@@ -120,8 +120,31 @@ public final class RegisterSceneObjectFragment extends Fragment implements Regis
     }
 
     @Override
-    public void closeRegisterSceneObjectFragment() {
-        interactionListener.onCloseRegisterSceneObjectFragment();
+    public void showUploadProgressDialog() {
+        // When displaying the progress rate, it is impossible to reset the progress rate,
+        // so the instance can not be cached.
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage(getString(R.string.progress_dialog_upload));
+        progressDialog.setIndeterminate(false);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setCancelable(false);
+        progressDialog.setMax(0);
+        progressDialog.show();
+    }
+
+    @Override
+    public void setUploadProgressDialogProgress(long max, long diff) {
+        if (progressDialog != null) {
+            progressDialog.setMax((int) max);
+            progressDialog.incrementProgressBy((int) diff);
+        }
+    }
+
+    @Override
+    public void hideUploadProgressDialog() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.hide();
+        }
     }
 
     @OnClick(R.id.button_select_document)
@@ -132,10 +155,5 @@ public final class RegisterSceneObjectFragment extends Fragment implements Regis
     @OnClick(R.id.button_register)
     void onClickButtonRegister() {
         presenter.onClickButtonRegister();
-    }
-
-    public interface InteractionListener {
-
-        void onCloseRegisterSceneObjectFragment();
     }
 }

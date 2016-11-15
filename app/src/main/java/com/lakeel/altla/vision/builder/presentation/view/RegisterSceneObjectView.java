@@ -11,5 +11,9 @@ public interface RegisterSceneObjectView {
 
     void showPickedImage(Bitmap bitmap);
 
-    void closeRegisterSceneObjectFragment();
+    void showUploadProgressDialog();
+
+    void setUploadProgressDialogProgress(long max, long diff);
+
+    void hideUploadProgressDialog();
 }

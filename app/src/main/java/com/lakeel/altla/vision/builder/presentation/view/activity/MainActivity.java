@@ -40,7 +40,6 @@ public final class MainActivity extends AppCompatActivity
         implements ActivityScopeContext,
                    SignInFragment.OnShowMainFragmentListener,
                    MainFragment.InteractionListener,
-                   RegisterSceneObjectFragment.InteractionListener,
                    NavigationView.OnNavigationItemSelectedListener {
 
     private static final List<TangoCoordinateFramePair> FRAME_PAIRS;
@@ -169,10 +168,5 @@ public final class MainActivity extends AppCompatActivity
                                    .replace(R.id.fragment_container, fragment)
                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                                    .commit();
-    }
-
-    @Override
-    public void onCloseRegisterSceneObjectFragment() {
-        getSupportFragmentManager().popBackStack();
     }
 }
