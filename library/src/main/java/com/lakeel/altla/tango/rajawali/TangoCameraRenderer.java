@@ -32,31 +32,31 @@ public abstract class TangoCameraRenderer extends Renderer {
 
     private static final String TEXTURE_NAME = "tangoCamera";
 
-    private static final int INVALID_CAMERA_ID = -1;
+    private static final int INVALID_TANGO_CAMERA_ID = -1;
 
     private static final int INVALID_TEXTURE_ID = 0;
 
-    private final AtomicBoolean mIsFrameAvailableTangoThread = new AtomicBoolean(false);
+    private final AtomicBoolean tangoCameraTextureAvailable = new AtomicBoolean(false);
 
-    private final CameraTransformer mCameraTransformer = new CameraTransformer();
+    private final CameraTransformer cameraTransformer = new CameraTransformer();
 
-    private final Vector3 mCurrentCameraForward = new Vector3();
+    private final Vector3 currentCameraForward = new Vector3();
 
-    private StreamingTexture mTexture;
+    private StreamingTexture texture;
 
-    private Tango mTango;
+    private Tango tango;
 
-    private int mCameraId = INVALID_CAMERA_ID;
+    private int tangoCameraId = INVALID_TANGO_CAMERA_ID;
 
-    private TangoCameraIntrinsics mIntrinsics;
+    private TangoCameraIntrinsics tangoCameraIntrinsics;
 
-    private boolean mSceneCameraConfigured;
+    private boolean sceneCameraConfigured;
 
-    private int mConnectedTextureId = INVALID_TEXTURE_ID;
+    private int connectedTextureId = INVALID_TEXTURE_ID;
 
-    private double mUpdateTextureTimestamp;
+    private double updateTextureTimestamp;
 
-    private double mUpdateCameraPoseTimestamp;
+    private double updateCameraTransformationTimestamp;
 
     public TangoCameraRenderer(Context context) {
         super(context);
@@ -70,9 +70,9 @@ public abstract class TangoCameraRenderer extends Renderer {
         Material material = new Material();
         material.setColorInfluence(0);
 
-        mTexture = new StreamingTexture(TEXTURE_NAME, (StreamingTexture.ISurfaceListener) null);
+        texture = new StreamingTexture(TEXTURE_NAME, (StreamingTexture.ISurfaceListener) null);
         try {
-            material.addTexture(mTexture);
+            material.addTexture(texture);
             screenQuad.setMaterial(material);
             getCurrentScene().addChild(screenQuad);
         } catch (ATexture.TextureException e) {
@@ -91,12 +91,12 @@ public abstract class TangoCameraRenderer extends Renderer {
     @Override
     public void onRenderSurfaceSizeChanged(GL10 gl, int width, int height) {
         super.onRenderSurfaceSizeChanged(gl, width, height);
-        mSceneCameraConfigured = false;
+        sceneCameraConfigured = false;
     }
 
     @Override
-    public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset,
-                                 int yPixelOffset) {
+    public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep,
+                                 int xPixelOffset, int yPixelOffset) {
     }
 
     @Override
@@ -104,26 +104,26 @@ public abstract class TangoCameraRenderer extends Renderer {
     }
 
     public void connectToTangoCamera(Tango tango) {
-        mTango = tango;
-        mCameraId = TangoCameraIntrinsics.TANGO_CAMERA_COLOR;
-        mIntrinsics = mTango.getCameraIntrinsics(mCameraId);
+        this.tango = tango;
+        tangoCameraId = TangoCameraIntrinsics.TANGO_CAMERA_COLOR;
+        tangoCameraIntrinsics = this.tango.getCameraIntrinsics(tangoCameraId);
         getCurrentScene().registerFrameCallback(new SceneFrameCallback());
     }
 
     public void disconnectFromTangoCamera() {
-        if (mTango != null && mCameraId != INVALID_CAMERA_ID) {
+        if (tango != null && tangoCameraId != INVALID_TANGO_CAMERA_ID) {
             synchronized (this) {
                 getCurrentScene().clearFrameCallbacks();
-                mTango.disconnectCamera(mCameraId);
-                mIsFrameAvailableTangoThread.set(false);
-                mCameraId = INVALID_CAMERA_ID;
-                mConnectedTextureId = INVALID_TEXTURE_ID;
+                tango.disconnectCamera(tangoCameraId);
+                tangoCameraTextureAvailable.set(false);
+                tangoCameraId = INVALID_TANGO_CAMERA_ID;
+                connectedTextureId = INVALID_TEXTURE_ID;
             }
         }
     }
 
     public void onFrameAvailable() {
-        mIsFrameAvailableTangoThread.set(true);
+        tangoCameraTextureAvailable.set(true);
     }
 
     protected TangoSupport.TangoMatrixTransformData getCameraMatrixTransformAtTime(double timestamp) {
@@ -144,16 +144,16 @@ public abstract class TangoCameraRenderer extends Renderer {
      * @param cameraTransform The matrix to transform the current camera.
      */
     protected void updateCameraPose(TangoSupport.TangoMatrixTransformData cameraTransform) {
-        mCameraTransformer.transform(getCurrentCamera(), cameraTransform.matrix, mCurrentCameraForward);
-        mUpdateCameraPoseTimestamp = cameraTransform.timestamp;
+        cameraTransformer.transform(getCurrentCamera(), cameraTransform.matrix, currentCameraForward);
+        updateCameraTransformationTimestamp = cameraTransform.timestamp;
     }
 
     protected final Vector3 getCurrentCameraForward() {
-        return mCurrentCameraForward;
+        return currentCameraForward;
     }
 
     public synchronized double getUpdateTextureTimestamp() {
-        return mUpdateTextureTimestamp;
+        return updateTextureTimestamp;
     }
 
     /**
@@ -191,33 +191,33 @@ public abstract class TangoCameraRenderer extends Renderer {
         public void onPreFrame(long sceneTime, double deltaTime) {
             try {
                 synchronized (TangoCameraRenderer.this) {
-                    if (!mSceneCameraConfigured) {
-                        projection(mIntrinsics, mProjection);
+                    if (!sceneCameraConfigured) {
+                        projection(tangoCameraIntrinsics, mProjection);
                         getCurrentCamera().setProjectionMatrix(mProjection);
-                        mSceneCameraConfigured = true;
+                        sceneCameraConfigured = true;
                     }
 
                     // NOTE by Tango Samples:
                     //
                     // NOTE: When the OpenGL context is recycled, Rajawali may re-generate the
                     // texture with a different ID.
-                    int textureId = mTexture.getTextureId();
-                    if (mConnectedTextureId != textureId) {
-                        mTango.connectTextureId(mCameraId, textureId);
-                        mConnectedTextureId = textureId;
+                    int textureId = texture.getTextureId();
+                    if (connectedTextureId != textureId) {
+                        tango.connectTextureId(tangoCameraId, textureId);
+                        connectedTextureId = textureId;
                     }
 
-                    if (mIsFrameAvailableTangoThread.compareAndSet(true, false)) {
-                        mUpdateTextureTimestamp = mTango.updateTexture(mCameraId);
+                    if (tangoCameraTextureAvailable.compareAndSet(true, false)) {
+                        updateTextureTimestamp = tango.updateTexture(tangoCameraId);
                     }
 
-                    if (mUpdateTextureTimestamp > mUpdateCameraPoseTimestamp) {
+                    if (updateTextureTimestamp > updateCameraTransformationTimestamp) {
                         TangoSupport.TangoMatrixTransformData transformData =
-                                getCameraMatrixTransformAtTime(mUpdateTextureTimestamp);
+                                getCameraMatrixTransformAtTime(updateTextureTimestamp);
                         if (transformData.statusCode == TangoPoseData.POSE_VALID) {
                             updateCameraPose(transformData);
                         } else {
-                            Log.v(TAG, "Can't get a valid camera pose at time: " + mUpdateTextureTimestamp);
+                            Log.v(TAG, "Can't get a valid camera pose at time: " + updateTextureTimestamp);
                         }
                     }
                 }
@@ -245,25 +245,25 @@ public abstract class TangoCameraRenderer extends Renderer {
 
     private static class CameraTransformer {
 
-        final Matrix4 mTransform = new Matrix4();
+        final Matrix4 transform = new Matrix4();
 
-        final Vector3 mPosition = new Vector3();
+        final Vector3 position = new Vector3();
 
-        final Quaternion mOrientation = new Quaternion();
+        final Quaternion orientation = new Quaternion();
 
-        final Quaternion mConugateOrientation = new Quaternion();
+        final Quaternion conjugateOrientation = new Quaternion();
 
         void transform(Camera camera, float[] matrix, Vector3 cameraForward) {
             // Convert arrays to a Matrix4 instance.
-            mTransform.setAll(matrix);
+            transform.setAll(matrix);
             // Get the position from the matrix.
-            mTransform.getTranslation(mPosition);
+            transform.getTranslation(position);
             // Get the orientation from the matrix.
-            mOrientation.fromMatrix(mTransform);
+            orientation.fromMatrix(transform);
 
             // Update the specified camera pose.
-            camera.setPosition(mPosition);
-            camera.setOrientation(mOrientation);
+            camera.setPosition(position);
+            camera.setOrientation(orientation);
 
             // Update the forward vector of the current camera.
             //
@@ -274,10 +274,10 @@ public abstract class TangoCameraRenderer extends Renderer {
             // so we call Vector3#rotateBy with the conjugate of an orientation.
             cameraForward.setAll(0, 0, -1);
 
-            mConugateOrientation.setAll(mOrientation);
-            mConugateOrientation.conjugate();
+            conjugateOrientation.setAll(orientation);
+            conjugateOrientation.conjugate();
 
-            cameraForward.rotateBy(mConugateOrientation);
+            cameraForward.rotateBy(conjugateOrientation);
             cameraForward.normalize();
         }
     }

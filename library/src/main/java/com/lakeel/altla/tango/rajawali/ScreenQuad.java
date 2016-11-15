@@ -16,21 +16,21 @@ import org.rajawali3d.postprocessing.passes.EffectPass;
  */
 final class ScreenQuad extends Object3D {
 
-    private int mSegmentsW;
+    private int segmentsW;
 
-    private int mSegmentsH;
+    private int segmentsH;
 
-    private int mNumTextureTiles;
+    private int numTextureTiles;
 
-    private boolean mCreateTextureCoords;
+    private boolean createTextureCoords;
 
-    private boolean mCreateVertexColorBuffer;
+    private boolean createVertexColorBuffer;
 
-    private Camera2D mCamera;
+    private Camera2D camera;
 
-    private Matrix4 mVPMatrix;
+    private Matrix4 viewProjection;
 
-    private EffectPass mEffectPass;
+    private EffectPass effectPass;
 
     public ScreenQuad() {
         this(1, 1, true, false, 1, true);
@@ -51,50 +51,50 @@ final class ScreenQuad extends Object3D {
     private ScreenQuad(int segmentsW, int segmentsH, boolean createTextureCoordinates,
                        boolean createVertexColorBuffer, int numTextureTiles, boolean createVBOs) {
         super();
-        mSegmentsW = segmentsW;
-        mSegmentsH = segmentsH;
-        mCreateTextureCoords = createTextureCoordinates;
-        mCreateVertexColorBuffer = createVertexColorBuffer;
-        mNumTextureTiles = numTextureTiles;
+        this.segmentsW = segmentsW;
+        this.segmentsH = segmentsH;
+        createTextureCoords = createTextureCoordinates;
+        this.createVertexColorBuffer = createVertexColorBuffer;
+        this.numTextureTiles = numTextureTiles;
         init(createVBOs);
     }
 
     private void init(boolean createVBOs) {
         int i, j;
-        int numVertices = (mSegmentsW + 1) * (mSegmentsH + 1);
+        int numVertices = (segmentsW + 1) * (segmentsH + 1);
         float[] vertices = new float[numVertices * 3];
         float[] textureCoords = null;
-        if (mCreateTextureCoords) {
+        if (createTextureCoords) {
             textureCoords = new float[numVertices * 2];
         }
         float[] normals = new float[numVertices * 3];
         float[] colors = null;
-        if (mCreateVertexColorBuffer) {
+        if (createVertexColorBuffer) {
             colors = new float[numVertices * 4];
         }
-        int[] indices = new int[mSegmentsW * mSegmentsH * 6];
+        int[] indices = new int[segmentsW * segmentsH * 6];
         int vertexCount = 0;
         int texCoordCount = 0;
 
-        mCamera = new Camera2D();
-        mCamera.setProjectionMatrix(0, 0);
-        mVPMatrix = new Matrix4();
+        camera = new Camera2D();
+        camera.setProjectionMatrix(0, 0);
+        viewProjection = new Matrix4();
 
-        for (i = 0; i <= mSegmentsW; i++) {
-            for (j = 0; j <= mSegmentsH; j++) {
-                float v1 = ((float) i / (float) mSegmentsW - 0.5f);
-                float v2 = ((float) j / (float) mSegmentsH - 0.5f);
+        for (i = 0; i <= segmentsW; i++) {
+            for (j = 0; j <= segmentsH; j++) {
+                float v1 = ((float) i / (float) segmentsW - 0.5f);
+                float v2 = ((float) j / (float) segmentsH - 0.5f);
                 vertices[vertexCount] = v1;
                 vertices[vertexCount + 1] = v2;
                 vertices[vertexCount + 2] = 0;
 
-                if (mCreateTextureCoords) {
+                if (createTextureCoords) {
                     // [FIX]
                     // Fixed texture coodinations in original rajawali codes.
-                    float u = (float) i / (float) mSegmentsW;
-                    textureCoords[texCoordCount++] = u * mNumTextureTiles;
-                    float v = (float) j / (float) mSegmentsH;
-                    textureCoords[texCoordCount++] = (1.0f - v) * mNumTextureTiles;
+                    float u = (float) i / (float) segmentsW;
+                    textureCoords[texCoordCount++] = u * numTextureTiles;
+                    float v = (float) j / (float) segmentsH;
+                    textureCoords[texCoordCount++] = (1.0f - v) * numTextureTiles;
                 }
 
                 normals[vertexCount] = 0;
@@ -105,11 +105,11 @@ final class ScreenQuad extends Object3D {
             }
         }
 
-        int colspan = mSegmentsH + 1;
+        int colspan = segmentsH + 1;
         int indexCount = 0;
 
-        for (int col = 0; col < mSegmentsW; col++) {
-            for (int row = 0; row < mSegmentsH; row++) {
+        for (int col = 0; col < segmentsW; col++) {
+            for (int row = 0; row < segmentsH; row++) {
                 int ul = col * colspan + row;
                 int ll = ul + 1;
                 int ur = (col + 1) * colspan + row;
@@ -125,7 +125,7 @@ final class ScreenQuad extends Object3D {
             }
         }
 
-        if (mCreateVertexColorBuffer) {
+        if (createVertexColorBuffer) {
             int numColors = numVertices * 4;
             for (j = 0; j < numColors; j += 4) {
                 colors[j] = 1.0f;
@@ -143,10 +143,10 @@ final class ScreenQuad extends Object3D {
 
     public void render(Camera camera, final Matrix4 vpMatrix, final Matrix4 projMatrix,
                        final Matrix4 vMatrix, final Matrix4 parentMatrix, Material sceneMaterial) {
-        final Matrix4 pMatrix = mCamera.getProjectionMatrix();
-        final Matrix4 viewMatrix = mCamera.getViewMatrix();
-        mVPMatrix.setAll(pMatrix).multiply(viewMatrix);
-        super.render(mCamera, mVPMatrix, projMatrix, viewMatrix, null, sceneMaterial);
+        final Matrix4 pMatrix = camera.getProjectionMatrix();
+        final Matrix4 viewMatrix = camera.getViewMatrix();
+        viewProjection.setAll(pMatrix).multiply(viewMatrix);
+        super.render(camera, viewProjection, projMatrix, viewMatrix, null, sceneMaterial);
     }
 
     @Override
@@ -165,8 +165,8 @@ final class ScreenQuad extends Object3D {
     @Override
     protected void setShaderParams(Camera camera) {
         super.setShaderParams(camera);
-        if (mEffectPass != null) {
-            mEffectPass.setShaderParams();
+        if (effectPass != null) {
+            effectPass.setShaderParams();
         }
     }
 }
