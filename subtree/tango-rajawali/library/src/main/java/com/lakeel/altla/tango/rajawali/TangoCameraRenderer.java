@@ -42,6 +42,8 @@ public abstract class TangoCameraRenderer extends Renderer {
 
     private final Vector3 mCurrentCameraForward = new Vector3();
 
+    private final SceneFrameCallback sceneFrameCallback = new SceneFrameCallback();
+
     private StreamingTexture mTexture;
 
     private Tango mTango;
@@ -107,15 +109,15 @@ public abstract class TangoCameraRenderer extends Renderer {
         mTango = tango;
         mCameraId = TangoCameraIntrinsics.TANGO_CAMERA_COLOR;
         mIntrinsics = mTango.getCameraIntrinsics(mCameraId);
-        getCurrentScene().registerFrameCallback(new SceneFrameCallback());
+        getCurrentScene().registerFrameCallback(sceneFrameCallback);
     }
 
     public void disconnectFromTangoCamera() {
         if (mTango != null && mCameraId != INVALID_CAMERA_ID) {
             synchronized (this) {
-                getCurrentScene().clearFrameCallbacks();
-                mTango.disconnectCamera(mCameraId);
                 mIsFrameAvailableTangoThread.set(false);
+                getCurrentScene().unregisterFrameCallback(sceneFrameCallback);
+                mTango.disconnectCamera(mCameraId);
                 mCameraId = INVALID_CAMERA_ID;
                 mConnectedTextureId = INVALID_TEXTURE_ID;
             }
