@@ -1,6 +1,5 @@
 package com.lakeel.altla.vision.builder.data.repository;
 
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -9,18 +8,14 @@ import com.lakeel.altla.vision.builder.domain.repository.FirebaseFileRepository;
 
 import java.io.InputStream;
 
-import javax.inject.Inject;
-
 import rx.Single;
 
 public final class FirebaseFileRepositoryImpl implements FirebaseFileRepository {
 
     private final StorageReference directory;
 
-    @Inject
-    public FirebaseFileRepositoryImpl(String uri, String path) {
-        StorageReference root = FirebaseStorage.getInstance().getReferenceFromUrl(uri);
-        directory = root.child(path);
+    public FirebaseFileRepositoryImpl(StorageReference directory) {
+        this.directory = directory;
     }
 
     @Override

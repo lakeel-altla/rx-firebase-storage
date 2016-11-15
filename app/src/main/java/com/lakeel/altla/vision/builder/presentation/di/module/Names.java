@@ -8,7 +8,9 @@ public final class Names {
 
     static final String FIREBASE_STORAGE_URI = "firebaseStorageUri";
 
-    static final String FIREBASE_STORAGE_PATH_FILES = "firebaseStoragePathFiles";
+    static final String FIREBASE_STORAGE_REFERENCE_ROOT = "firebaseStorageReferenceRoot";
+
+    static final String FIREBASE_STORAGE_REFERENCE_FILES_DIRECTORY = "firebaseStorageReferenceFilesDirectory";
 
     private Names() {
     }

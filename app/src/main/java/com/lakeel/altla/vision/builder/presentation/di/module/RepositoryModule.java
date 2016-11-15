@@ -1,5 +1,7 @@
 package com.lakeel.altla.vision.builder.presentation.di.module;
 
+import com.google.firebase.storage.StorageReference;
+
 import com.lakeel.altla.vision.builder.data.repository.FirebaseFileRepositoryImpl;
 import com.lakeel.altla.vision.builder.data.repository.LocalDocumentRepositoryImpl;
 import com.lakeel.altla.vision.builder.data.repository.RealmImageReferenceRepository;
@@ -33,8 +35,7 @@ public final class RepositoryModule {
     @ActivityScope
     @Provides
     public FirebaseFileRepository provideFirebaseFileRepository(
-            @Named(Names.FIREBASE_STORAGE_URI) String uri,
-            @Named(Names.FIREBASE_STORAGE_PATH_FILES) String path) {
-        return new FirebaseFileRepositoryImpl(uri, path);
+            @Named(Names.FIREBASE_STORAGE_REFERENCE_FILES_DIRECTORY) StorageReference reference) {
+        return new FirebaseFileRepositoryImpl(reference);
     }
 }
