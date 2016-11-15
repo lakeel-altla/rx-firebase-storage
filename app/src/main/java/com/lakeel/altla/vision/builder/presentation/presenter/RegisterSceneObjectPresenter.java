@@ -37,7 +37,7 @@ public final class RegisterSceneObjectPresenter {
 
     private Uri uri;
 
-    private long mPrevBytesTransferred;
+    private long prevBytesTransferred;
 
     @Inject
     public RegisterSceneObjectPresenter() {
@@ -84,8 +84,8 @@ public final class RegisterSceneObjectPresenter {
 
         Subscription subscription = uploadFileUseCase
                 .execute(uri.toString(), (totalBytes, bytesTransferred) -> {
-                    long increment = bytesTransferred - mPrevBytesTransferred;
-                    mPrevBytesTransferred = bytesTransferred;
+                    long increment = bytesTransferred - prevBytesTransferred;
+                    prevBytesTransferred = bytesTransferred;
                     view.setUploadProgressDialogProgress(totalBytes, increment);
                 }).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(uuid -> {
