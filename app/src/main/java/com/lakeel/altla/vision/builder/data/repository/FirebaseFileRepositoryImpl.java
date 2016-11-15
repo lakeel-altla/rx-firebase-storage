@@ -4,8 +4,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import com.lakeel.altla.android.log.Log;
-import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.rx.firebase.storage.UploadTaskSingle;
 import com.lakeel.altla.vision.builder.domain.repository.FirebaseFileRepository;
 
 import java.io.InputStream;
@@ -15,8 +14,6 @@ import javax.inject.Inject;
 import rx.Single;
 
 public final class FirebaseFileRepositoryImpl implements FirebaseFileRepository {
-
-    private static final Log LOG = LogFactory.getLog(FirebaseFileRepositoryImpl.class);
 
     private final StorageReference directory;
 
@@ -34,15 +31,10 @@ public final class FirebaseFileRepositoryImpl implements FirebaseFileRepository 
         // Calling RxJava methods from them will be also called by its thread.
         // Note that a subsequent stream processing is also handled by its thread.
 
-        return Single.create(subscriber -> {
-            LOG.d("Saving file to Firebase Storage...");
+        StorageReference file = directory.child(uuid);
+        UploadTask task = file.putStream(stream);
 
-            StorageReference file = directory.child(uuid);
-            UploadTask task = file.putStream(stream);
-            task.addOnSuccessListener(taskSnapshot -> subscriber.onSuccess(uuid))
-                .addOnFailureListener(subscriber::onError)
-                .addOnProgressListener(snapshot -> onProgressListener.onProgress(
-                        snapshot.getTotalByteCount(), snapshot.getBytesTransferred()));
-        });
+        return UploadTaskSingle.create(task, onProgressListener::onProgress)
+                               .map(taskSnapshot -> uuid);
     }
 }

@@ -58,12 +58,14 @@ dependencies {
     debugCompile project(path: ':tango-rajawali', configuration: 'debug')
     debugCompile project(path: ':rajawali-pool', configuration: 'debug')
     debugCompile project(path: ':rx-realm', configuration: 'debug')
+    debugCompile project(path: ':rx-firebase-storage', configuration: 'debug')
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4'
 
     releaseCompile project(path: ':tango-helper', configuration: 'release')
     releaseCompile project(path: ':tango-rajawali', configuration: 'release')
     releaseCompile project(path: ':rajawali-pool', configuration: 'release')
     releaseCompile project(path: ':rx-realm', configuration: 'release')
+    releaseCompile project(path: ':rx-firebase-storage', configuration: 'release')
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4'
 }
 
