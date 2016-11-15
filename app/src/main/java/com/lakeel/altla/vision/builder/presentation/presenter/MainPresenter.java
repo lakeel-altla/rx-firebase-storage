@@ -8,7 +8,6 @@ import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.tango.OnFrameAvailableListener;
 import com.lakeel.altla.tango.TangoUpdateDispatcher;
-import com.lakeel.altla.vision.builder.R;
 import com.lakeel.altla.vision.builder.domain.model.ImageReference;
 import com.lakeel.altla.vision.builder.domain.usecase.CreateImageReferenceUseCase;
 import com.lakeel.altla.vision.builder.domain.usecase.FindAllImageReferencesUseCase;
@@ -27,7 +26,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +33,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import rx.Single;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.exceptions.Exceptions;
@@ -85,6 +82,8 @@ public final class MainPresenter
 
     private boolean hasPickedObject;
 
+    private volatile boolean active = true;
+
     private ObjectEditMode objectEditMode = ObjectEditMode.NONE;
 
     @Inject
@@ -92,6 +91,8 @@ public final class MainPresenter
     }
 
     public void onCreateView(@NonNull MainView view) {
+        LOG.v("onCreateView");
+
         this.view = view;
 
         this.view.setTangoUxLayout(tangoUx);
@@ -129,6 +130,7 @@ public final class MainPresenter
     public void onResume() {
         renderer.connectToTangoCamera(tango);
         tangoUpdateDispatcher.getOnFrameAvailableListeners().add(this);
+        active = true;
     }
 
     private BitmapModel loadBitmapModel(ImageReference imageReference) {
@@ -143,6 +145,7 @@ public final class MainPresenter
     }
 
     public void onPause() {
+        active = false;
         tangoUpdateDispatcher.getOnFrameAvailableListeners().remove(this);
         renderer.disconnectFromTangoCamera();
     }
@@ -153,9 +156,10 @@ public final class MainPresenter
 
     @Override
     public void onFrameAvailable(int cameraId) {
-        if (cameraId == TangoCameraIntrinsics.TANGO_CAMERA_COLOR) {
+        if (active && cameraId == TangoCameraIntrinsics.TANGO_CAMERA_COLOR) {
             renderer.onFrameAvailable();
-            view.requestRender();
+            // TODO: remove the following commented code.
+//            view.requestRender();
         }
     }
 
@@ -171,7 +175,8 @@ public final class MainPresenter
     }
 
     public void onClickImageButtonAddModel() {
-        view.showSelectImageMethodDialog(R.array.dialog_select_image_methods_items);
+        view.showRegisterSceneObjectFragment(true);
+//        view.showSelectImageMethodDialog(R.array.dialog_select_image_methods_items);
     }
 
     public void onTouchButtonTranslateObject() {
@@ -223,48 +228,48 @@ public final class MainPresenter
         view.setScaleObjectSelected(true);
     }
 
-    public void onSelectImageMethodSelected(int index) {
-        switch (index) {
-            case 0:
-                view.showImagePicker();
-                break;
-            case 1:
-                // TODO
-                break;
-        }
-    }
+//    public void onSelectImageMethodSelected(int index) {
+//        switch (index) {
+//            case 0:
+//                view.showImagePicker();
+//                break;
+//            case 1:
+//                // TODO
+//                break;
+//        }
+//    }
 
-    public void onImagePicked(Uri uri) {
-        LOG.d("Image picked: %s", uri);
+//    public void onImagePicked(Uri uri) {
+//        LOG.d("Image picked: %s", uri);
+//
+//        Subscription subscription = documentBitmapLoader
+//                .loadAsSingle(uri)
+//                .flatMap(bitmap -> saveBitmap(uri, bitmap))
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(bitmap -> {
+//                    BitmapModel model = new BitmapModel(uri, bitmap);
+//                    models.add(model);
+//                    view.updateModels();
+//                }, e -> {
+//                    if (e instanceof FileNotFoundException) {
+//                        view.showSnackbar(R.string.snackbar_image_file_not_found);
+//                    } else if (e instanceof IOException) {
+//                        // close に対する I/O エラーなのでログを出して無視する
+//                        LOG.w("Closing file failed.", e);
+//                    } else {
+//                        view.showSnackbar(R.string.snackbar_unexpected_error_occured);
+//                        LOG.e("Unexpected error occured.", e);
+//                    }
+//                });
+//
+//        compositeSubscription.add(subscription);
+//    }
 
-        Subscription subscription = documentBitmapLoader
-                .loadAsSingle(uri)
-                .flatMap(bitmap -> saveBitmap(uri, bitmap))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(bitmap -> {
-                    BitmapModel model = new BitmapModel(uri, bitmap);
-                    models.add(model);
-                    view.updateModels();
-                }, e -> {
-                    if (e instanceof FileNotFoundException) {
-                        view.showSnackbar(R.string.snackbar_image_file_not_found);
-                    } else if (e instanceof IOException) {
-                        // close に対する I/O エラーなのでログを出して無視する
-                        LOG.w("Closing file failed.", e);
-                    } else {
-                        view.showSnackbar(R.string.snackbar_unexpected_error_occured);
-                        LOG.e("Unexpected error occured.", e);
-                    }
-                });
-
-        compositeSubscription.add(subscription);
-    }
-
-    private Single<Bitmap> saveBitmap(Uri uri, Bitmap bitmap) {
-        ImageReference imageReference = new ImageReference(uri.toString());
-        return createImageReferenceUseCase.execute(imageReference)
-                                          .map(ir -> bitmap);
-    }
+//    private Single<Bitmap> saveBitmap(Uri uri, Bitmap bitmap) {
+//        ImageReference imageReference = new ImageReference(uri.toString());
+//        return createImageReferenceUseCase.execute(imageReference)
+//                                          .map(ir -> bitmap);
+//    }
 
     public int getModelCount() {
         return models.size();

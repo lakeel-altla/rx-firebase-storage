@@ -6,7 +6,6 @@ import com.lakeel.altla.vision.builder.presentation.model.Axis;
 
 import org.rajawali3d.renderer.ISurfaceRenderer;
 
-import android.support.annotation.ArrayRes;
 import android.support.annotation.StringRes;
 
 /**
@@ -18,15 +17,17 @@ public interface MainView {
 
     void setSurfaceRenderer(ISurfaceRenderer renderer);
 
-    void requestRender();
+//    void requestRender();
 
     void showSnackbar(@StringRes int resId);
 
     void setModelPaneVisible(boolean visible);
 
-    void showSelectImageMethodDialog(@ArrayRes int itemsId);
+    void showRegisterSceneObjectFragment(boolean editMode);
 
-    void showImagePicker();
+//    void showSelectImageMethodDialog(@ArrayRes int itemsId);
+
+//    void showImagePicker();
 
     void updateModels();
 

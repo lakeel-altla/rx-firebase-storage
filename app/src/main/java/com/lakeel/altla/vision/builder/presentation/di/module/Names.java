@@ -6,6 +6,10 @@ public final class Names {
 
     public static final String ACTIVITY_CONTEXT = "activityContext";
 
+    static final String FIREBASE_STORAGE_URI = "firebaseStorageUri";
+
+    static final String FIREBASE_STORAGE_PATH_FILES = "firebaseStoragePathFiles";
+
     private Names() {
     }
 }

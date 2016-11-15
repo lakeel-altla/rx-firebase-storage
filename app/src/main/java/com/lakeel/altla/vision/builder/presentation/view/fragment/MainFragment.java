@@ -16,18 +16,13 @@ import org.rajawali3d.renderer.ISurfaceRenderer;
 import org.rajawali3d.view.ISurface;
 import org.rajawali3d.view.TextureView;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.ArrayRes;
 import android.support.annotation.StringRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GestureDetectorCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.DragEvent;
@@ -49,14 +44,14 @@ import butterknife.OnTouch;
 public final class MainFragment extends Fragment implements MainView {
 
     private static final Log LOG = LogFactory.getLog(MainFragment.class);
-
-    private static final int REQUEST_CODE_ACTION_OPEN_DOCUMENT = 0;
+//
+//    private static final int REQUEST_CODE_ACTION_OPEN_DOCUMENT = 0;
 
     @Inject
     MainPresenter presenter;
 
     @BindView(R.id.view_top)
-    View viewTop;
+    ViewGroup viewTop;
 
 //    @BindView(R.id.layout_tango_ux)
 //    TangoUxLayout tangoUxLayout;
@@ -101,7 +96,9 @@ public final class MainFragment extends Fragment implements MainView {
 
     private GestureDetectorCompat gestureDetector;
 
-    private AlertDialog alertDialog;
+//    private AlertDialog alertDialog;
+
+    private InteractionListener interactionListener;
 
     public static MainFragment newInstance() {
         return new MainFragment();
@@ -112,6 +109,7 @@ public final class MainFragment extends Fragment implements MainView {
         super.onAttach(context);
 
         ActivityScopeContext.class.cast(context).getActivityComponent().inject(this);
+        interactionListener = InteractionListener.class.cast(context);
 
         gestureDetector = new GestureDetectorCompat(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
@@ -133,6 +131,12 @@ public final class MainFragment extends Fragment implements MainView {
                 return presenter.onSingleTapUp(e);
             }
         });
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        interactionListener = null;
     }
 
     @Override
@@ -212,10 +216,10 @@ public final class MainFragment extends Fragment implements MainView {
         textureView.setSurfaceRenderer(renderer);
     }
 
-    @Override
-    public void requestRender() {
-        textureView.requestRenderUpdate();
-    }
+//    @Override
+//    public void requestRender() {
+//        textureView.requestRenderUpdate();
+//    }
 
     @Override
     public void showSnackbar(@StringRes int resId) {
@@ -234,26 +238,31 @@ public final class MainFragment extends Fragment implements MainView {
     }
 
     @Override
-    public void showSelectImageMethodDialog(@ArrayRes int itemsId) {
-        if (alertDialog == null) {
-            alertDialog = new AlertDialog.Builder(getContext())
-                    .setTitle(R.string.dialog_select_image_methods_title)
-                    .setItems(itemsId, (dialogInterface, i) -> {
-                        presenter.onSelectImageMethodSelected(i);
-                    })
-                    .create();
-        }
-        alertDialog.show();
+    public void showRegisterSceneObjectFragment(boolean editMode) {
+        interactionListener.onShowRegisterSceneObjectFragment(editMode);
     }
 
-    @Override
-    public void showImagePicker() {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT)
-                .addCategory(Intent.CATEGORY_OPENABLE)
-                .setType("image/*");
+//    @Override
+//    public void showSelectImageMethodDialog(@ArrayRes int itemsId) {
+//        if (alertDialog == null) {
+//            alertDialog = new AlertDialog.Builder(getContext())
+//                    .setTitle(R.string.dialog_select_image_methods_title)
+//                    .setItems(itemsId, (dialogInterface, i) -> {
+//                        presenter.onSelectImageMethodSelected(i);
+//                    })
+//                    .create();
+//        }
+//        alertDialog.show();
+//    }
 
-        startActivityForResult(intent, REQUEST_CODE_ACTION_OPEN_DOCUMENT);
-    }
+//    @Override
+//    public void showImagePicker() {
+//        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT)
+//                .addCategory(Intent.CATEGORY_OPENABLE)
+//                .setType("image/*");
+//
+//        startActivityForResult(intent, REQUEST_CODE_ACTION_OPEN_DOCUMENT);
+//    }
 
     @Override
     public void updateModels() {
@@ -303,20 +312,20 @@ public final class MainFragment extends Fragment implements MainView {
     public void setScaleObjectSelected(boolean selected) {
         buttonScaleObject.setPressed(selected);
     }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (REQUEST_CODE_ACTION_OPEN_DOCUMENT == requestCode) {
-            if (Activity.RESULT_OK == resultCode) {
-                Uri uri = (data != null) ? data.getData() : null;
-                if (uri != null) {
-                    presenter.onImagePicked(uri);
-                }
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
+//
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        if (REQUEST_CODE_ACTION_OPEN_DOCUMENT == requestCode) {
+//            if (Activity.RESULT_OK == resultCode) {
+//                Uri uri = (data != null) ? data.getData() : null;
+//                if (uri != null) {
+//                    presenter.onImagePicked(uri);
+//                }
+//            }
+//        } else {
+//            super.onActivityResult(requestCode, resultCode, data);
+//        }
+//    }
 
     @OnClick(R.id.image_button_add_model)
     void onClickImageButtonAddModel() {
@@ -414,5 +423,10 @@ public final class MainFragment extends Fragment implements MainView {
             presenter.onTouchButtonScaleObject();
         }
         return true;
+    }
+
+    public interface InteractionListener {
+
+        void onShowRegisterSceneObjectFragment(boolean editMode);
     }
 }

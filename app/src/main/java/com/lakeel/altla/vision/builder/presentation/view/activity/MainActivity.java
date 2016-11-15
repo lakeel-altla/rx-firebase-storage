@@ -13,12 +13,14 @@ import com.lakeel.altla.vision.builder.presentation.app.MyApplication;
 import com.lakeel.altla.vision.builder.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.builder.presentation.di.module.ActivityModule;
 import com.lakeel.altla.vision.builder.presentation.view.fragment.MainFragment;
+import com.lakeel.altla.vision.builder.presentation.view.fragment.RegisterSceneObjectFragment;
 import com.lakeel.altla.vision.builder.presentation.view.fragment.SignInFragment;
 import com.projecttango.tangosupport.TangoSupport;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -35,7 +37,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public final class MainActivity extends AppCompatActivity
-        implements ActivityScopeContext, SignInFragment.OnShowMainFragmentListener,
+        implements ActivityScopeContext,
+                   SignInFragment.OnShowMainFragmentListener,
+                   MainFragment.InteractionListener,
+                   RegisterSceneObjectFragment.InteractionListener,
                    NavigationView.OnNavigationItemSelectedListener {
 
     private static final List<TangoCoordinateFramePair> FRAME_PAIRS;
@@ -124,6 +129,15 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public ActivityComponent getActivityComponent() {
         return activityComponent;
     }
@@ -138,20 +152,27 @@ public final class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
-
         if (id == R.id.nav_sign_out) {
             FirebaseAuth.getInstance().signOut();
         }
 
-//        if (id == R.id.nav_tango_space) {
-//            mFragmentController.showTangoSpaceAdListFragment();
-//        } else if (id == R.id.nav_app_space) {
-//            mFragmentController.showAppSpaceAdListFragment();
-//        }
-
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onShowRegisterSceneObjectFragment(boolean editMode) {
+        RegisterSceneObjectFragment fragment = RegisterSceneObjectFragment.newInstance(editMode);
+        getSupportFragmentManager().beginTransaction()
+                                   .addToBackStack(null)
+                                   .replace(R.id.fragment_container, fragment)
+                                   .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                   .commit();
+    }
+
+    @Override
+    public void onCloseRegisterSceneObjectFragment() {
+        getSupportFragmentManager().popBackStack();
     }
 }
