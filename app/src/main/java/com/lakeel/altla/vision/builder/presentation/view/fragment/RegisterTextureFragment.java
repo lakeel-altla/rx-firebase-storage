@@ -1,8 +1,8 @@
 package com.lakeel.altla.vision.builder.presentation.view.fragment;
 
 import com.lakeel.altla.vision.builder.R;
-import com.lakeel.altla.vision.builder.presentation.presenter.RegisterSceneObjectPresenter;
-import com.lakeel.altla.vision.builder.presentation.view.RegisterSceneObjectView;
+import com.lakeel.altla.vision.builder.presentation.presenter.RegisterTexturePresenter;
+import com.lakeel.altla.vision.builder.presentation.view.RegisterTextureView;
 import com.lakeel.altla.vision.builder.presentation.view.activity.ActivityScopeContext;
 
 import android.app.Activity;
@@ -14,7 +14,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,15 +27,14 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnTextChanged;
 
-public final class RegisterSceneObjectFragment extends Fragment implements RegisterSceneObjectView {
-
-    private static final String ARG_EDIT_MODE = "editMode";
+public final class RegisterTextureFragment extends Fragment implements RegisterTextureView {
 
     private static final int REQUEST_CODE_ACTION_OPEN_DOCUMENT = 0;
 
     @Inject
-    RegisterSceneObjectPresenter presenter;
+    RegisterTexturePresenter presenter;
 
     @BindView(R.id.view_top)
     View viewTop;
@@ -41,14 +42,13 @@ public final class RegisterSceneObjectFragment extends Fragment implements Regis
     @BindView(R.id.image_view)
     ImageView imageView;
 
+    @BindView(R.id.text_input_edit_text_filename)
+    TextInputEditText textInputEditTextFilename;
+
     private ProgressDialog progressDialog;
 
-    public static RegisterSceneObjectFragment newInstance(boolean editMode) {
-        RegisterSceneObjectFragment fragment = new RegisterSceneObjectFragment();
-        Bundle bundle = new Bundle();
-        bundle.putBoolean(ARG_EDIT_MODE, editMode);
-        fragment.setArguments(bundle);
-        return fragment;
+    public static RegisterTextureFragment newInstance() {
+        return new RegisterTextureFragment();
     }
 
     @Override
@@ -59,20 +59,8 @@ public final class RegisterSceneObjectFragment extends Fragment implements Regis
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        boolean editMode = false;
-        if (getArguments() != null) {
-            editMode = getArguments().getBoolean(ARG_EDIT_MODE);
-        }
-
-        presenter.onCreate(editMode);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_register_scene_object, container, false);
+        View view = inflater.inflate(R.layout.fragment_register_texture, container, false);
         ButterKnife.bind(this, view);
 
         presenter.onCreateView(this);
@@ -115,8 +103,13 @@ public final class RegisterSceneObjectFragment extends Fragment implements Regis
     }
 
     @Override
-    public void showPickedImage(Bitmap bitmap) {
+    public void showImage(Bitmap bitmap) {
         imageView.setImageBitmap(bitmap);
+    }
+
+    @Override
+    public void showFilename(String filename) {
+        textInputEditTextFilename.setText(filename);
     }
 
     @Override
@@ -155,5 +148,10 @@ public final class RegisterSceneObjectFragment extends Fragment implements Regis
     @OnClick(R.id.button_register)
     void onClickButtonRegister() {
         presenter.onClickButtonRegister();
+    }
+
+    @OnTextChanged(value = R.id.text_input_edit_text_filename, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
+    void afterFilenameChanged(Editable editable) {
+        presenter.afterFilenameChanged(editable.toString());
     }
 }

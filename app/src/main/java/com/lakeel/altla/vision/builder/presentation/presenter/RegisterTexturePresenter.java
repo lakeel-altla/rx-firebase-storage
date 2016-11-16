@@ -3,10 +3,12 @@ package com.lakeel.altla.vision.builder.presentation.presenter;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.builder.R;
-import com.lakeel.altla.vision.builder.domain.usecase.UploadFileUseCase;
+import com.lakeel.altla.vision.builder.domain.usecase.RegisterTextureUseCase;
 import com.lakeel.altla.vision.builder.presentation.helper.DocumentBitmapLoader;
-import com.lakeel.altla.vision.builder.presentation.view.RegisterSceneObjectView;
+import com.lakeel.altla.vision.builder.presentation.helper.DocumentFilenameLoader;
+import com.lakeel.altla.vision.builder.presentation.view.RegisterTextureView;
 
+import android.content.ContentResolver;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
@@ -19,35 +21,37 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
-public final class RegisterSceneObjectPresenter {
+public final class RegisterTexturePresenter {
 
-    private static final Log LOG = LogFactory.getLog(RegisterSceneObjectPresenter.class);
+    private static final Log LOG = LogFactory.getLog(RegisterTexturePresenter.class);
 
     @Inject
     DocumentBitmapLoader documentBitmapLoader;
 
     @Inject
-    UploadFileUseCase uploadFileUseCase;
+    DocumentFilenameLoader documentFilenameLoader;
+
+    @Inject
+    RegisterTextureUseCase registerTextureUseCase;
+
+    @Inject
+    ContentResolver contentResolver;
 
     private final CompositeSubscription compositeSubscription = new CompositeSubscription();
 
-    private RegisterSceneObjectView view;
-
-    private boolean editMode;
+    private RegisterTextureView view;
 
     private Uri uri;
+
+    private String filename;
 
     private long prevBytesTransferred;
 
     @Inject
-    public RegisterSceneObjectPresenter() {
+    public RegisterTexturePresenter() {
     }
 
-    public void onCreate(boolean editMode) {
-        this.editMode = editMode;
-    }
-
-    public void onCreateView(@NonNull RegisterSceneObjectView view) {
+    public void onCreateView(@NonNull RegisterTextureView view) {
         this.view = view;
     }
 
@@ -60,12 +64,17 @@ public final class RegisterSceneObjectPresenter {
     }
 
     public void onImagePicked(Uri uri) {
+        LOG.d("onImagePicked: uri = %s", uri);
+
         Subscription subscription = documentBitmapLoader
                 .loadAsSingle(uri)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(bitmap -> {
                     this.uri = uri;
-                    view.showPickedImage(bitmap);
+                    filename = documentFilenameLoader.load(uri);
+
+                    view.showImage(bitmap);
+                    view.showFilename(filename);
                 }, e -> {
                     if (e instanceof FileNotFoundException) {
                         view.showSnackbar(R.string.snackbar_image_file_not_found);
@@ -82,8 +91,11 @@ public final class RegisterSceneObjectPresenter {
     public void onClickButtonRegister() {
         view.showUploadProgressDialog();
 
-        Subscription subscription = uploadFileUseCase
-                .execute(uri.toString(), (totalBytes, bytesTransferred) -> {
+        // TODO
+        String directoryPath = null;
+
+        Subscription subscription = registerTextureUseCase
+                .execute(uri.toString(), directoryPath, filename, (totalBytes, bytesTransferred) -> {
                     long increment = bytesTransferred - prevBytesTransferred;
                     prevBytesTransferred = bytesTransferred;
                     view.setUploadProgressDialogProgress(totalBytes, increment);
@@ -97,5 +109,9 @@ public final class RegisterSceneObjectPresenter {
                     view.showSnackbar(R.string.snackbar_upload_failed);
                 });
         compositeSubscription.add(subscription);
+    }
+
+    public void afterFilenameChanged(String filename) {
+        this.filename = filename;
     }
 }

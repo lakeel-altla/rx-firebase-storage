@@ -17,11 +17,6 @@
     <string name="button_rotate_object_in_x_axis">X-axis</string>
     <string name="button_rotate_object_in_y_axis">Y-axis</string>
     <string name="button_rotate_object_in_z_axis">Z-axis</string>
-    <string-array name="dialog_select_image_methods_items">
-        <item>From your device</item>
-        <item>From URL</item>
-    </string-array>
-
     <string name="snackbar_google_api_client_connection_failed">Google Play Services error.</string>
     <string name="snackbar_google_sign_in_failed">Google Sign-In failed.</string>
     <string name="snackbar_google_sign_in_reqiured">Sign-in required.</string>

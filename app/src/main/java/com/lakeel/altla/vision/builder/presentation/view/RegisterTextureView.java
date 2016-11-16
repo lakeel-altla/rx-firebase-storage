@@ -3,13 +3,15 @@ package com.lakeel.altla.vision.builder.presentation.view;
 import android.graphics.Bitmap;
 import android.support.annotation.StringRes;
 
-public interface RegisterSceneObjectView {
+public interface RegisterTextureView {
 
     void showSnackbar(@StringRes int resId);
 
     void showImagePicker();
 
-    void showPickedImage(Bitmap bitmap);
+    void showImage(Bitmap bitmap);
+
+    void showFilename(String filename);
 
     void showUploadProgressDialog();
 

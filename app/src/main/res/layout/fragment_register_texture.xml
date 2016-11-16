@@ -7,7 +7,7 @@
                 android:paddingTop="@dimen/activity_vertical_margin"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:context="com.lakeel.altla.vision.builder.presentation.view.fragment.RegisterSceneObjectFragment">
+                tools:context="com.lakeel.altla.vision.builder.presentation.view.fragment.RegisterTextureFragment">
 
     <Button android:id="@+id/button_select_document"
             android:text="Select image..."
@@ -24,22 +24,19 @@
                android:layout_height="@dimen/item_model_image_height"/>
 
     <android.support.design.widget.TextInputLayout
-            android:id="@+id/text_input_layout_name"
+            android:id="@+id/text_input_layput_filename"
             android:layout_below="@id/image_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
         <android.support.design.widget.TextInputEditText
-                android:id="@+id/edit_text_name"
-                android:hint="Name"
+                android:id="@+id/text_input_edit_text_filename"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
-
     </android.support.design.widget.TextInputLayout>
 
     <Button android:id="@+id/button_register"
             android:text="Register"
-            android:layout_below="@id/text_input_layout_name"
+            android:layout_below="@id/text_input_layput_filename"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 

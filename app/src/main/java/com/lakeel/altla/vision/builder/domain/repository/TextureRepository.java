@@ -4,9 +4,9 @@ import java.io.InputStream;
 
 import rx.Single;
 
-public interface FirebaseFileRepository {
+public interface TextureRepository {
 
-    Single<String> save(String uuid, InputStream stream, OnProgressListener onProgressListener);
+    Single<String> save(String directoryPath, String filename, InputStream stream, OnProgressListener onProgressListener);
 
     interface OnProgressListener {
 

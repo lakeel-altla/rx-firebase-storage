@@ -159,7 +159,6 @@ public final class MainPresenter
         if (active && cameraId == TangoCameraIntrinsics.TANGO_CAMERA_COLOR) {
             renderer.onFrameAvailable();
             // TODO: remove the following commented code.
-//            view.requestRender();
         }
     }
 
@@ -175,8 +174,7 @@ public final class MainPresenter
     }
 
     public void onClickImageButtonAddModel() {
-        view.showRegisterSceneObjectFragment(true);
-//        view.showSelectImageMethodDialog(R.array.dialog_select_image_methods_items);
+        view.showRegisterSceneObjectFragment();
     }
 
     public void onTouchButtonTranslateObject() {
@@ -227,49 +225,6 @@ public final class MainPresenter
         view.setRotateObjectMenuVisible(false);
         view.setScaleObjectSelected(true);
     }
-
-//    public void onSelectImageMethodSelected(int index) {
-//        switch (index) {
-//            case 0:
-//                view.showImagePicker();
-//                break;
-//            case 1:
-//                // TODO
-//                break;
-//        }
-//    }
-
-//    public void onImagePicked(Uri uri) {
-//        LOG.d("Image picked: %s", uri);
-//
-//        Subscription subscription = documentBitmapLoader
-//                .loadAsSingle(uri)
-//                .flatMap(bitmap -> saveBitmap(uri, bitmap))
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(bitmap -> {
-//                    BitmapModel model = new BitmapModel(uri, bitmap);
-//                    models.add(model);
-//                    view.updateModels();
-//                }, e -> {
-//                    if (e instanceof FileNotFoundException) {
-//                        view.showSnackbar(R.string.snackbar_image_file_not_found);
-//                    } else if (e instanceof IOException) {
-//                        // close に対する I/O エラーなのでログを出して無視する
-//                        LOG.w("Closing file failed.", e);
-//                    } else {
-//                        view.showSnackbar(R.string.snackbar_unexpected_error_occured);
-//                        LOG.e("Unexpected error occured.", e);
-//                    }
-//                });
-//
-//        compositeSubscription.add(subscription);
-//    }
-
-//    private Single<Bitmap> saveBitmap(Uri uri, Bitmap bitmap) {
-//        ImageReference imageReference = new ImageReference(uri.toString());
-//        return createImageReferenceUseCase.execute(imageReference)
-//                                          .map(ir -> bitmap);
-//    }
 
     public int getModelCount() {
         return models.size();

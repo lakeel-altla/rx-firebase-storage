@@ -18,9 +18,7 @@ import org.rajawali3d.view.TextureView;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.StringRes;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -44,8 +42,6 @@ import butterknife.OnTouch;
 public final class MainFragment extends Fragment implements MainView {
 
     private static final Log LOG = LogFactory.getLog(MainFragment.class);
-//
-//    private static final int REQUEST_CODE_ACTION_OPEN_DOCUMENT = 0;
 
     @Inject
     MainPresenter presenter;
@@ -216,16 +212,6 @@ public final class MainFragment extends Fragment implements MainView {
         textureView.setSurfaceRenderer(renderer);
     }
 
-//    @Override
-//    public void requestRender() {
-//        textureView.requestRenderUpdate();
-//    }
-
-    @Override
-    public void showSnackbar(@StringRes int resId) {
-        Snackbar.make(viewTop, resId, Snackbar.LENGTH_SHORT).show();
-    }
-
     @Override
     public void setModelPaneVisible(boolean visible) {
         if (visible) {
@@ -238,31 +224,9 @@ public final class MainFragment extends Fragment implements MainView {
     }
 
     @Override
-    public void showRegisterSceneObjectFragment(boolean editMode) {
-        interactionListener.onShowRegisterSceneObjectFragment(editMode);
+    public void showRegisterSceneObjectFragment() {
+        interactionListener.onShowRegisterSceneObjectFragment();
     }
-
-//    @Override
-//    public void showSelectImageMethodDialog(@ArrayRes int itemsId) {
-//        if (alertDialog == null) {
-//            alertDialog = new AlertDialog.Builder(getContext())
-//                    .setTitle(R.string.dialog_select_image_methods_title)
-//                    .setItems(itemsId, (dialogInterface, i) -> {
-//                        presenter.onSelectImageMethodSelected(i);
-//                    })
-//                    .create();
-//        }
-//        alertDialog.show();
-//    }
-
-//    @Override
-//    public void showImagePicker() {
-//        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT)
-//                .addCategory(Intent.CATEGORY_OPENABLE)
-//                .setType("image/*");
-//
-//        startActivityForResult(intent, REQUEST_CODE_ACTION_OPEN_DOCUMENT);
-//    }
 
     @Override
     public void updateModels() {
@@ -312,20 +276,6 @@ public final class MainFragment extends Fragment implements MainView {
     public void setScaleObjectSelected(boolean selected) {
         buttonScaleObject.setPressed(selected);
     }
-//
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        if (REQUEST_CODE_ACTION_OPEN_DOCUMENT == requestCode) {
-//            if (Activity.RESULT_OK == resultCode) {
-//                Uri uri = (data != null) ? data.getData() : null;
-//                if (uri != null) {
-//                    presenter.onImagePicked(uri);
-//                }
-//            }
-//        } else {
-//            super.onActivityResult(requestCode, resultCode, data);
-//        }
-//    }
 
     @OnClick(R.id.image_button_add_model)
     void onClickImageButtonAddModel() {
@@ -427,6 +377,6 @@ public final class MainFragment extends Fragment implements MainView {
 
     public interface InteractionListener {
 
-        void onShowRegisterSceneObjectFragment(boolean editMode);
+        void onShowRegisterSceneObjectFragment();
     }
 }

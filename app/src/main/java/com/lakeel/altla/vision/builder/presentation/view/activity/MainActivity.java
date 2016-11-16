@@ -13,7 +13,7 @@ import com.lakeel.altla.vision.builder.presentation.app.MyApplication;
 import com.lakeel.altla.vision.builder.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.builder.presentation.di.module.ActivityModule;
 import com.lakeel.altla.vision.builder.presentation.view.fragment.MainFragment;
-import com.lakeel.altla.vision.builder.presentation.view.fragment.RegisterSceneObjectFragment;
+import com.lakeel.altla.vision.builder.presentation.view.fragment.RegisterTextureFragment;
 import com.lakeel.altla.vision.builder.presentation.view.fragment.SignInFragment;
 import com.projecttango.tangosupport.TangoSupport;
 
@@ -161,8 +161,8 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onShowRegisterSceneObjectFragment(boolean editMode) {
-        RegisterSceneObjectFragment fragment = RegisterSceneObjectFragment.newInstance(editMode);
+    public void onShowRegisterSceneObjectFragment() {
+        RegisterTextureFragment fragment = RegisterTextureFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
                                    .addToBackStack(null)
                                    .replace(R.id.fragment_container, fragment)
