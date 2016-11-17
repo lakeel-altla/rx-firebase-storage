@@ -3,6 +3,7 @@ package com.lakeel.altla.vision.builder.presentation.presenter;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.builder.R;
+import com.lakeel.altla.vision.builder.domain.model.TextureDatabaseEntry;
 import com.lakeel.altla.vision.builder.domain.usecase.RegisterTextureUseCase;
 import com.lakeel.altla.vision.builder.presentation.helper.DocumentBitmapLoader;
 import com.lakeel.altla.vision.builder.presentation.helper.DocumentFilenameLoader;
@@ -91,22 +92,21 @@ public final class RegisterTexturePresenter {
     public void onClickButtonRegister() {
         view.showUploadProgressDialog();
 
-        // TODO
-        String directoryPath = null;
+        TextureDatabaseEntry.Metadata metadata = new TextureDatabaseEntry.Metadata();
+        metadata.filename = filename;
 
-        Subscription subscription = registerTextureUseCase
-                .execute(uri.toString(), directoryPath, filename, (totalBytes, bytesTransferred) -> {
+        Subscription subscription =
+                registerTextureUseCase.execute(uri.toString(), metadata, (totalBytes, bytesTransferred) -> {
                     long increment = bytesTransferred - prevBytesTransferred;
                     prevBytesTransferred = bytesTransferred;
                     view.setUploadProgressDialogProgress(totalBytes, increment);
-                }).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(uuid -> {
+                }).observeOn(AndroidSchedulers.mainThread()).subscribe(textureList -> {
                     view.hideUploadProgressDialog();
-                    view.showSnackbar(R.string.snackbar_uploaded);
+                    view.showSnackbar(R.string.snackbar_done);
                 }, e -> {
-                    LOG.e("Uploading file failed.", e);
+                    LOG.e("Failed to register the texture.", e);
                     view.hideUploadProgressDialog();
-                    view.showSnackbar(R.string.snackbar_upload_failed);
+                    view.showSnackbar(R.string.snackbar_failed);
                 });
         compositeSubscription.add(subscription);
     }

@@ -6,6 +6,10 @@ public final class Names {
 
     public static final String ACTIVITY_CONTEXT = "activityContext";
 
+    static final String FIREBASE_DATABASE_REFERENCE_ROOT = "firebase.database.reference.root";
+
+    static final String FIREBASE_DATABASE_REFERENCE_TEXTURES = "firebase.database.reference.textures";
+
     static final String FIREBASE_STORAGE_URI = "firebaseStorage.uri";
 
     static final String FIREBASE_STORAGE_REFERENCE_DIRECTORY_ROOT = "firebaseStorage.reference.directory.root";
