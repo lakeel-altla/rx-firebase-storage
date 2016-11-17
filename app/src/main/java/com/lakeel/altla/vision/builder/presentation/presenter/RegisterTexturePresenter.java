@@ -65,7 +65,7 @@ public final class RegisterTexturePresenter {
     }
 
     public void onImagePicked(Uri uri) {
-        LOG.d("onImagePicked: uri = %s", uri);
+        LOG.d("Loading the image: uri = %s", uri);
 
         Subscription subscription = documentBitmapLoader
                 .loadAsSingle(uri)
@@ -74,10 +74,13 @@ public final class RegisterTexturePresenter {
                     this.uri = uri;
                     filename = documentFilenameLoader.load(uri);
 
+                    LOG.d("Loaded the image.");
+
                     view.showImage(bitmap);
                     view.showFilename(filename);
                 }, e -> {
                     if (e instanceof FileNotFoundException) {
+                        LOG.w(String.format("The image could not be found: uri = %s", uri), e);
                         view.showSnackbar(R.string.snackbar_image_file_not_found);
                     } else if (e instanceof IOException) {
                         LOG.w("Closing file failed.", e);
@@ -90,6 +93,8 @@ public final class RegisterTexturePresenter {
     }
 
     public void onClickButtonRegister() {
+        LOG.d("Registering the texture.");
+
         view.showUploadProgressDialog();
 
         TextureDatabaseEntry.Metadata metadata = new TextureDatabaseEntry.Metadata();
@@ -101,6 +106,7 @@ public final class RegisterTexturePresenter {
                     prevBytesTransferred = bytesTransferred;
                     view.setUploadProgressDialogProgress(totalBytes, increment);
                 }).observeOn(AndroidSchedulers.mainThread()).subscribe(textureList -> {
+                    LOG.d("Registered the texture.");
                     view.hideUploadProgressDialog();
                     view.showSnackbar(R.string.snackbar_done);
                 }, e -> {

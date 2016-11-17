@@ -28,16 +28,16 @@ public final class TextureDatabaseEntryRepositoryImpl implements TextureDatabase
 
     @Override
     public Single<TextureDatabaseEntry> save(TextureDatabaseEntry entry) {
-        LOG.d("Saving the texture entry: uuid = %s", entry.uuid);
+        LOG.d("Saving the entry: uuid = %s", entry.uuid);
 
         return Single.create(subscriber -> {
             reference.child(entry.uuid).setValue(entry.metadata)
                      .addOnSuccessListener(aVoid -> {
-                         LOG.d("Saved the texture entry.");
+                         LOG.d("Saved the entry.");
                          subscriber.onSuccess(entry);
                      })
                      .addOnFailureListener(e -> {
-                         LOG.e("Failed to save the texture entry.");
+                         LOG.e("Failed to save the entry.");
                          subscriber.onError(e);
                      });
         });
@@ -45,7 +45,7 @@ public final class TextureDatabaseEntryRepositoryImpl implements TextureDatabase
 
     @Override
     public Observable<TextureDatabaseEntry> findByFilename(String filename) {
-        LOG.d("Finding the texture entry: filename = %s", filename);
+        LOG.d("Finding the entry: filename = %s", filename);
 
         return Observable.create(subscriber -> {
             reference.orderByChild("filename").equalTo(filename)
@@ -68,11 +68,11 @@ public final class TextureDatabaseEntryRepositoryImpl implements TextureDatabase
                                  entry.uuid = child.getKey();
                                  entry.metadata = child.getValue(TextureDatabaseEntry.Metadata.class);
 
-                                 LOG.d("Found the texture entry: entry = %s", entry);
+                                 LOG.d("Found the entry: entry = %s", entry);
 
                                  subscriber.onNext(entry);
                              } else {
-                                 LOG.d("Found no texture entry.");
+                                 LOG.d("Found no entry.");
                              }
 
                              subscriber.onCompleted();
@@ -80,7 +80,7 @@ public final class TextureDatabaseEntryRepositoryImpl implements TextureDatabase
 
                          @Override
                          public void onCancelled(DatabaseError databaseError) {
-                             LOG.e("Cancelled to find the texture entry.");
+                             LOG.e("Cancelled to find the entry.");
                              subscriber.onError(new DatabaseErrorException(databaseError));
                          }
                      });
