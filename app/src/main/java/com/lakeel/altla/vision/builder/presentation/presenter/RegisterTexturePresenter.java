@@ -3,7 +3,7 @@ package com.lakeel.altla.vision.builder.presentation.presenter;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.builder.R;
-import com.lakeel.altla.vision.builder.domain.model.TextureDatabaseEntry;
+import com.lakeel.altla.vision.builder.domain.model.TextureMetadata;
 import com.lakeel.altla.vision.builder.domain.usecase.RegisterTextureUseCase;
 import com.lakeel.altla.vision.builder.presentation.helper.DocumentBitmapLoader;
 import com.lakeel.altla.vision.builder.presentation.helper.DocumentFilenameLoader;
@@ -11,10 +11,13 @@ import com.lakeel.altla.vision.builder.presentation.view.RegisterTextureView;
 
 import android.content.ContentResolver;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -25,6 +28,8 @@ import rx.subscriptions.CompositeSubscription;
 public final class RegisterTexturePresenter {
 
     private static final Log LOG = LogFactory.getLog(RegisterTexturePresenter.class);
+
+    private static final String STATE_ENTRY_ID = "entryId";
 
     @Inject
     DocumentBitmapLoader documentBitmapLoader;
@@ -48,8 +53,21 @@ public final class RegisterTexturePresenter {
 
     private long prevBytesTransferred;
 
+    private String entryId;
+
     @Inject
     public RegisterTexturePresenter() {
+    }
+
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        // Restore the uuid.
+        if (savedInstanceState != null) {
+            entryId = savedInstanceState.getString(STATE_ENTRY_ID);
+        }
+
+        if (entryId == null) {
+            entryId = UUID.randomUUID().toString();
+        }
     }
 
     public void onCreateView(@NonNull RegisterTextureView view) {
@@ -58,6 +76,10 @@ public final class RegisterTexturePresenter {
 
     public void onStop() {
         compositeSubscription.clear();
+    }
+
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(STATE_ENTRY_ID, entryId);
     }
 
     public void onClickButtonSelectDocument() {
@@ -93,24 +115,31 @@ public final class RegisterTexturePresenter {
     }
 
     public void onClickButtonRegister() {
-        LOG.d("Registering the texture.");
+        LOG.i("Registering the texture: entryId = %s", entryId);
 
         view.showUploadProgressDialog();
 
-        TextureDatabaseEntry.Metadata metadata = new TextureDatabaseEntry.Metadata();
+        TextureMetadata metadata = new TextureMetadata();
         metadata.filename = filename;
 
-        Subscription subscription =
-                registerTextureUseCase.execute(uri.toString(), metadata, (totalBytes, bytesTransferred) -> {
+        Subscription subscription = registerTextureUseCase
+                .execute(entryId, uri.toString(), metadata, (totalBytes, bytesTransferred) -> {
+                    // The progress status.
                     long increment = bytesTransferred - prevBytesTransferred;
                     prevBytesTransferred = bytesTransferred;
                     view.setUploadProgressDialogProgress(totalBytes, increment);
-                }).observeOn(AndroidSchedulers.mainThread()).subscribe(textureList -> {
-                    LOG.d("Registered the texture.");
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(entryId -> {
+                    // Done.
+                    LOG.i("Registered the texture.");
+
                     view.hideUploadProgressDialog();
                     view.showSnackbar(R.string.snackbar_done);
                 }, e -> {
+                    // Failed.
                     LOG.e("Failed to register the texture.", e);
+
                     view.hideUploadProgressDialog();
                     view.showSnackbar(R.string.snackbar_failed);
                 });

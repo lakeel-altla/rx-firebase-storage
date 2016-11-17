@@ -1,13 +1,13 @@
 package com.lakeel.altla.vision.builder.domain.usecase;
 
 import com.lakeel.altla.vision.builder.ArgumentNullException;
-import com.lakeel.altla.vision.builder.domain.model.TextureDatabaseEntry;
-import com.lakeel.altla.vision.builder.domain.model.TextureStorageEntry;
+import com.lakeel.altla.vision.builder.domain.model.TextureMetadata;
 import com.lakeel.altla.vision.builder.domain.repository.LocalDocumentRepository;
-import com.lakeel.altla.vision.builder.domain.repository.TextureDatabaseEntryRepository;
-import com.lakeel.altla.vision.builder.domain.repository.TextureStorageEntryRepository;
+import com.lakeel.altla.vision.builder.domain.repository.TextureEntryRepository;
+import com.lakeel.altla.vision.builder.domain.repository.TextureFileRepository;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -22,61 +22,66 @@ public final class RegisterTextureUseCase {
     LocalDocumentRepository localDocumentRepository;
 
     @Inject
-    TextureDatabaseEntryRepository textureDatabaseEntryRepository;
+    TextureEntryRepository textureEntryRepository;
 
     @Inject
-    TextureStorageEntryRepository textureStorageEntryRepository;
+    TextureFileRepository textureFileRepository;
 
     @Inject
     public RegisterTextureUseCase() {
     }
 
-    public Single<TextureDatabaseEntry> execute(String localUri, TextureDatabaseEntry.Metadata metadata,
-                                                OnProgressListener onProgressListener) {
+    public Single<String> execute(String entryId, String localUri, TextureMetadata metadata,
+                                  OnProgressListener onProgressListener) {
+        if (entryId == null) throw new ArgumentNullException("entryId");
         if (localUri == null) throw new ArgumentNullException("localUri");
         if (metadata == null) throw new ArgumentNullException("metadata");
 
-        return findTextureEntryByFilename(metadata.filename)
-                .defaultIfEmpty(createTextureEntry(metadata))
+        // Find the existing entry.
+        return findFileId(entryId)
+                // Delete a previous file if it exists.
+                .flatMap(fileId -> deleteFile(fileId))
+                // Create a file id if the entry does not exist.
+                .defaultIfEmpty(UUID.randomUUID().toString())
                 .toSingle()
-                .flatMap(databaseEntry -> openStream(localUri, databaseEntry))
-                .flatMap(margedEntry -> uploadTexture(margedEntry, onProgressListener))
-                .flatMap(margedEntry -> addTextureToList(margedEntry))
+                // Open the stream to the android local file.
+                .flatMap(fileId -> openStream(localUri, fileId))
+                // Upload its file to Fierbase Storage.
+                .flatMap(file -> uploadTexture(file, onProgressListener))
+                // Save the entry to Firebase Database.
+                .flatMap(fileId -> saveTextureEntry(entryId, fileId, metadata))
                 .subscribeOn(Schedulers.io());
     }
 
-    private Observable<TextureDatabaseEntry> findTextureEntryByFilename(String filename) {
-        return textureDatabaseEntryRepository.findByFilename(filename);
+    private Observable<String> findFileId(String entryId) {
+        return textureEntryRepository.findFileId(entryId);
     }
 
-    private TextureDatabaseEntry createTextureEntry(TextureDatabaseEntry.Metadata metadata) {
-        String uuid = UUID.randomUUID().toString();
-        return new TextureDatabaseEntry(uuid, metadata);
+    private Observable<String> deleteFile(String fileId) {
+        return textureFileRepository.delete(fileId)
+                                    .toObservable();
     }
 
-    private Single<MargedEntry> openStream(String localUri, TextureDatabaseEntry databaseEntry) {
+    private Single<TextureFile> openStream(String localUri, String fileId) {
         return localDocumentRepository
                 .openStream(localUri)
-                .map(stream -> new MargedEntry(databaseEntry, new TextureStorageEntry(databaseEntry.uuid, stream)));
+                .map(stream -> new TextureFile(fileId, stream));
     }
 
-    private Single<MargedEntry> uploadTexture(MargedEntry margedEntry, OnProgressListener onProgressListener) {
-        TextureStorageEntry storageEntry = margedEntry.storageEntry;
-
+    private Single<String> uploadTexture(TextureFile file, OnProgressListener onProgressListener) {
         try {
             // Use the value obtained from the stream, because totalBytes returned by Firebase is always -1.
-            long available = storageEntry.stream.available();
-            return textureStorageEntryRepository
-                    .save(storageEntry,
-                          (totalBytes, bytesTransferred) -> onProgressListener.onProgress(available, bytesTransferred))
-                    .map(s -> margedEntry);
+            long available = file.stream.available();
+            return textureFileRepository.save(
+                    file.fileId, file.stream,
+                    (totalBytes, bytesTransferred) -> onProgressListener.onProgress(available, bytesTransferred));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private Single<TextureDatabaseEntry> addTextureToList(MargedEntry entry) {
-        return textureDatabaseEntryRepository.save(entry.databaseEntry);
+    private Single<String> saveTextureEntry(String entryId, String fileId, TextureMetadata metadata) {
+        return textureEntryRepository.save(entryId, fileId, metadata);
     }
 
     public interface OnProgressListener {
@@ -84,15 +89,15 @@ public final class RegisterTextureUseCase {
         void onProgress(long totalBytes, long bytesTransferred);
     }
 
-    private class MargedEntry {
+    private final class TextureFile {
 
-        final TextureDatabaseEntry databaseEntry;
+        String fileId;
 
-        final TextureStorageEntry storageEntry;
+        InputStream stream;
 
-        MargedEntry(TextureDatabaseEntry databaseEntry, TextureStorageEntry storageEntry) {
-            this.databaseEntry = databaseEntry;
-            this.storageEntry = storageEntry;
+        TextureFile(String fileId, InputStream stream) {
+            this.fileId = fileId;
+            this.stream = stream;
         }
     }
 }

@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
@@ -59,6 +60,13 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        presenter.onCreate(savedInstanceState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_register_texture, container, false);
         ButterKnife.bind(this, view);
@@ -72,6 +80,13 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
     public void onStop() {
         super.onStop();
         presenter.onStop();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        presenter.onSaveInstanceState(outState);
     }
 
     @Override

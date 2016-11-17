@@ -12,6 +12,8 @@ import dagger.Provides;
 @Module
 public final class FirebaseDatabaseModule {
 
+    private static final String PATH_APP_ROOT = "builder";
+
     private static final String PATH_TEXTURES = "builder/textures";
 
     @Singleton
@@ -26,6 +28,15 @@ public final class FirebaseDatabaseModule {
     public DatabaseReference provideRootReference(FirebaseDatabase database) {
         return database.getReference();
     }
+
+    @Named(Names.FIREBASE_DATABASE_REFERENCE_APP_ROOT)
+    @Singleton
+    @Provides
+    public DatabaseReference provideAppRootReference(
+            @Named(Names.FIREBASE_DATABASE_REFERENCE_ROOT) DatabaseReference root) {
+        return root.child(PATH_APP_ROOT);
+    }
+
 
     @Named(Names.FIREBASE_DATABASE_REFERENCE_TEXTURES)
     @Singleton

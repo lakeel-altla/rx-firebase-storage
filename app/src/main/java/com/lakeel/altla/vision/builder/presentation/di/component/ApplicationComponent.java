@@ -3,6 +3,7 @@ package com.lakeel.altla.vision.builder.presentation.di.component;
 import com.lakeel.altla.vision.builder.presentation.di.module.ActivityModule;
 import com.lakeel.altla.vision.builder.presentation.di.module.ApplicationModule;
 import com.lakeel.altla.vision.builder.presentation.di.module.ConfigModule;
+import com.lakeel.altla.vision.builder.presentation.di.module.FirebaseAuthModule;
 import com.lakeel.altla.vision.builder.presentation.di.module.FirebaseDatabaseModule;
 import com.lakeel.altla.vision.builder.presentation.di.module.FirebaseStorageModule;
 import com.lakeel.altla.vision.builder.presentation.di.module.Names;
@@ -18,6 +19,7 @@ import dagger.Component;
 @Singleton
 @Component(modules = { ApplicationModule.class,
                        ConfigModule.class,
+                       FirebaseAuthModule.class,
                        FirebaseDatabaseModule.class,
                        FirebaseStorageModule.class })
 public interface ApplicationComponent {
