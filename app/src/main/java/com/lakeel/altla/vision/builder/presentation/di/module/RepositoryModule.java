@@ -15,6 +15,7 @@ import com.lakeel.altla.vision.builder.domain.repository.TextureFileRepository;
 import com.lakeel.altla.vision.builder.presentation.di.ActivityScope;
 
 import android.content.ContentResolver;
+import android.content.Context;
 
 import javax.inject.Named;
 
@@ -46,7 +47,8 @@ public final class RepositoryModule {
     @ActivityScope
     @Provides
     public TextureFileRepository provideTextureFileRepository(
-            @Named(Names.FIREBASE_STORAGE_REFERENCE_DIRECTORY_TEXTURES) StorageReference reference) {
-        return new TextureFileRepositoryImpl(reference);
+            @Named(Names.FIREBASE_STORAGE_REFERENCE_DIRECTORY_TEXTURES) StorageReference reference,
+            @Named(Names.ACTIVITY_CONTEXT) Context context) {
+        return new TextureFileRepositoryImpl(reference, context);
     }
 }

@@ -8,7 +8,9 @@ import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
 
+import java.io.File;
 import java.io.FileDescriptor;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import rx.Single;
@@ -28,7 +30,7 @@ public final class DocumentBitmapLoader {
 
         try (ParcelFileDescriptor descriptor = contentResolver.openFileDescriptor(uri, "r")) {
             if (descriptor == null) {
-                throw new LoadFailedException("Opening file descriptor failed: uri = " + uri);
+                throw new LoadFailedException("Failed to open the file descriptor: uri = " + uri);
             }
 
             FileDescriptor fileDescriptor = descriptor.getFileDescriptor();
@@ -36,7 +38,19 @@ public final class DocumentBitmapLoader {
             if (bitmap != null) {
                 return bitmap;
             } else {
-                throw new LoadFailedException("Decoding file descriptor failed: uri = " + uri);
+                throw new LoadFailedException("Failed to decode the file descriptor: uri = " + uri);
+            }
+        }
+    }
+
+    @NonNull
+    public Bitmap load(@NonNull File file) throws IOException {
+        try (FileInputStream stream = new FileInputStream(file)) {
+            Bitmap bitmap = BitmapFactory.decodeStream(stream);
+            if (bitmap != null) {
+                return bitmap;
+            } else {
+                throw new LoadFailedException("Failed to decode the file stream: file = " + file);
             }
         }
     }

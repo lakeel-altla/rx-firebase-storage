@@ -8,9 +8,10 @@ import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.tango.OnFrameAvailableListener;
 import com.lakeel.altla.tango.TangoUpdateDispatcher;
-import com.lakeel.altla.vision.builder.domain.model.ImageReference;
-import com.lakeel.altla.vision.builder.domain.usecase.CreateImageReferenceUseCase;
+import com.lakeel.altla.vision.builder.domain.model.TextureEntry;
+import com.lakeel.altla.vision.builder.domain.usecase.DownloadTextureFileUseCase;
 import com.lakeel.altla.vision.builder.domain.usecase.FindAllImageReferencesUseCase;
+import com.lakeel.altla.vision.builder.domain.usecase.FindAllTextureEntriesUseCase;
 import com.lakeel.altla.vision.builder.presentation.di.module.Names;
 import com.lakeel.altla.vision.builder.presentation.helper.DocumentBitmapLoader;
 import com.lakeel.altla.vision.builder.presentation.model.Axis;
@@ -22,10 +23,10 @@ import com.lakeel.altla.vision.builder.presentation.view.renderer.MainRenderer;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +34,10 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import rx.Single;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.exceptions.Exceptions;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -60,10 +62,13 @@ public final class MainPresenter
     TangoUpdateDispatcher tangoUpdateDispatcher;
 
     @Inject
+    FindAllTextureEntriesUseCase findAllTextureEntriesUseCase;
+
+    @Inject
     FindAllImageReferencesUseCase findAllImageReferencesUseCase;
 
     @Inject
-    CreateImageReferenceUseCase createImageReferenceUseCase;
+    DownloadTextureFileUseCase downloadTextureFileUseCase;
 
     @Inject
     DocumentBitmapLoader documentBitmapLoader;
@@ -114,34 +119,60 @@ public final class MainPresenter
     public void onStart() {
         models.clear();
 
-        Subscription subscription = findAllImageReferencesUseCase
+        LOG.d("Find all texture entries.");
+
+        Subscription subscription = findAllTextureEntriesUseCase
                 .execute()
-                .map(this::loadBitmapModel)
-                .toList()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(imageModels -> {
-                    LOG.v("Image models exist: count = %d", imageModels.size());
-                    models.addAll(imageModels);
-                    view.updateModels();
+                .subscribe(entry -> {
+                    LOG.d("Found the entry: entry = %s", entry);
+                    downloadTexture(entry);
+                }, e -> {
+                    LOG.e("Failed to find all entries.", e);
+                }, () -> {
+                    LOG.d("Found all entries.");
                 });
         compositeSubscription.add(subscription);
+    }
+
+    private void downloadTexture(TextureEntry entry) {
+        LOG.d("Downloading the texture: entry = %s", entry);
+
+        Subscription subscription = downloadTextureFileUseCase
+                .execute(entry.id, (totalBytes, bytesTransferred) -> {
+                    // TODO
+                    LOG.v("The progress status: totalBytes = %d, bytesTransferred = %d", totalBytes, bytesTransferred);
+                })
+                .flatMap(this::loadBitmap)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(bitmap -> {
+                    LOG.d("Downloaded the texture.");
+
+                    BitmapModel model = new BitmapModel(entry.name, bitmap);
+                    models.add(model);
+                    view.updateModels();
+                }, e -> {
+                    // TODO: How to recover.
+                    LOG.w(String.format("Failed to download the texture: entry = %s", entry), e);
+                });
+        compositeSubscription.add(subscription);
+    }
+
+    private Single<Bitmap> loadBitmap(File file) {
+        return Single.<Bitmap>create(subscriber -> {
+            try {
+                Bitmap bitmap = documentBitmapLoader.load(file);
+                subscriber.onSuccess(bitmap);
+            } catch (IOException e) {
+                subscriber.onError(e);
+            }
+        }).subscribeOn(Schedulers.io());
     }
 
     public void onResume() {
         renderer.connectToTangoCamera(tango);
         tangoUpdateDispatcher.getOnFrameAvailableListeners().add(this);
         active = true;
-    }
-
-    private BitmapModel loadBitmapModel(ImageReference imageReference) {
-        Uri uri = Uri.parse(imageReference.uri);
-
-        try {
-            Bitmap bitmap = documentBitmapLoader.load(uri);
-            return new BitmapModel(uri, bitmap);
-        } catch (IOException e) {
-            throw Exceptions.propagate(e);
-        }
     }
 
     public void onPause() {

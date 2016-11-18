@@ -29,7 +29,7 @@ public final class RegisterTexturePresenter {
 
     private static final Log LOG = LogFactory.getLog(RegisterTexturePresenter.class);
 
-    private static final String STATE_ENTRY_ID = "entryId";
+    private static final String STATE_ID = "id";
 
     @Inject
     DocumentBitmapLoader documentBitmapLoader;
@@ -53,7 +53,7 @@ public final class RegisterTexturePresenter {
 
     private long prevBytesTransferred;
 
-    private String entryId;
+    private String id;
 
     @Inject
     public RegisterTexturePresenter() {
@@ -62,11 +62,11 @@ public final class RegisterTexturePresenter {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         // Restore the uuid.
         if (savedInstanceState != null) {
-            entryId = savedInstanceState.getString(STATE_ENTRY_ID);
+            id = savedInstanceState.getString(STATE_ID);
         }
 
-        if (entryId == null) {
-            entryId = UUID.randomUUID().toString();
+        if (id == null) {
+            id = UUID.randomUUID().toString();
         }
     }
 
@@ -79,7 +79,7 @@ public final class RegisterTexturePresenter {
     }
 
     public void onSaveInstanceState(Bundle outState) {
-        outState.putString(STATE_ENTRY_ID, entryId);
+        outState.putString(STATE_ID, id);
     }
 
     public void onClickButtonSelectDocument() {
@@ -115,15 +115,14 @@ public final class RegisterTexturePresenter {
     }
 
     public void onClickButtonRegister() {
-        LOG.i("Registering the texture: entryId = %s", entryId);
+        LOG.i("Registering the texture: id = %s", id);
 
         view.showUploadProgressDialog();
 
         TextureMetadata metadata = new TextureMetadata();
-        metadata.filename = filename;
 
         Subscription subscription = registerTextureUseCase
-                .execute(entryId, uri.toString(), metadata, (totalBytes, bytesTransferred) -> {
+                .execute(id, filename, uri.toString(), metadata, (totalBytes, bytesTransferred) -> {
                     // The progress status.
                     long increment = bytesTransferred - prevBytesTransferred;
                     prevBytesTransferred = bytesTransferred;

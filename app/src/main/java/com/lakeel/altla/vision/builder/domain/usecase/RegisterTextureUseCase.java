@@ -31,17 +31,18 @@ public final class RegisterTextureUseCase {
     public RegisterTextureUseCase() {
     }
 
-    public Single<String> execute(String entryId, String localUri, TextureMetadata metadata,
+    public Single<String> execute(String id, String name, String localUri, TextureMetadata metadata,
                                   OnProgressListener onProgressListener) {
-        if (entryId == null) throw new ArgumentNullException("entryId");
+        if (id == null) throw new ArgumentNullException("id");
+        if (name == null) throw new ArgumentNullException("name");
         if (localUri == null) throw new ArgumentNullException("localUri");
         if (metadata == null) throw new ArgumentNullException("metadata");
 
         // Find the existing entry.
-        return findFileId(entryId)
+        return findFileId(id)
                 // Delete a previous file if it exists.
                 .flatMap(fileId -> deleteFile(fileId))
-                // Create a file id if the entry does not exist.
+                // Create a new file id if no previous file exists.
                 .defaultIfEmpty(UUID.randomUUID().toString())
                 .toSingle()
                 // Open the stream to the android local file.
@@ -49,12 +50,13 @@ public final class RegisterTextureUseCase {
                 // Upload its file to Fierbase Storage.
                 .flatMap(file -> uploadTexture(file, onProgressListener))
                 // Save the entry to Firebase Database.
-                .flatMap(fileId -> saveTextureEntry(entryId, fileId, metadata))
+                .flatMap(fileId -> saveTextureEntry(id, name, fileId, metadata))
                 .subscribeOn(Schedulers.io());
     }
 
     private Observable<String> findFileId(String entryId) {
-        return textureEntryRepository.findFileId(entryId);
+        return textureEntryRepository.findReference(entryId)
+                                     .map(reference -> reference.fileId);
     }
 
     private Observable<String> deleteFile(String fileId) {
@@ -80,8 +82,8 @@ public final class RegisterTextureUseCase {
         }
     }
 
-    private Single<String> saveTextureEntry(String entryId, String fileId, TextureMetadata metadata) {
-        return textureEntryRepository.save(entryId, fileId, metadata);
+    private Single<String> saveTextureEntry(String id, String name, String fileId, TextureMetadata metadata) {
+        return textureEntryRepository.save(id, name, fileId, metadata);
     }
 
     public interface OnProgressListener {

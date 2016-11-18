@@ -2,12 +2,12 @@ package com.lakeel.altla.vision.builder.domain.model;
 
 public final class TextureMetadata {
 
-    public String filename;
+    public String description;
 
     @Override
     public String toString() {
         return "TextureMetadata{" +
-               "filename='" + filename + '\'' +
+               "description='" + description + '\'' +
                '}';
     }
 }

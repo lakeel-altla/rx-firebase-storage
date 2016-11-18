@@ -1,14 +1,20 @@
 package com.lakeel.altla.vision.builder.data.repository;
 
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.rx.firebase.storage.FileDownloadTaskSingle;
 import com.lakeel.altla.rx.firebase.storage.UploadTaskSingle;
 import com.lakeel.altla.vision.builder.ArgumentNullException;
 import com.lakeel.altla.vision.builder.domain.repository.TextureFileRepository;
 
+import android.content.Context;
+
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 
 import rx.Single;
@@ -19,10 +25,14 @@ public final class TextureFileRepositoryImpl implements TextureFileRepository {
 
     private final StorageReference baseDirectory;
 
-    public TextureFileRepositoryImpl(StorageReference baseDirectory) {
+    private final Context context;
+
+    public TextureFileRepositoryImpl(StorageReference baseDirectory, Context context) {
         if (baseDirectory == null) throw new ArgumentNullException("baseDirectory");
+        if (context == null) throw new ArgumentNullException("context");
 
         this.baseDirectory = baseDirectory;
+        this.context = context;
     }
 
     @Override
@@ -56,5 +66,31 @@ public final class TextureFileRepositoryImpl implements TextureFileRepository {
                          subscriber.onError(e);
                      });
         });
+    }
+
+    @Override
+    public Single<File> download(String fileId, OnProgressListener onProgressListener) {
+
+        File localCacheDirectory = new File(context.getCacheDir(), "textures");
+        if (!localCacheDirectory.exists()) {
+            LOG.d("Creating the cache directory: %s", localCacheDirectory);
+            localCacheDirectory.mkdirs();
+        }
+
+        File localCacheFile = new File(localCacheDirectory, fileId);
+
+        LOG.d("Downloading the file: fileId = %s, destination = %s", fileId, localCacheFile);
+
+        try {
+            localCacheFile.createNewFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        StorageReference reference = baseDirectory.child(fileId);
+        FileDownloadTask task = reference.getFile(localCacheFile);
+
+        return FileDownloadTaskSingle.create(task, onProgressListener::onProgress)
+                                     .map(snapshot -> localCacheFile);
     }
 }
