@@ -1,7 +1,7 @@
 package com.lakeel.altla.vision.builder.presentation.di.module;
 
-import com.lakeel.altla.vision.builder.data.repository.android.LocalDocumentRepositoryImpl;
-import com.lakeel.altla.vision.builder.domain.repository.LocalDocumentRepository;
+import com.lakeel.altla.vision.builder.data.repository.android.DocumentRepositoryImpl;
+import com.lakeel.altla.vision.builder.domain.repository.DocumentRepository;
 import com.lakeel.altla.vision.builder.presentation.di.ActivityScope;
 
 import android.content.ContentResolver;
@@ -14,7 +14,7 @@ public final class AndroidRepositoryModule {
 
     @ActivityScope
     @Provides
-    public LocalDocumentRepository provideLocalDocumentRepository(ContentResolver contentResolver) {
-        return new LocalDocumentRepositoryImpl(contentResolver);
+    public DocumentRepository provideLocalDocumentRepository(ContentResolver contentResolver) {
+        return new DocumentRepositoryImpl(contentResolver);
     }
 }

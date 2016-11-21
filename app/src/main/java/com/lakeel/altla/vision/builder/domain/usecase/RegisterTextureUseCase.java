@@ -2,7 +2,7 @@ package com.lakeel.altla.vision.builder.domain.usecase;
 
 import com.lakeel.altla.vision.builder.ArgumentNullException;
 import com.lakeel.altla.vision.builder.domain.model.TextureMetadata;
-import com.lakeel.altla.vision.builder.domain.repository.LocalDocumentRepository;
+import com.lakeel.altla.vision.builder.domain.repository.DocumentRepository;
 import com.lakeel.altla.vision.builder.domain.repository.TextureEntryRepository;
 import com.lakeel.altla.vision.builder.domain.repository.TextureFileRepository;
 
@@ -19,7 +19,7 @@ import rx.schedulers.Schedulers;
 public final class RegisterTextureUseCase {
 
     @Inject
-    LocalDocumentRepository localDocumentRepository;
+    DocumentRepository documentRepository;
 
     @Inject
     TextureEntryRepository textureEntryRepository;
@@ -65,7 +65,7 @@ public final class RegisterTextureUseCase {
     }
 
     private Single<TextureFile> openStream(String localUri, String fileId) {
-        return localDocumentRepository
+        return documentRepository
                 .openStream(localUri)
                 .map(stream -> new TextureFile(fileId, stream));
     }

@@ -1,7 +1,7 @@
 package com.lakeel.altla.vision.builder.data.repository.android;
 
 import com.lakeel.altla.vision.builder.ArgumentNullException;
-import com.lakeel.altla.vision.builder.domain.repository.LocalDocumentRepository;
+import com.lakeel.altla.vision.builder.domain.repository.DocumentRepository;
 
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -12,11 +12,11 @@ import java.io.InputStream;
 
 import rx.Single;
 
-public final class LocalDocumentRepositoryImpl implements LocalDocumentRepository {
+public final class DocumentRepositoryImpl implements DocumentRepository {
 
     private final ContentResolver contentResolver;
 
-    public LocalDocumentRepositoryImpl(ContentResolver contentResolver) {
+    public DocumentRepositoryImpl(ContentResolver contentResolver) {
         if (contentResolver == null) throw new ArgumentNullException("contentResolver");
 
         this.contentResolver = contentResolver;
