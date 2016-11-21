@@ -1,5 +1,6 @@
 package com.lakeel.altla.vision.builder.data.repository.firebase;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -9,6 +10,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.rx.tasks.RxGmsTask;
 import com.lakeel.altla.vision.builder.ArgumentNullException;
 import com.lakeel.altla.vision.builder.domain.model.TextureEntry;
 import com.lakeel.altla.vision.builder.domain.model.TextureMetadata;
@@ -45,26 +47,14 @@ public final class TextureEntryRepositoryImpl implements TextureEntryRepository 
 
     @Override
     public Single<String> save(String id, String name, String fileId, TextureMetadata metadata) {
-        LOG.d("Saving the entry: id = %s, name = %s, fileId = %s, metadata = %s", id, name, fileId, metadata);
 
-        return Single.create(subscriber -> {
+        Map<String, Object> updates = new HashMap<>();
+        updates.put(PATH_TEXTURE_ENTRIES + "/" + id, name);
+        updates.put(PATH_TEXTURE_REFERENCES + "/" + id, fileId);
+        updates.put(PATH_TEXTURE_METADATAS + "/" + id, metadata);
 
-            Map<String, Object> updates = new HashMap<>();
-            updates.put(PATH_TEXTURE_ENTRIES + "/" + id, name);
-            updates.put(PATH_TEXTURE_REFERENCES + "/" + id, fileId);
-            updates.put(PATH_TEXTURE_METADATAS + "/" + id, metadata);
-
-            getUserFolder().updateChildren(updates)
-                           .addOnSuccessListener(aVoid -> {
-                               LOG.d("Saved the entry.");
-                               subscriber.onSuccess(id);
-                           })
-                           .addOnFailureListener(e -> {
-                               LOG.e("Failed to save the entry: id = %s, name = %s, fileId = %s, metadata = %s",
-                                     id, name, fileId, metadata);
-                               subscriber.onError(e);
-                           });
-        });
+        Task<Void> task = getUserFolder().updateChildren(updates);
+        return RxGmsTask.asSingle(task).map(aVoid -> id);
     }
 
     @Override
