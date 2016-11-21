@@ -8,8 +8,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
-import com.lakeel.altla.android.log.Log;
-import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.rx.tasks.RxGmsTask;
 import com.lakeel.altla.vision.builder.ArgumentNullException;
 import com.lakeel.altla.vision.builder.domain.model.TextureEntry;
@@ -24,8 +22,6 @@ import rx.Observable;
 import rx.Single;
 
 public final class TextureEntryRepositoryImpl implements TextureEntryRepository {
-
-    private static final Log LOG = LogFactory.getLog(TextureEntryRepositoryImpl.class);
 
     private static final String PATH_TEXTURE_ENTRIES = "textureEntries";
 
@@ -59,8 +55,6 @@ public final class TextureEntryRepositoryImpl implements TextureEntryRepository 
 
     @Override
     public Observable<TextureEntry> findEntry(String id) {
-        LOG.d("Finding the entry: id = %s", id);
-
         return Observable.create(subscriber -> {
             getUserFolder().child(PATH_TEXTURE_ENTRIES)
                            .orderByKey()
@@ -74,12 +68,7 @@ public final class TextureEntryRepositoryImpl implements TextureEntryRepository 
                                        String name = child.getValue(String.class);
 
                                        TextureEntry entry = new TextureEntry(id, name);
-
-                                       LOG.d("Found the entry: entry = %s", entry);
-
                                        subscriber.onNext(entry);
-                                   } else {
-                                       LOG.d("Found no entry.");
                                    }
 
                                    subscriber.onCompleted();
@@ -87,7 +76,6 @@ public final class TextureEntryRepositoryImpl implements TextureEntryRepository 
 
                                @Override
                                public void onCancelled(DatabaseError error) {
-                                   LOG.e("Cancelled to find the entry: id = %s", id);
                                    subscriber.onError(new DatabaseErrorException(error));
                                }
                            });
@@ -96,16 +84,12 @@ public final class TextureEntryRepositoryImpl implements TextureEntryRepository 
 
     @Override
     public Observable<TextureEntry> findAllEntries() {
-        LOG.d("Finding all entries.");
-
         return Observable.create(subscriber -> {
             getUserFolder().child(PATH_TEXTURE_ENTRIES)
                            .orderByValue()
                            .addListenerForSingleValueEvent(new ValueEventListener() {
                                @Override
                                public void onDataChange(DataSnapshot snapshot) {
-                                   LOG.d("Found all entries: count = %d", snapshot.getChildrenCount());
-
                                    for (DataSnapshot child : snapshot.getChildren()) {
                                        String id = child.getKey();
                                        String name = child.getValue(String.class);
@@ -119,7 +103,6 @@ public final class TextureEntryRepositoryImpl implements TextureEntryRepository 
 
                                @Override
                                public void onCancelled(DatabaseError error) {
-                                   LOG.e("Cancelled to find all entries.");
                                    subscriber.onError(new DatabaseErrorException(error));
                                }
                            });
@@ -128,8 +111,6 @@ public final class TextureEntryRepositoryImpl implements TextureEntryRepository 
 
     @Override
     public Observable<TextureReference> findReference(String id) {
-        LOG.d("Finding the reference: id = %s", id);
-
         return Observable.create(subscriber -> {
             getUserFolder().child(PATH_TEXTURE_REFERENCES)
                            .orderByKey()
@@ -144,11 +125,7 @@ public final class TextureEntryRepositoryImpl implements TextureEntryRepository 
 
                                        TextureReference reference = new TextureReference(id, fileId);
 
-                                       LOG.d("Found the reference: reference = %s", reference);
-
                                        subscriber.onNext(reference);
-                                   } else {
-                                       LOG.d("Found no reference.");
                                    }
 
                                    subscriber.onCompleted();
@@ -156,7 +133,6 @@ public final class TextureEntryRepositoryImpl implements TextureEntryRepository 
 
                                @Override
                                public void onCancelled(DatabaseError databaseError) {
-                                   LOG.e("Cancelled to find the reference: id = %s", id);
                                    subscriber.onError(new DatabaseErrorException(databaseError));
                                }
                            });

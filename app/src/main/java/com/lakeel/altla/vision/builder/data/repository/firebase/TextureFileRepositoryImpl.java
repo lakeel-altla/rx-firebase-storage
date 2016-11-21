@@ -5,8 +5,6 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import com.lakeel.altla.android.log.Log;
-import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.rx.firebase.storage.RxFirebaseStorageTask;
 import com.lakeel.altla.rx.tasks.RxGmsTask;
 import com.lakeel.altla.vision.builder.ArgumentNullException;
@@ -21,8 +19,6 @@ import java.io.InputStream;
 import rx.Single;
 
 public final class TextureFileRepositoryImpl implements TextureFileRepository {
-
-    private static final Log LOG = LogFactory.getLog(TextureFileRepositoryImpl.class);
 
     private final StorageReference baseDirectory;
 
@@ -53,7 +49,6 @@ public final class TextureFileRepositoryImpl implements TextureFileRepository {
 
     @Override
     public Single<String> delete(String fileId) {
-        LOG.d("Deleting the file: fileId = %s", fileId);
 
         StorageReference reference = baseDirectory.child(fileId);
         Task<Void> task = reference.delete();
@@ -66,13 +61,10 @@ public final class TextureFileRepositoryImpl implements TextureFileRepository {
 
         File localCacheDirectory = new File(context.getCacheDir(), "textures");
         if (!localCacheDirectory.exists()) {
-            LOG.d("Creating the cache directory: %s", localCacheDirectory);
             localCacheDirectory.mkdirs();
         }
 
         File localCacheFile = new File(localCacheDirectory, fileId);
-
-        LOG.d("Downloading the file: fileId = %s, destination = %s", fileId, localCacheFile);
 
         try {
             localCacheFile.createNewFile();
