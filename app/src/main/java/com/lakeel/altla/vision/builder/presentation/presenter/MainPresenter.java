@@ -14,8 +14,8 @@ import com.lakeel.altla.vision.builder.domain.usecase.FindAllTextureEntriesUseCa
 import com.lakeel.altla.vision.builder.domain.usecase.FindFileBitmapUseCase;
 import com.lakeel.altla.vision.builder.presentation.di.module.Names;
 import com.lakeel.altla.vision.builder.presentation.model.Axis;
-import com.lakeel.altla.vision.builder.presentation.model.BitmapModel;
 import com.lakeel.altla.vision.builder.presentation.model.ObjectEditMode;
+import com.lakeel.altla.vision.builder.presentation.model.TextureModel;
 import com.lakeel.altla.vision.builder.presentation.view.MainView;
 import com.lakeel.altla.vision.builder.presentation.view.ModelListItemView;
 import com.lakeel.altla.vision.builder.presentation.view.renderer.MainRenderer;
@@ -66,7 +66,7 @@ public final class MainPresenter
 
     private final CompositeSubscription compositeSubscription = new CompositeSubscription();
 
-    private final List<BitmapModel> models = new ArrayList<>();
+    private final List<TextureModel> models = new ArrayList<>();
 
     private MainView view;
 
@@ -139,7 +139,7 @@ public final class MainPresenter
                 .subscribe(bitmap -> {
                     LOG.d("Downloaded the texture.");
 
-                    BitmapModel model = new BitmapModel(entry.name, bitmap);
+                    TextureModel model = new TextureModel(entry.name, bitmap);
                     models.add(model);
                     view.updateModels();
                 }, e -> {
@@ -250,8 +250,8 @@ public final class MainPresenter
     public void onDropModel() {
         LOG.v("onDropModel");
 
-        BitmapModel bitmapModel = models.get(lastSelectedPosition);
-        renderer.addPlaneBitmap(bitmapModel.bitmap);
+        TextureModel model = models.get(lastSelectedPosition);
+        renderer.addPlaneBitmap(model.bitmap);
         lastSelectedPosition = -1;
     }
 
@@ -296,7 +296,7 @@ public final class MainPresenter
         }
 
         public void onBind(int position) {
-            BitmapModel model = models.get(position);
+            TextureModel model = models.get(position);
             mItemView.showModel(model);
         }
 
