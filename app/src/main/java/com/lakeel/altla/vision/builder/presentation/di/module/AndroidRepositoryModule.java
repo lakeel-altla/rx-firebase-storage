@@ -14,7 +14,7 @@ public final class AndroidRepositoryModule {
 
     @ActivityScope
     @Provides
-    public DocumentRepository provideLocalDocumentRepository(ContentResolver contentResolver) {
+    public DocumentRepository provideDocumentRepository(ContentResolver contentResolver) {
         return new DocumentRepositoryImpl(contentResolver);
     }
 }
