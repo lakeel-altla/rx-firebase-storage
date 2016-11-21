@@ -1,15 +1,27 @@
 apply plugin: 'com.android.application'
 
+// android-apt for Butter Knife
+apply plugin: 'com.neenbedankt.android-apt'
+
+// retrolambda
+apply plugin: 'me.tatarka.retrolambda'
+
+// realm
+apply plugin: 'realm-android'
+
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.1"
+
     defaultConfig {
-        applicationId "com.lakeel.altla.rx.firebase.storage"
+        applicationId "com.lakeel.altla.vision.builder"
         minSdkVersion 19
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        // Enable multidex
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -17,7 +29,51 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+repositories {
+    maven {
+        url 'https://lakeel-altla.github.io/maven-repository'
+    }
 }
 
 dependencies {
+    apt 'com.jakewharton:butterknife-compiler:8.4.0'
+    apt 'com.google.dagger:dagger-compiler:2.7'
+
+    compile 'com.android.support:multidex:1.0.0'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:design:24.2.1'
+    compile 'com.google.dagger:dagger:2.7'
+    compile 'com.jakewharton:butterknife:8.4.0'
+    compile 'io.reactivex:rxjava:1.1.10'
+    compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'com.google.android.gms:play-services-auth:9.6.1'
+    compile 'com.google.firebase:firebase-auth:9.6.1'
+    compile 'com.google.firebase:firebase-storage:9.6.1'
+    compile 'com.google.firebase:firebase-database:9.6.1'
+    compile 'com.lakeel.altla:android-log:0.0.2@aar'
+
+    debugCompile project(path: ':tango-helper', configuration: 'debug')
+    debugCompile project(path: ':tango-rajawali', configuration: 'debug')
+    debugCompile project(path: ':rajawali-pool', configuration: 'debug')
+    debugCompile project(path: ':rx-realm', configuration: 'debug')
+    debugCompile project(path: ':rx-gms-tasks', configuration: 'debug')
+    debugCompile project(path: ':rx-firebase-storage', configuration: 'debug')
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4'
+
+    releaseCompile project(path: ':tango-helper', configuration: 'release')
+    releaseCompile project(path: ':tango-rajawali', configuration: 'release')
+    releaseCompile project(path: ':rajawali-pool', configuration: 'release')
+    releaseCompile project(path: ':rx-realm', configuration: 'release')
+    releaseCompile project(path: ':rx-gms-tasks', configuration: 'release')
+    releaseCompile project(path: ':rx-firebase-storage', configuration: 'release')
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4'
 }
+
+// google-services plugin to use firebase.
+apply plugin: 'com.google.gms.google-services'
