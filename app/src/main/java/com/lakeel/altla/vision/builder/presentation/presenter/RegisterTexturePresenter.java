@@ -3,6 +3,7 @@ package com.lakeel.altla.vision.builder.presentation.presenter;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.builder.R;
+import com.lakeel.altla.vision.builder.domain.model.TextureMetadata;
 import com.lakeel.altla.vision.builder.domain.usecase.RegisterTextureUseCase;
 import com.lakeel.altla.vision.builder.presentation.helper.DocumentBitmapLoader;
 import com.lakeel.altla.vision.builder.presentation.helper.DocumentFilenameLoader;
@@ -10,10 +11,13 @@ import com.lakeel.altla.vision.builder.presentation.view.RegisterTextureView;
 
 import android.content.ContentResolver;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -24,6 +28,8 @@ import rx.subscriptions.CompositeSubscription;
 public final class RegisterTexturePresenter {
 
     private static final Log LOG = LogFactory.getLog(RegisterTexturePresenter.class);
+
+    private static final String STATE_ID = "id";
 
     @Inject
     DocumentBitmapLoader documentBitmapLoader;
@@ -47,8 +53,21 @@ public final class RegisterTexturePresenter {
 
     private long prevBytesTransferred;
 
+    private String id;
+
     @Inject
     public RegisterTexturePresenter() {
+    }
+
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        // Restore the uuid.
+        if (savedInstanceState != null) {
+            id = savedInstanceState.getString(STATE_ID);
+        }
+
+        if (id == null) {
+            id = UUID.randomUUID().toString();
+        }
     }
 
     public void onCreateView(@NonNull RegisterTextureView view) {
@@ -59,12 +78,16 @@ public final class RegisterTexturePresenter {
         compositeSubscription.clear();
     }
 
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(STATE_ID, id);
+    }
+
     public void onClickButtonSelectDocument() {
         view.showImagePicker();
     }
 
     public void onImagePicked(Uri uri) {
-        LOG.d("onImagePicked: uri = %s", uri);
+        LOG.d("Loading the image: uri = %s", uri);
 
         Subscription subscription = documentBitmapLoader
                 .loadAsSingle(uri)
@@ -73,10 +96,13 @@ public final class RegisterTexturePresenter {
                     this.uri = uri;
                     filename = documentFilenameLoader.load(uri);
 
+                    LOG.d("Loaded the image.");
+
                     view.showImage(bitmap);
                     view.showFilename(filename);
                 }, e -> {
                     if (e instanceof FileNotFoundException) {
+                        LOG.w(String.format("The image could not be found: uri = %s", uri), e);
                         view.showSnackbar(R.string.snackbar_image_file_not_found);
                     } else if (e instanceof IOException) {
                         LOG.w("Closing file failed.", e);
@@ -89,24 +115,32 @@ public final class RegisterTexturePresenter {
     }
 
     public void onClickButtonRegister() {
+        LOG.i("Registering the texture: id = %s", id);
+
         view.showUploadProgressDialog();
 
-        // TODO
-        String directoryPath = null;
+        TextureMetadata metadata = new TextureMetadata();
 
         Subscription subscription = registerTextureUseCase
-                .execute(uri.toString(), directoryPath, filename, (totalBytes, bytesTransferred) -> {
+                .execute(id, filename, uri.toString(), metadata, (totalBytes, bytesTransferred) -> {
+                    // The progress status.
                     long increment = bytesTransferred - prevBytesTransferred;
                     prevBytesTransferred = bytesTransferred;
                     view.setUploadProgressDialogProgress(totalBytes, increment);
-                }).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(uuid -> {
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(entryId -> {
+                    // Done.
+                    LOG.i("Registered the texture.");
+
                     view.hideUploadProgressDialog();
-                    view.showSnackbar(R.string.snackbar_uploaded);
+                    view.showSnackbar(R.string.snackbar_done);
                 }, e -> {
-                    LOG.e("Uploading file failed.", e);
+                    // Failed.
+                    LOG.e("Failed to register the texture.", e);
+
                     view.hideUploadProgressDialog();
-                    view.showSnackbar(R.string.snackbar_upload_failed);
+                    view.showSnackbar(R.string.snackbar_failed);
                 });
         compositeSubscription.add(subscription);
     }

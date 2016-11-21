@@ -2,7 +2,7 @@ package com.lakeel.altla.rx.firebase.storage;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.UploadTask;
+import com.google.firebase.storage.FileDownloadTask;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,25 +10,25 @@ import android.support.annotation.Nullable;
 import rx.Single;
 import rx.SingleSubscriber;
 
-public final class UploadTaskSingle {
+public final class FileDownloadTaskSingle {
 
-    private UploadTaskSingle() {
+    private FileDownloadTaskSingle() {
     }
 
     @NonNull
-    public static Single<UploadTask.TaskSnapshot> create(@NonNull final UploadTask task,
-                                                         @Nullable final OnProgressListener onProgressListener) {
+    public static Single<FileDownloadTask.TaskSnapshot> create(@NonNull final FileDownloadTask task,
+                                                               @Nullable final OnProgressListener onProgressListener) {
         if (task == null) throw new IllegalArgumentException("'task' must be not null.");
 
-        return Single.create(new Single.OnSubscribe<UploadTask.TaskSnapshot>() {
+        return Single.create(new Single.OnSubscribe<FileDownloadTask.TaskSnapshot>() {
 
             @Override
-            public void call(final SingleSubscriber<? super UploadTask.TaskSnapshot> subscriber) {
+            public void call(final SingleSubscriber<? super FileDownloadTask.TaskSnapshot> subscriber) {
 
                 task.addOnSuccessListener(
-                        new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                             @Override
-                            public void onSuccess(UploadTask.TaskSnapshot snapshot) {
+                            public void onSuccess(FileDownloadTask.TaskSnapshot snapshot) {
                                 subscriber.onSuccess(snapshot);
                             }
                         })
@@ -42,9 +42,9 @@ public final class UploadTaskSingle {
 
                 if (onProgressListener != null) {
                     task.addOnProgressListener(
-                            new com.google.firebase.storage.OnProgressListener<UploadTask.TaskSnapshot>() {
+                            new com.google.firebase.storage.OnProgressListener<FileDownloadTask.TaskSnapshot>() {
                                 @Override
-                                public void onProgress(UploadTask.TaskSnapshot snapshot) {
+                                public void onProgress(FileDownloadTask.TaskSnapshot snapshot) {
                                     onProgressListener.onProgress(snapshot.getTotalByteCount(),
                                                                   snapshot.getBytesTransferred());
                                 }
