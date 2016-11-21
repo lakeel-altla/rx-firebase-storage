@@ -38,7 +38,7 @@ public final class AndroidRepositoryModule {
 
     @ActivityScope
     @Provides
-    public FileBitmapRepository provideFileBitmapRepository(ContentResolver contentResolver) {
-        return new FileBitmapRepositoryImpl(contentResolver);
+    public FileBitmapRepository provideFileBitmapRepository() {
+        return new FileBitmapRepositoryImpl();
     }
 }
