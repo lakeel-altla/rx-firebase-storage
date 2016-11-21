@@ -10,8 +10,10 @@ import com.squareup.leakcanary.LeakCanary;
 import org.rajawali3d.util.RajLog;
 
 import android.app.Activity;
-import android.app.Application;
+import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.multidex.MultiDex;
+import android.support.multidex.MultiDexApplication;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -19,9 +21,15 @@ import io.realm.RealmConfiguration;
 /**
  * Defines our application class.
  */
-public final class MyApplication extends Application {
+public final class MyApplication extends MultiDexApplication {
 
     private ApplicationComponent applicationComponent;
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
 
     @Override
     public void onCreate() {
