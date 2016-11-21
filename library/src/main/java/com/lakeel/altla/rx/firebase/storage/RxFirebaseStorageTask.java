@@ -15,6 +15,9 @@ import rx.Single;
 import rx.SingleSubscriber;
 import rx.Subscriber;
 
+/**
+ * Provides methods to wrap a task for Firebase Storage in a Rx object.
+ */
 public final class RxFirebaseStorageTask {
 
     /**
