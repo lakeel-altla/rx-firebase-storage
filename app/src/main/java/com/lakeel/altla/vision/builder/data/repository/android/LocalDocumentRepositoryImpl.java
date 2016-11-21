@@ -1,4 +1,4 @@
-package com.lakeel.altla.vision.builder.data.repository;
+package com.lakeel.altla.vision.builder.data.repository.android;
 
 import com.lakeel.altla.vision.builder.ArgumentNullException;
 import com.lakeel.altla.vision.builder.domain.repository.LocalDocumentRepository;

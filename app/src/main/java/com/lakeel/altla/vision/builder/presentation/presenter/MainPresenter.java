@@ -10,7 +10,6 @@ import com.lakeel.altla.tango.OnFrameAvailableListener;
 import com.lakeel.altla.tango.TangoUpdateDispatcher;
 import com.lakeel.altla.vision.builder.domain.model.TextureEntry;
 import com.lakeel.altla.vision.builder.domain.usecase.DownloadTextureFileUseCase;
-import com.lakeel.altla.vision.builder.domain.usecase.FindAllImageReferencesUseCase;
 import com.lakeel.altla.vision.builder.domain.usecase.FindAllTextureEntriesUseCase;
 import com.lakeel.altla.vision.builder.presentation.di.module.Names;
 import com.lakeel.altla.vision.builder.presentation.helper.DocumentBitmapLoader;
@@ -63,9 +62,6 @@ public final class MainPresenter
 
     @Inject
     FindAllTextureEntriesUseCase findAllTextureEntriesUseCase;
-
-    @Inject
-    FindAllImageReferencesUseCase findAllImageReferencesUseCase;
 
     @Inject
     DownloadTextureFileUseCase downloadTextureFileUseCase;
