@@ -9,7 +9,7 @@ import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.rx.firebase.storage.FileDownloadTaskSingle;
 import com.lakeel.altla.rx.firebase.storage.UploadTaskSingle;
-import com.lakeel.altla.rx.tasks.RxTask;
+import com.lakeel.altla.rx.tasks.RxGmsTask;
 import com.lakeel.altla.vision.builder.ArgumentNullException;
 import com.lakeel.altla.vision.builder.domain.repository.TextureFileRepository;
 
@@ -59,7 +59,7 @@ public final class TextureFileRepositoryImpl implements TextureFileRepository {
         StorageReference reference = baseDirectory.child(fileId);
         Task<Void> task = reference.delete();
 
-        return RxTask.asObservable(task).map(aVoid -> fileId).toSingle();
+        return RxGmsTask.asObservable(task).map(aVoid -> fileId).toSingle();
     }
 
     @Override
