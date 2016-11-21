@@ -1,5 +1,6 @@
 package com.lakeel.altla.vision.builder.data.repository.firebase;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -8,6 +9,7 @@ import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.rx.firebase.storage.FileDownloadTaskSingle;
 import com.lakeel.altla.rx.firebase.storage.UploadTaskSingle;
+import com.lakeel.altla.rx.tasks.RxTask;
 import com.lakeel.altla.vision.builder.ArgumentNullException;
 import com.lakeel.altla.vision.builder.domain.repository.TextureFileRepository;
 
@@ -54,18 +56,10 @@ public final class TextureFileRepositoryImpl implements TextureFileRepository {
     public Single<String> delete(String fileId) {
         LOG.d("Deleting the file: fileId = %s", fileId);
 
-        return Single.create(subscriber -> {
-            StorageReference reference = baseDirectory.child(fileId);
-            reference.delete()
-                     .addOnSuccessListener(aVoid -> {
-                         LOG.d("Deleted the file.");
-                         subscriber.onSuccess(fileId);
-                     })
-                     .addOnFailureListener(e -> {
-                         LOG.e("Failed to delete the file: fileId = %s", fileId);
-                         subscriber.onError(e);
-                     });
-        });
+        StorageReference reference = baseDirectory.child(fileId);
+        Task<Void> task = reference.delete();
+
+        return RxTask.asObservable(task).map(aVoid -> fileId).toSingle();
     }
 
     @Override
