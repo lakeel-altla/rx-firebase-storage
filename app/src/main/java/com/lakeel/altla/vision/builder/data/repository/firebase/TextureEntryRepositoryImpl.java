@@ -4,10 +4,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.Query;
 
+import com.lakeel.altla.rx.firebase.database.RxFirebaseQuery;
 import com.lakeel.altla.rx.tasks.RxGmsTask;
 import com.lakeel.altla.vision.builder.ArgumentNullException;
 import com.lakeel.altla.vision.builder.domain.model.TextureEntry;
@@ -55,88 +55,50 @@ public final class TextureEntryRepositoryImpl implements TextureEntryRepository 
 
     @Override
     public Observable<TextureEntry> findEntry(String id) {
-        return Observable.create(subscriber -> {
-            getUserFolder().child(PATH_TEXTURE_ENTRIES)
-                           .orderByKey()
-                           .equalTo(id)
-                           .addListenerForSingleValueEvent(new ValueEventListener() {
-                               @Override
-                               public void onDataChange(DataSnapshot snapshot) {
-                                   if (0 < snapshot.getChildrenCount()) {
-                                       DataSnapshot child = snapshot.getChildren().iterator().next();
+        Query query = getUserFolder().child(PATH_TEXTURE_ENTRIES)
+                                     .orderByKey()
+                                     .equalTo(id);
 
-                                       String name = child.getValue(String.class);
-
-                                       TextureEntry entry = new TextureEntry(id, name);
-                                       subscriber.onNext(entry);
-                                   }
-
-                                   subscriber.onCompleted();
-                               }
-
-                               @Override
-                               public void onCancelled(DatabaseError error) {
-                                   subscriber.onError(new DatabaseErrorException(error));
-                               }
-                           });
-        });
+        return RxFirebaseQuery.asObservableForSingleValueEvent(query)
+                              .map(snapshot -> {
+                                  DataSnapshot child = snapshot.getChildren().iterator().next();
+                                  String name = child.getValue(String.class);
+                                  return new TextureEntry(id, name);
+                              });
     }
 
     @Override
     public Observable<TextureEntry> findAllEntries() {
-        return Observable.create(subscriber -> {
-            getUserFolder().child(PATH_TEXTURE_ENTRIES)
-                           .orderByValue()
-                           .addListenerForSingleValueEvent(new ValueEventListener() {
-                               @Override
-                               public void onDataChange(DataSnapshot snapshot) {
-                                   for (DataSnapshot child : snapshot.getChildren()) {
-                                       String id = child.getKey();
-                                       String name = child.getValue(String.class);
+        Query query = getUserFolder().child(PATH_TEXTURE_ENTRIES)
+                                     .orderByValue();
 
-                                       TextureEntry entry = new TextureEntry(id, name);
-                                       subscriber.onNext(entry);
-                                   }
-
-                                   subscriber.onCompleted();
-                               }
-
-                               @Override
-                               public void onCancelled(DatabaseError error) {
-                                   subscriber.onError(new DatabaseErrorException(error));
-                               }
-                           });
-        });
+        return RxFirebaseQuery.asObservableForSingleValueEvent(query)
+                              .flatMap(snapshot -> Observable.from(snapshot.getChildren()))
+                              .map(snapshot -> {
+                                  String id = snapshot.getKey();
+                                  String name = snapshot.getValue(String.class);
+                                  return new TextureEntry(id, name);
+                              });
     }
 
     @Override
     public Observable<TextureReference> findReference(String id) {
-        return Observable.create(subscriber -> {
-            getUserFolder().child(PATH_TEXTURE_REFERENCES)
-                           .orderByKey()
-                           .equalTo(id)
-                           .addListenerForSingleValueEvent(new ValueEventListener() {
-                               @Override
-                               public void onDataChange(DataSnapshot snapshot) {
-                                   if (0 < snapshot.getChildrenCount()) {
-                                       DataSnapshot child = snapshot.getChildren().iterator().next();
+        Query query = getUserFolder().child(PATH_TEXTURE_REFERENCES)
+                                     .orderByKey()
+                                     .equalTo(id);
 
-                                       String fileId = child.getValue(String.class);
+        return RxFirebaseQuery.asObservableForSingleValueEvent(query)
+                              .flatMap(snapshot -> Observable.create(subscriber -> {
+                                  if (0 < snapshot.getChildrenCount()) {
+                                      DataSnapshot child = snapshot.getChildren().iterator().next();
+                                      String fileId = child.getValue(String.class);
 
-                                       TextureReference reference = new TextureReference(id, fileId);
+                                      TextureReference reference = new TextureReference(id, fileId);
+                                      subscriber.onNext(reference);
+                                  }
 
-                                       subscriber.onNext(reference);
-                                   }
-
-                                   subscriber.onCompleted();
-                               }
-
-                               @Override
-                               public void onCancelled(DatabaseError databaseError) {
-                                   subscriber.onError(new DatabaseErrorException(databaseError));
-                               }
-                           });
-        });
+                                  subscriber.onCompleted();
+                              }));
     }
 
     private DatabaseReference getUserFolder() {
