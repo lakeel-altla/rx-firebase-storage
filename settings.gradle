@@ -1,8 +1,7 @@
-include ':app', ':tango-helper', ':tango-rajawali', ':rajawali-pool', ':rx-realm', ':rx-gms-tasks', ':rx-firebase-database', ':rx-firebase-storage'
+include ':app', ':tango-helper', ':tango-rajawali', ':rajawali-pool', ':rx-realm', ':rx-firebase-database', ':rx-firebase-storage'
 project(':tango-helper').projectDir = new File(settingsDir, './subtree/tango-helper/library')
 project(':tango-rajawali').projectDir = new File(settingsDir, './subtree/tango-rajawali/library')
 project(':rajawali-pool').projectDir = new File(settingsDir, './subtree/rajawali-pool/library')
 project(':rx-realm').projectDir = new File(settingsDir, './subtree/rx-realm/library')
-project(':rx-gms-tasks').projectDir = new File(settingsDir, './subtree/rx-gms-tasks/library')
 project(':rx-firebase-database').projectDir = new File(settingsDir, './subtree/rx-firebase-database/library')
 project(':rx-firebase-storage').projectDir = new File(settingsDir, './subtree/rx-firebase-storage/library')

@@ -57,12 +57,12 @@ dependencies {
     compile 'com.google.firebase:firebase-storage:9.6.1'
     compile 'com.google.firebase:firebase-database:9.6.1'
     compile 'com.lakeel.altla:android-log:0.0.2@aar'
+    compile 'com.lakeel.altla:rx-gms-tasks:1.0.0'
 
     debugCompile project(path: ':tango-helper', configuration: 'debug')
     debugCompile project(path: ':tango-rajawali', configuration: 'debug')
     debugCompile project(path: ':rajawali-pool', configuration: 'debug')
     debugCompile project(path: ':rx-realm', configuration: 'debug')
-    debugCompile project(path: ':rx-gms-tasks', configuration: 'debug')
     debugCompile project(path: ':rx-firebase-database', configuration: 'debug')
     debugCompile project(path: ':rx-firebase-storage', configuration: 'debug')
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4'
@@ -71,7 +71,6 @@ dependencies {
     releaseCompile project(path: ':tango-rajawali', configuration: 'release')
     releaseCompile project(path: ':rajawali-pool', configuration: 'release')
     releaseCompile project(path: ':rx-realm', configuration: 'release')
-    releaseCompile project(path: ':rx-gms-tasks', configuration: 'release')
     releaseCompile project(path: ':rx-firebase-database', configuration: 'release')
     releaseCompile project(path: ':rx-firebase-storage', configuration: 'release')
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4'
