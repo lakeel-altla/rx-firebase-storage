@@ -17,6 +17,13 @@ import rx.Subscriber;
 
 public final class RxFirebaseStorageTask {
 
+    /**
+     * Wraps the specified {@link UploadTask} in {@link Observable}.
+     *
+     * @param task               The wrapped task.
+     * @param onProgressListener The callback to get the progress status, or null.
+     * @return The {@link Observable} that wraps the specified {@link UploadTask}.
+     */
     @NonNull
     public static Observable<UploadTask.TaskSnapshot> asObservable(
             @NonNull final UploadTask task, @Nullable final OnProgressListener onProgressListener) {
@@ -54,6 +61,13 @@ public final class RxFirebaseStorageTask {
         });
     }
 
+    /**
+     * Wraps the specified {@link UploadTask} in {@link Single}.
+     *
+     * @param task               The wrapped task.
+     * @param onProgressListener The callback to get the progress status, or null.
+     * @return The {@link Single} that wraps the specified {@link UploadTask}.
+     */
     @NonNull
     public static Single<UploadTask.TaskSnapshot> asSingle(@NonNull final UploadTask task,
                                                            @Nullable final OnProgressListener onProgressListener) {
@@ -91,6 +105,13 @@ public final class RxFirebaseStorageTask {
         });
     }
 
+    /**
+     * Wraps the specified {@link UploadTask} in {@link Completable}.
+     *
+     * @param task               The wrapped task.
+     * @param onProgressListener The callback to get the progress status, or null.
+     * @return The {@link Completable} that wraps the specified {@link UploadTask}.
+     */
     @NonNull
     public static Completable asCompletable(@NonNull final UploadTask task,
                                             @Nullable final OnProgressListener onProgressListener) {
@@ -127,6 +148,13 @@ public final class RxFirebaseStorageTask {
         });
     }
 
+    /**
+     * Wraps the specified {@link FileDownloadTask} in {@link Observable}.
+     *
+     * @param task               The wrapped task.
+     * @param onProgressListener The callback to get the progress status, or null.
+     * @return The {@link Observable} that wraps the specified {@link FileDownloadTask}.
+     */
     @NonNull
     public static Observable<FileDownloadTask.TaskSnapshot> asObservable(
             @NonNull final FileDownloadTask task, @Nullable final OnProgressListener onProgressListener) {
@@ -164,6 +192,13 @@ public final class RxFirebaseStorageTask {
         });
     }
 
+    /**
+     * Wraps the specified {@link FileDownloadTask} in {@link Single}.
+     *
+     * @param task               The wrapped task.
+     * @param onProgressListener The callback to get the progress status, or null.
+     * @return The {@link Single} that wraps the specified {@link FileDownloadTask}.
+     */
     @NonNull
     public static Single<FileDownloadTask.TaskSnapshot> asSingle(
             @NonNull final FileDownloadTask task, @Nullable final OnProgressListener onProgressListener) {
@@ -201,6 +236,13 @@ public final class RxFirebaseStorageTask {
         });
     }
 
+    /**
+     * Wraps the specified {@link FileDownloadTask} in {@link Completable}.
+     *
+     * @param task               The wrapped task.
+     * @param onProgressListener The callback to get the progress status, or null.
+     * @return The {@link Completable} that wraps the specified {@link FileDownloadTask}.
+     */
     @NonNull
     public static Completable asCompletable(@NonNull final FileDownloadTask task,
                                             @Nullable final OnProgressListener onProgressListener) {
