@@ -8,7 +8,7 @@ import com.google.firebase.storage.UploadTask;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.rx.firebase.storage.FileDownloadTaskSingle;
-import com.lakeel.altla.rx.firebase.storage.UploadTaskSingle;
+import com.lakeel.altla.rx.firebase.storage.RxFirebaseStorageTask;
 import com.lakeel.altla.rx.tasks.RxGmsTask;
 import com.lakeel.altla.vision.builder.ArgumentNullException;
 import com.lakeel.altla.vision.builder.domain.repository.TextureFileRepository;
@@ -48,8 +48,8 @@ public final class TextureFileRepositoryImpl implements TextureFileRepository {
         StorageReference reference = baseDirectory.child(fileId);
         UploadTask task = reference.putStream(stream);
 
-        return UploadTaskSingle.create(task, onProgressListener::onProgress)
-                               .map(snapshot -> fileId);
+        return RxFirebaseStorageTask.asSingle(task, onProgressListener::onProgress)
+                                    .map(snapshot -> fileId);
     }
 
     @Override
