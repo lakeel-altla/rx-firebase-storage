@@ -4,7 +4,7 @@ import java.io.InputStream;
 
 import rx.Single;
 
-public interface LocalDocumentRepository {
+public interface DocumentRepository {
 
     Single<InputStream> openStream(String uri);
 }

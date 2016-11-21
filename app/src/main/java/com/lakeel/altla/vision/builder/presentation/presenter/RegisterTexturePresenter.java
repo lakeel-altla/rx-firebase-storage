@@ -4,12 +4,12 @@ import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.builder.R;
 import com.lakeel.altla.vision.builder.domain.model.TextureMetadata;
+import com.lakeel.altla.vision.builder.domain.usecase.FindDocumentBitmapUseCase;
+import com.lakeel.altla.vision.builder.domain.usecase.FindDocumentFilenameUseCase;
 import com.lakeel.altla.vision.builder.domain.usecase.RegisterTextureUseCase;
-import com.lakeel.altla.vision.builder.presentation.helper.DocumentBitmapLoader;
-import com.lakeel.altla.vision.builder.presentation.helper.DocumentFilenameLoader;
 import com.lakeel.altla.vision.builder.presentation.view.RegisterTextureView;
 
-import android.content.ContentResolver;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import rx.Single;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
@@ -32,16 +33,13 @@ public final class RegisterTexturePresenter {
     private static final String STATE_ID = "id";
 
     @Inject
-    DocumentBitmapLoader documentBitmapLoader;
+    FindDocumentBitmapUseCase findDocumentBitmapUseCase;
 
     @Inject
-    DocumentFilenameLoader documentFilenameLoader;
+    FindDocumentFilenameUseCase findDocumentFilenameUseCase;
 
     @Inject
     RegisterTextureUseCase registerTextureUseCase;
-
-    @Inject
-    ContentResolver contentResolver;
 
     private final CompositeSubscription compositeSubscription = new CompositeSubscription();
 
@@ -87,19 +85,20 @@ public final class RegisterTexturePresenter {
     }
 
     public void onImagePicked(Uri uri) {
-        LOG.d("Loading the image: uri = %s", uri);
+        LOG.d("Loading the bitmap & the filename: uri = %s", uri);
 
-        Subscription subscription = documentBitmapLoader
-                .loadAsSingle(uri)
+        Subscription subscription = findDocumentBitmapUseCase
+                .execute(uri)
+                .flatMap(bitmap -> findFilename(uri, bitmap))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(bitmap -> {
+                .subscribe(bitmapAndFilename -> {
+                    LOG.d("Loaded the bitmap & the filename.");
+
                     this.uri = uri;
-                    filename = documentFilenameLoader.load(uri);
+                    filename = bitmapAndFilename.filename;
 
-                    LOG.d("Loaded the image.");
-
-                    view.showImage(bitmap);
-                    view.showFilename(filename);
+                    view.showImage(bitmapAndFilename.bitmap);
+                    view.showFilename(bitmapAndFilename.filename);
                 }, e -> {
                     if (e instanceof FileNotFoundException) {
                         LOG.w(String.format("The image could not be found: uri = %s", uri), e);
@@ -112,6 +111,11 @@ public final class RegisterTexturePresenter {
                     }
                 });
         compositeSubscription.add(subscription);
+    }
+
+    private Single<BitmapAndFilename> findFilename(Uri uri, Bitmap bitmap) {
+        return findDocumentFilenameUseCase.execute(uri)
+                                          .map(filename -> new BitmapAndFilename(bitmap, filename));
     }
 
     public void onClickButtonRegister() {
@@ -147,5 +151,17 @@ public final class RegisterTexturePresenter {
 
     public void afterFilenameChanged(String filename) {
         this.filename = filename;
+    }
+
+    private class BitmapAndFilename {
+
+        final Bitmap bitmap;
+
+        final String filename;
+
+        BitmapAndFilename(Bitmap bitmap, String filename) {
+            this.bitmap = bitmap;
+            this.filename = filename;
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.lakeel.altla.vision.builder.data.repository;
+package com.lakeel.altla.vision.builder.data.repository.firebase;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

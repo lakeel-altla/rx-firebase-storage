@@ -1,7 +1,7 @@
 package com.lakeel.altla.vision.builder.presentation.view.adapter;
 
 import com.lakeel.altla.vision.builder.R;
-import com.lakeel.altla.vision.builder.presentation.model.BitmapModel;
+import com.lakeel.altla.vision.builder.presentation.model.TextureModel;
 import com.lakeel.altla.vision.builder.presentation.presenter.MainPresenter;
 import com.lakeel.altla.vision.builder.presentation.view.ModelListItemView;
 
@@ -117,7 +117,7 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
         }
 
         @Override
-        public void showModel(@NonNull BitmapModel model) {
+        public void showModel(@NonNull TextureModel model) {
             imageView.setImageBitmap(model.bitmap);
         }
 
