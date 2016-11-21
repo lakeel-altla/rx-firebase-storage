@@ -11,8 +11,8 @@ import com.lakeel.altla.tango.TangoUpdateDispatcher;
 import com.lakeel.altla.vision.builder.domain.model.TextureEntry;
 import com.lakeel.altla.vision.builder.domain.usecase.DownloadTextureFileUseCase;
 import com.lakeel.altla.vision.builder.domain.usecase.FindAllTextureEntriesUseCase;
+import com.lakeel.altla.vision.builder.domain.usecase.FindFileBitmapUseCase;
 import com.lakeel.altla.vision.builder.presentation.di.module.Names;
-import com.lakeel.altla.vision.builder.presentation.helper.DocumentBitmapLoader;
 import com.lakeel.altla.vision.builder.presentation.model.Axis;
 import com.lakeel.altla.vision.builder.presentation.model.BitmapModel;
 import com.lakeel.altla.vision.builder.presentation.model.ObjectEditMode;
@@ -21,22 +21,17 @@ import com.lakeel.altla.vision.builder.presentation.view.ModelListItemView;
 import com.lakeel.altla.vision.builder.presentation.view.renderer.MainRenderer;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import rx.Single;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -67,7 +62,7 @@ public final class MainPresenter
     DownloadTextureFileUseCase downloadTextureFileUseCase;
 
     @Inject
-    DocumentBitmapLoader documentBitmapLoader;
+    FindFileBitmapUseCase findFileBitmapUseCase;
 
     private final CompositeSubscription compositeSubscription = new CompositeSubscription();
 
@@ -139,7 +134,7 @@ public final class MainPresenter
                     // TODO
                     LOG.v("The progress status: totalBytes = %d, bytesTransferred = %d", totalBytes, bytesTransferred);
                 })
-                .flatMap(this::loadBitmap)
+                .flatMap(findFileBitmapUseCase::execute)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(bitmap -> {
                     LOG.d("Downloaded the texture.");
@@ -152,17 +147,6 @@ public final class MainPresenter
                     LOG.w(String.format("Failed to download the texture: entry = %s", entry), e);
                 });
         compositeSubscription.add(subscription);
-    }
-
-    private Single<Bitmap> loadBitmap(File file) {
-        return Single.<Bitmap>create(subscriber -> {
-            try {
-                Bitmap bitmap = documentBitmapLoader.load(file);
-                subscriber.onSuccess(bitmap);
-            } catch (IOException e) {
-                subscriber.onError(e);
-            }
-        }).subscribeOn(Schedulers.io());
     }
 
     public void onResume() {
