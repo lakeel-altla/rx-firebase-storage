@@ -63,6 +63,7 @@ dependencies {
     debugCompile project(path: ':rajawali-pool', configuration: 'debug')
     debugCompile project(path: ':rx-realm', configuration: 'debug')
     debugCompile project(path: ':rx-gms-tasks', configuration: 'debug')
+    debugCompile project(path: ':rx-firebase-database', configuration: 'debug')
     debugCompile project(path: ':rx-firebase-storage', configuration: 'debug')
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4'
 
@@ -71,6 +72,7 @@ dependencies {
     releaseCompile project(path: ':rajawali-pool', configuration: 'release')
     releaseCompile project(path: ':rx-realm', configuration: 'release')
     releaseCompile project(path: ':rx-gms-tasks', configuration: 'release')
+    releaseCompile project(path: ':rx-firebase-database', configuration: 'release')
     releaseCompile project(path: ':rx-firebase-storage', configuration: 'release')
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4'
 }
