@@ -13,9 +13,9 @@ import rx.Single;
 import rx.SingleSubscriber;
 import rx.Subscriber;
 
-public final class RxTask {
+public final class RxGmsTask {
 
-    private RxTask() {
+    private RxGmsTask() {
     }
 
     public static <TResult> Observable<TResult> asObservable(final Task<TResult> task) {
