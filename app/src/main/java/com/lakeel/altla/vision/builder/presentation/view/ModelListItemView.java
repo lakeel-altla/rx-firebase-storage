@@ -12,4 +12,6 @@ public interface ModelListItemView {
     void showModel(@NonNull TextureModel model);
 
     void startDrag();
+
+    void setSelected(int selectedPosition, boolean selected);
 }

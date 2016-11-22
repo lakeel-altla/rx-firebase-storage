@@ -25,7 +25,9 @@ import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -68,11 +70,11 @@ public final class MainPresenter
 
     private final List<TextureModel> models = new ArrayList<>();
 
+    private final SingleSelection selection = new SingleSelection();
+
     private MainView view;
 
     private MainRenderer renderer;
-
-    private int lastSelectedPosition = -1;
 
     private boolean isModelPaneVisible;
 
@@ -245,14 +247,14 @@ public final class MainPresenter
         ModelItemPresenter itemPresenter = new ModelItemPresenter();
         itemPresenter.onCreateItemView(itemView);
         itemView.setItemPresenter(itemPresenter);
+        selection.addItemPresenter(itemPresenter);
     }
 
     public void onDropModel() {
-        LOG.v("onDropModel");
-
-        TextureModel model = models.get(lastSelectedPosition);
-        renderer.addPlaneBitmap(model.bitmap);
-        lastSelectedPosition = -1;
+        if (0 <= selection.selectedPosition) {
+            TextureModel model = models.get(selection.selectedPosition);
+            renderer.addPlaneBitmap(model.bitmap);
+        }
     }
 
     public boolean onSingleTapUp(MotionEvent e) {
@@ -300,11 +302,48 @@ public final class MainPresenter
             mItemView.showModel(model);
         }
 
-        public void onStartDrag(int position) {
-            LOG.v("Starting drag: position = %d", position);
+        public void onClickViewTop(int position) {
+            selection.setSelectedPosition(position);
+        }
 
-            lastSelectedPosition = position;
+        public void onLongClickViewTop(int position) {
+            selection.setSelectedPosition(position);
             mItemView.startDrag();
+        }
+
+        void setSelected(int selectedPosition, boolean selected) {
+            mItemView.setSelected(selectedPosition, selected);
+        }
+    }
+
+    private final class SingleSelection {
+
+        int selectedPosition = -1;
+
+        Set<ModelItemPresenter> itemPresenters = new HashSet<>();
+
+        void addItemPresenter(ModelItemPresenter itemPresenter) {
+            itemPresenters.add(itemPresenter);
+        }
+
+        void setSelectedPosition(int selectedPosition) {
+            if (0 <= this.selectedPosition) {
+                // Deselect the previous selection.
+                for (ModelItemPresenter itemPresenter : itemPresenters) {
+                    itemPresenter.setSelected(this.selectedPosition, false);
+                }
+            }
+
+            if (this.selectedPosition == selectedPosition) {
+                // Deselect only.
+                this.selectedPosition = -1;
+            } else if (0 <= selectedPosition) {
+                // Select the new position.
+                this.selectedPosition = selectedPosition;
+                for (ModelItemPresenter itemPresenter : itemPresenters) {
+                    itemPresenter.setSelected(this.selectedPosition, true);
+                }
+            }
         }
     }
 }

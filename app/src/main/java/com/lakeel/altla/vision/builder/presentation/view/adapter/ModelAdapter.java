@@ -6,8 +6,6 @@ import com.lakeel.altla.vision.builder.presentation.presenter.MainPresenter;
 import com.lakeel.altla.vision.builder.presentation.view.ModelListItemView;
 
 import android.content.ClipData;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.DragEvent;
@@ -16,9 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import butterknife.BindColor;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.OnLongClick;
 
 public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHolder> {
@@ -63,12 +61,6 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
         @BindView(R.id.image_view)
         ImageView imageView;
 
-        @BindColor(R.color.background_model_pane)
-        int backgroundModelPane;
-
-        @BindColor(R.color.background_model_pane_drag)
-        int backgroundModelPaneDrag;
-
         private final View.DragShadowBuilder dragShadowBuilder;
 
         private MainPresenter.ModelItemPresenter itemPresenter;
@@ -82,10 +74,6 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
             imageView.setOnDragListener((view, dragEvent) -> {
                 switch (dragEvent.getAction()) {
                     case DragEvent.ACTION_DRAG_STARTED:
-                        // darkenss the icon & the background to indicate dragging.
-                        viewTop.setBackgroundColor(backgroundModelPaneDrag);
-                        imageView.setColorFilter(backgroundModelPaneDrag, PorterDuff.Mode.MULTIPLY);
-                        imageView.invalidate();
                         // returns true to accept a drag event.
                         return true;
                     case DragEvent.ACTION_DRAG_ENTERED:
@@ -96,10 +84,6 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
                         // does not accept to drop here.
                         return false;
                     case DragEvent.ACTION_DRAG_ENDED:
-                        // restores colors.
-                        viewTop.setBackgroundColor(backgroundModelPane);
-                        imageView.setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
-                        imageView.invalidate();
                         return true;
                 }
 
@@ -126,9 +110,21 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
             imageView.startDrag(CLIP_DATA_DUMMY, dragShadowBuilder, null, 0);
         }
 
+        @Override
+        public void setSelected(int selectedPosition, boolean selected) {
+            if (selectedPosition == getAdapterPosition()) {
+                viewTop.setSelected(selected);
+            }
+        }
+
+        @OnClick(R.id.view_top)
+        void onClickViewTop() {
+            itemPresenter.onClickViewTop(getAdapterPosition());
+        }
+
         @OnLongClick(R.id.view_top)
         boolean onLongClickViewTop() {
-            itemPresenter.onStartDrag(getAdapterPosition());
+            itemPresenter.onLongClickViewTop(getAdapterPosition());
             return true;
         }
     }
