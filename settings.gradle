@@ -1,5 +1,4 @@
-include ':app', ':tango-helper', ':tango-rajawali', ':rajawali-pool', ':rx-firebase-storage'
+include ':app', ':tango-helper', ':tango-rajawali', ':rajawali-pool'
 project(':tango-helper').projectDir = new File(settingsDir, './subtree/tango-helper/library')
 project(':tango-rajawali').projectDir = new File(settingsDir, './subtree/tango-rajawali/library')
 project(':rajawali-pool').projectDir = new File(settingsDir, './subtree/rajawali-pool/library')
-project(':rx-firebase-storage').projectDir = new File(settingsDir, './subtree/rx-firebase-storage/library')
