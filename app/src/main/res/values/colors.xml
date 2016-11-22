@@ -19,6 +19,9 @@
     <color name="background_model_pane_item_selected">#cc4169e1</color>
 
     <!-- white -->
+    <color name="text_color_model_pane_item">#ffffff</color>
+
+    <!-- white -->
     <color name="tint_fab_icon">#ffffff</color>
 
     <!-- white -->

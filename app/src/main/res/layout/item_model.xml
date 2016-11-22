@@ -2,16 +2,48 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:id="@+id/view_top"
               android:background="@drawable/selector_list_item"
-              android:orientation="vertical"
+              android:orientation="horizontal"
+              android:paddingTop="@dimen/content_vertical_margin"
+              android:paddingBottom="@dimen/content_vertical_margin"
+              android:paddingStart="@dimen/content_horizontal_margin"
+              android:paddingEnd="@dimen/content_horizontal_margin"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content">
 
     <ImageView android:id="@+id/image_view"
-               android:layout_marginStart="@dimen/content_horizontal_margin"
-               android:layout_marginEnd="@dimen/content_horizontal_margin"
-               android:layout_marginTop="@dimen/content_vertical_margin"
-               android:layout_marginBottom="@dimen/content_vertical_margin"
                android:layout_width="@dimen/item_model_image_width"
                android:layout_height="@dimen/item_model_image_height"/>
+
+    <RelativeLayout android:id="@+id/view_group_texture_detail"
+                    android:layout_marginStart="@dimen/content_horizontal_margin"
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+
+        <TextView android:id="@+id/text_view_texture_name"
+                  android:textColor="@color/text_color_model_pane_item"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"/>
+
+        <ImageButton android:id="@+id/image_button_edit_texture"
+                     android:src="@drawable/ic_mode_edit_black_24dp"
+                     android:background="?android:attr/actionBarItemBackground"
+                     android:tint="@color/tint_image_button"
+                     android:layout_below="@id/text_view_texture_name"
+                     android:layout_marginTop="@dimen/content_vertical_margin"
+                     android:layout_width="@dimen/touch_target_width"
+                     android:layout_height="@dimen/touch_target_height"/>
+
+        <ImageButton android:id="@+id/image_button_delete_texture"
+                     android:src="@drawable/ic_delete_black_24dp"
+                     android:background="?android:attr/actionBarItemBackground"
+                     android:tint="@color/tint_image_button"
+                     android:layout_below="@id/text_view_texture_name"
+                     android:layout_toEndOf="@id/image_button_edit_texture"
+                     android:layout_marginTop="@dimen/content_vertical_margin"
+                     android:layout_width="@dimen/touch_target_width"
+                     android:layout_height="@dimen/touch_target_height"/>
+
+    </RelativeLayout>
 
 </LinearLayout>

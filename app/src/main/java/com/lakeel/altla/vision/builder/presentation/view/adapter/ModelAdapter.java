@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -61,6 +62,12 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
         @BindView(R.id.image_view)
         ImageView imageView;
 
+        @BindView(R.id.view_group_texture_detail)
+        ViewGroup viewGroupTextureDetail;
+
+        @BindView(R.id.text_view_texture_name)
+        TextView textViewTextureName;
+
         private final View.DragShadowBuilder dragShadowBuilder;
 
         private MainPresenter.ModelItemPresenter itemPresenter;
@@ -89,6 +96,9 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
 
                 return false;
             });
+
+            // Hide.
+            viewGroupTextureDetail.setVisibility(View.GONE);
         }
 
         public void onBind(int position) {
@@ -103,6 +113,7 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
         @Override
         public void showModel(@NonNull TextureModel model) {
             imageView.setImageBitmap(model.bitmap);
+            textViewTextureName.setText(model.name);
         }
 
         @Override
@@ -114,6 +125,12 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
         public void setSelected(int selectedPosition, boolean selected) {
             if (selectedPosition == getAdapterPosition()) {
                 viewTop.setSelected(selected);
+
+                if (selected) {
+                    viewGroupTextureDetail.setVisibility(View.VISIBLE);
+                } else {
+                    viewGroupTextureDetail.setVisibility(View.GONE);
+                }
             }
         }
 
