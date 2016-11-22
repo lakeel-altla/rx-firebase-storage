@@ -11,7 +11,7 @@ public interface TextureFileRepository {
 
     Single<String> delete(String fileId);
 
-    Single<File> download(String fileId, OnProgressListener onProgressListener);
+    Single<String> download(String fileId, File destination, OnProgressListener onProgressListener);
 
     interface OnProgressListener {
 

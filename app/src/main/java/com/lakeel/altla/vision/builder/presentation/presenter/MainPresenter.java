@@ -8,7 +8,6 @@ import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.tango.OnFrameAvailableListener;
 import com.lakeel.altla.tango.TangoUpdateDispatcher;
-import com.lakeel.altla.vision.builder.domain.model.TextureEntry;
 import com.lakeel.altla.vision.builder.domain.usecase.DownloadTextureFileUseCase;
 import com.lakeel.altla.vision.builder.domain.usecase.FindAllTextureEntriesUseCase;
 import com.lakeel.altla.vision.builder.domain.usecase.FindFileBitmapUseCase;
@@ -130,26 +129,26 @@ public final class MainPresenter
                 });
         compositeSubscription.add(subscription);
     }
-
-    private void downloadTexture(TextureEntry entry) {
-        LOG.d("Downloading the texture: entry = %s", entry);
-
-        Subscription subscription = downloadTextureFileUseCase
-                .execute(entry.id, (totalBytes, bytesTransferred) -> {
-                    // TODO
-                    LOG.v("The progress status: totalBytes = %d, bytesTransferred = %d", totalBytes, bytesTransferred);
-                })
-                .flatMap(findFileBitmapUseCase::execute)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(bitmap -> {
-                    LOG.d("Downloaded the texture.");
-
-                }, e -> {
-                    // TODO: How to recover.
-                    LOG.w(String.format("Failed to download the texture: entry = %s", entry), e);
-                });
-        compositeSubscription.add(subscription);
-    }
+//
+//    private void downloadTexture(TextureEntry entry) {
+//        LOG.d("Downloading the texture: entry = %s", entry);
+//
+//        Subscription subscription = downloadTextureFileUseCase
+//                .execute(entry.id, (totalBytes, bytesTransferred) -> {
+//                    // TODO
+//                    LOG.v("The progress status: totalBytes = %d, bytesTransferred = %d", totalBytes, bytesTransferred);
+//                })
+//                .flatMap(findFileBitmapUseCase::execute)
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(bitmap -> {
+//                    LOG.d("Downloaded the texture.");
+//
+//                }, e -> {
+//                    // TODO: How to recover.
+//                    LOG.w(String.format("Failed to download the texture: entry = %s", entry), e);
+//                });
+//        compositeSubscription.add(subscription);
+//    }
 
     public void onResume() {
         renderer.connectToTangoCamera(tango);
@@ -305,7 +304,7 @@ public final class MainPresenter
         public void onLoadBitmap(int position) {
             TextureModel model = models.get(position);
 
-            LOG.d("Downloading the texture: id = %s", model.id);
+            LOG.d("Loading the texture: id = %s", model.id);
 
             Subscription subscription = downloadTextureFileUseCase
                     .execute(model.id, (totalBytes, bytesTransferred) -> {
@@ -315,7 +314,7 @@ public final class MainPresenter
                     .flatMap(findFileBitmapUseCase::execute)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(bitmap -> {
-                        LOG.d("Downloaded the texture.");
+                        LOG.d("Loaded the texture.");
                         // Set the bitmap into the model.
                         model.bitmap = bitmap;
                         // Hide the progress bar.
@@ -324,7 +323,7 @@ public final class MainPresenter
                         mItemView.showModel(model);
                     }, e -> {
                         // TODO: How to recover.
-                        LOG.w(String.format("Failed to download the texture: id = %s", model.id), e);
+                        LOG.w(String.format("Failed to load the texture: id = %s", model.id), e);
                     });
             compositeSubscription.add(subscription);
         }

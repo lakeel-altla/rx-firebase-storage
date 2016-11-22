@@ -10,10 +10,7 @@ import com.lakeel.altla.rx.tasks.RxGmsTask;
 import com.lakeel.altla.vision.builder.ArgumentNullException;
 import com.lakeel.altla.vision.builder.domain.repository.TextureFileRepository;
 
-import android.content.Context;
-
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 
 import rx.Single;
@@ -22,14 +19,10 @@ public final class TextureFileRepositoryImpl implements TextureFileRepository {
 
     private final StorageReference baseDirectory;
 
-    private final Context context;
-
-    public TextureFileRepositoryImpl(StorageReference baseDirectory, Context context) {
+    public TextureFileRepositoryImpl(StorageReference baseDirectory) {
         if (baseDirectory == null) throw new ArgumentNullException("baseDirectory");
-        if (context == null) throw new ArgumentNullException("context");
 
         this.baseDirectory = baseDirectory;
-        this.context = context;
     }
 
     @Override
@@ -57,25 +50,12 @@ public final class TextureFileRepositoryImpl implements TextureFileRepository {
     }
 
     @Override
-    public Single<File> download(String fileId, OnProgressListener onProgressListener) {
-
-        File localCacheDirectory = new File(context.getCacheDir(), "textures");
-        if (!localCacheDirectory.exists()) {
-            localCacheDirectory.mkdirs();
-        }
-
-        File localCacheFile = new File(localCacheDirectory, fileId);
-
-        try {
-            localCacheFile.createNewFile();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public Single<String> download(String fileId, File destination, OnProgressListener onProgressListener) {
 
         StorageReference reference = baseDirectory.child(fileId);
-        FileDownloadTask task = reference.getFile(localCacheFile);
+        FileDownloadTask task = reference.getFile(destination);
 
         return RxFirebaseStorageTask.asSingle(task, onProgressListener::onProgress)
-                                    .map(snapshot -> localCacheFile);
+                                    .map(snapshot -> fileId);
     }
 }

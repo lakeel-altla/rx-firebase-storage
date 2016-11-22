@@ -10,8 +10,6 @@ import com.lakeel.altla.vision.builder.domain.repository.TextureEntryRepository;
 import com.lakeel.altla.vision.builder.domain.repository.TextureFileRepository;
 import com.lakeel.altla.vision.builder.presentation.di.ActivityScope;
 
-import android.content.Context;
-
 import javax.inject.Named;
 
 import dagger.Module;
@@ -30,8 +28,7 @@ public final class FirebaseRepositoryModule {
     @ActivityScope
     @Provides
     public TextureFileRepository provideTextureFileRepository(
-            @Named(Names.FIREBASE_STORAGE_REFERENCE_DIRECTORY_TEXTURES) StorageReference reference,
-            @Named(Names.ACTIVITY_CONTEXT) Context context) {
-        return new TextureFileRepositoryImpl(reference, context);
+            @Named(Names.FIREBASE_STORAGE_REFERENCE_DIRECTORY_TEXTURES) StorageReference reference) {
+        return new TextureFileRepositoryImpl(reference);
     }
 }

@@ -4,13 +4,18 @@ import com.lakeel.altla.vision.builder.data.repository.android.DocumentBitmapRep
 import com.lakeel.altla.vision.builder.data.repository.android.DocumentFilenameRepositoryImpl;
 import com.lakeel.altla.vision.builder.data.repository.android.DocumentRepositoryImpl;
 import com.lakeel.altla.vision.builder.data.repository.android.FileBitmapRepositoryImpl;
+import com.lakeel.altla.vision.builder.data.repository.android.TextureCacheRepositoryImpl;
 import com.lakeel.altla.vision.builder.domain.repository.DocumentBitmapRepository;
 import com.lakeel.altla.vision.builder.domain.repository.DocumentFilenameRepository;
 import com.lakeel.altla.vision.builder.domain.repository.DocumentRepository;
 import com.lakeel.altla.vision.builder.domain.repository.FileBitmapRepository;
+import com.lakeel.altla.vision.builder.domain.repository.TextureCacheRepository;
 import com.lakeel.altla.vision.builder.presentation.di.ActivityScope;
 
 import android.content.ContentResolver;
+import android.content.Context;
+
+import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
@@ -40,5 +45,11 @@ public final class AndroidRepositoryModule {
     @Provides
     public FileBitmapRepository provideFileBitmapRepository() {
         return new FileBitmapRepositoryImpl();
+    }
+
+    @ActivityScope
+    @Provides
+    public TextureCacheRepository provideTextureCacheRepository(@Named(Names.ACTIVITY_CONTEXT) Context context) {
+        return new TextureCacheRepositoryImpl(context);
     }
 }
