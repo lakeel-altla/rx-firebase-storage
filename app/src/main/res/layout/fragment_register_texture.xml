@@ -14,7 +14,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-    <ImageView android:id="@+id/image_view"
+    <ImageView android:id="@+id/image_view_texture"
                android:layout_below="@id/button_select_document"
                android:layout_marginStart="@dimen/content_horizontal_margin"
                android:layout_marginEnd="@dimen/content_horizontal_margin"
@@ -25,7 +25,7 @@
 
     <android.support.design.widget.TextInputLayout
             android:id="@+id/text_input_layput_filename"
-            android:layout_below="@id/image_view"
+            android:layout_below="@id/image_view_texture"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         <android.support.design.widget.TextInputEditText

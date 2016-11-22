@@ -119,7 +119,10 @@ public final class MainPresenter
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(entry -> {
                     LOG.d("Found the entry: entry = %s", entry);
-                    downloadTexture(entry);
+
+                    TextureModel model = new TextureModel(entry.id, entry.name);
+                    models.add(model);
+                    view.updateModels();
                 }, e -> {
                     LOG.e("Failed to find all entries.", e);
                 }, () -> {
@@ -141,9 +144,6 @@ public final class MainPresenter
                 .subscribe(bitmap -> {
                     LOG.d("Downloaded the texture.");
 
-                    TextureModel model = new TextureModel(entry.name, bitmap);
-                    models.add(model);
-                    view.updateModels();
                 }, e -> {
                     // TODO: How to recover.
                     LOG.w(String.format("Failed to download the texture: entry = %s", entry), e);
@@ -300,6 +300,33 @@ public final class MainPresenter
         public void onBind(int position) {
             TextureModel model = models.get(position);
             mItemView.showModel(model);
+        }
+
+        public void onLoadBitmap(int position) {
+            TextureModel model = models.get(position);
+
+            LOG.d("Downloading the texture: id = %s", model.id);
+
+            Subscription subscription = downloadTextureFileUseCase
+                    .execute(model.id, (totalBytes, bytesTransferred) -> {
+                        // Update the progress bar.
+                        mItemView.showProgress((int) totalBytes, (int) bytesTransferred);
+                    })
+                    .flatMap(findFileBitmapUseCase::execute)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(bitmap -> {
+                        LOG.d("Downloaded the texture.");
+                        // Set the bitmap into the model.
+                        model.bitmap = bitmap;
+                        // Hide the progress bar.
+                        mItemView.hideProgress();
+                        // Redraw.
+                        mItemView.showModel(model);
+                    }, e -> {
+                        // TODO: How to recover.
+                        LOG.w(String.format("Failed to download the texture: id = %s", model.id), e);
+                    });
+            compositeSubscription.add(subscription);
         }
 
         public void onClickViewTop(int position) {

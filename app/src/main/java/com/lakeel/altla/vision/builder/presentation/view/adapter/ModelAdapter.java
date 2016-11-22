@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import butterknife.BindView;
@@ -59,8 +60,11 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
         @BindView(R.id.view_top)
         View viewTop;
 
-        @BindView(R.id.image_view)
-        ImageView imageView;
+        @BindView(R.id.image_view_texture)
+        ImageView imageViewTexture;
+
+        @BindView(R.id.progress_bar_loading_texture)
+        ProgressBar progressBarLoadingTexture;
 
         @BindView(R.id.view_group_texture_detail)
         ViewGroup viewGroupTextureDetail;
@@ -76,9 +80,9 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
             super(itemView);
             ButterKnife.bind(this, itemView);
 
-            dragShadowBuilder = new View.DragShadowBuilder(imageView);
+            dragShadowBuilder = new View.DragShadowBuilder(imageViewTexture);
 
-            imageView.setOnDragListener((view, dragEvent) -> {
+            imageViewTexture.setOnDragListener((view, dragEvent) -> {
                 switch (dragEvent.getAction()) {
                     case DragEvent.ACTION_DRAG_STARTED:
                         // returns true to accept a drag event.
@@ -98,6 +102,8 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
             });
 
             // Hide.
+            imageViewTexture.setVisibility(View.GONE);
+            progressBarLoadingTexture.setVisibility(View.GONE);
             viewGroupTextureDetail.setVisibility(View.GONE);
         }
 
@@ -112,13 +118,35 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
 
         @Override
         public void showModel(@NonNull TextureModel model) {
-            imageView.setImageBitmap(model.bitmap);
             textViewTextureName.setText(model.name);
+
+            if (model.bitmap == null) {
+                // Load the bitmap.
+                imageViewTexture.setVisibility(View.GONE);
+                progressBarLoadingTexture.setVisibility(View.VISIBLE);
+                itemPresenter.onLoadBitmap(getAdapterPosition());
+            } else {
+                // Show the bitmap and hide the progress bar.
+                imageViewTexture.setImageBitmap(model.bitmap);
+                imageViewTexture.setVisibility(View.VISIBLE);
+                progressBarLoadingTexture.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void showProgress(int max, int progress) {
+            progressBarLoadingTexture.setMax(max);
+            progressBarLoadingTexture.setProgress(progress);
+        }
+
+        @Override
+        public void hideProgress() {
+            progressBarLoadingTexture.setVisibility(View.GONE);
         }
 
         @Override
         public void startDrag() {
-            imageView.startDrag(CLIP_DATA_DUMMY, dragShadowBuilder, null, 0);
+            imageViewTexture.startDrag(CLIP_DATA_DUMMY, dragShadowBuilder, null, 0);
         }
 
         @Override

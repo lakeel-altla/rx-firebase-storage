@@ -40,7 +40,7 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
     @BindView(R.id.view_top)
     View viewTop;
 
-    @BindView(R.id.image_view)
+    @BindView(R.id.image_view_texture)
     ImageView imageView;
 
     @BindView(R.id.text_input_edit_text_filename)

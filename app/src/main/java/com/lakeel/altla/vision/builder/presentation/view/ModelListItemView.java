@@ -11,6 +11,10 @@ public interface ModelListItemView {
 
     void showModel(@NonNull TextureModel model);
 
+    void showProgress(int max, int progress);
+
+    void hideProgress();
+
     void startDrag();
 
     void setSelected(int selectedPosition, boolean selected);

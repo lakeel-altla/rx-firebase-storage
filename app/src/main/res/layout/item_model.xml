@@ -1,22 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/view_top"
-              android:background="@drawable/selector_list_item"
-              android:orientation="horizontal"
-              android:paddingTop="@dimen/content_vertical_margin"
-              android:paddingBottom="@dimen/content_vertical_margin"
-              android:paddingStart="@dimen/content_horizontal_margin"
-              android:paddingEnd="@dimen/content_horizontal_margin"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/view_top"
+                android:background="@drawable/selector_list_item"
+                android:paddingTop="@dimen/content_vertical_margin"
+                android:paddingBottom="@dimen/content_vertical_margin"
+                android:paddingStart="@dimen/content_horizontal_margin"
+                android:paddingEnd="@dimen/content_horizontal_margin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
-    <ImageView android:id="@+id/image_view"
-               android:layout_width="@dimen/item_model_image_width"
-               android:layout_height="@dimen/item_model_image_height"/>
+    <FrameLayout
+            android:id="@+id/view_group_image"
+            android:layout_width="@dimen/item_model_image_width"
+            android:layout_height="@dimen/item_model_image_height">
+
+        <ImageView android:id="@+id/image_view_texture"
+                   android:layout_width="@dimen/item_model_image_width"
+                   android:layout_height="@dimen/item_model_image_height"/>
+
+        <ProgressBar android:id="@+id/progress_bar_loading_texture"
+                     android:indeterminate="false"
+                     style="?android:attr/progressBarStyle"
+                     android:layout_gravity="center"
+                     android:layout_height="wrap_content"
+                     android:layout_width="wrap_content"/>
+
+    </FrameLayout>
 
     <RelativeLayout android:id="@+id/view_group_texture_detail"
                     android:layout_marginStart="@dimen/content_horizontal_margin"
-                    android:orientation="vertical"
+                    android:layout_toEndOf="@id/view_group_image"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent">
 
@@ -46,4 +59,4 @@
 
     </RelativeLayout>
 
-</LinearLayout>
+</RelativeLayout>
