@@ -47,7 +47,7 @@ public final class RegisterTextureUseCase {
                 .toSingle()
                 // Open the stream to the android local file.
                 .flatMap(fileId -> openStream(localUri, fileId))
-                // Upload its file to Fierbase Storage.
+                // Upload its file to Firebase Storage.
                 .flatMap(file -> uploadTexture(file, onProgressListener))
                 // Save the entry to Firebase Database.
                 .flatMap(fileId -> saveTextureEntry(id, name, fileId, metadata))
