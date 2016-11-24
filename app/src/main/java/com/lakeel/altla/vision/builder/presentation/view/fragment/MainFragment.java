@@ -18,7 +18,9 @@ import org.rajawali3d.view.TextureView;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.StringRes;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -275,6 +277,11 @@ public final class MainFragment extends Fragment implements MainView {
     @Override
     public void setScaleObjectSelected(boolean selected) {
         buttonScaleObject.setPressed(selected);
+    }
+
+    @Override
+    public void showSnackbar(@StringRes int resId) {
+        Snackbar.make(viewTop, resId, Snackbar.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.image_button_add_model)

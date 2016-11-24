@@ -27,17 +27,20 @@
 
     </FrameLayout>
 
+    <!-- Detail -->
     <RelativeLayout android:id="@+id/view_group_texture_detail"
                     android:layout_marginStart="@dimen/content_horizontal_margin"
                     android:layout_toEndOf="@id/view_group_image"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent">
 
+        <!-- Texture name -->
         <TextView android:id="@+id/text_view_texture_name"
                   android:textColor="@color/text_color_model_pane_item"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"/>
 
+        <!-- Edit button -->
         <ImageButton android:id="@+id/image_button_edit_texture"
                      android:src="@drawable/ic_mode_edit_black_24dp"
                      android:background="?android:attr/actionBarItemBackground"
@@ -47,6 +50,7 @@
                      android:layout_width="@dimen/touch_target_width"
                      android:layout_height="@dimen/touch_target_height"/>
 
+        <!-- Delete button -->
         <ImageButton android:id="@+id/image_button_delete_texture"
                      android:src="@drawable/ic_delete_black_24dp"
                      android:background="?android:attr/actionBarItemBackground"

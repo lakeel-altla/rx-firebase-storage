@@ -61,6 +61,22 @@ public final class TextureCacheRepositoryImpl implements TextureCacheRepository 
         });
     }
 
+    @Override
+    public Single<String> delete(String fileId) {
+        if (fileId == null) throw new ArgumentNullException("fileId");
+
+        return Single.create(subscriber -> {
+            File file = resolveCacheFile(fileId);
+            if (file.delete()) {
+                LOG.d("Deleted the new cache file: fileId = %s", fileId);
+            } else {
+                LOG.w("The cache file does not exist: fileId = %s", fileId);
+            }
+
+            subscriber.onSuccess(fileId);
+        });
+    }
+
     private File resolveCacheFile(String fileId) {
         File directory = new File(context.getCacheDir(), "textures");
         if (!directory.exists()) {

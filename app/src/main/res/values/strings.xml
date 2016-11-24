@@ -27,5 +27,8 @@
     <string name="progress_dialog_upload">Uploading...</string>
     <string name="snackbar_failed">Failed.</string>
     <string name="snackbar_done">Done.</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_content_confirm_delete_texture">Are you sure you want to delete the selected texture ?</string>
 
 </resources>

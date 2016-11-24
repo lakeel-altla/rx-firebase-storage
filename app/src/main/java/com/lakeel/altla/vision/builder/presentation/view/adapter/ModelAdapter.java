@@ -1,5 +1,8 @@
 package com.lakeel.altla.vision.builder.presentation.view.adapter;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.lakeel.altla.android.log.Log;
+import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.builder.R;
 import com.lakeel.altla.vision.builder.presentation.model.TextureModel;
 import com.lakeel.altla.vision.builder.presentation.presenter.MainPresenter;
@@ -12,6 +15,7 @@ import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -22,6 +26,8 @@ import butterknife.OnClick;
 import butterknife.OnLongClick;
 
 public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHolder> {
+
+    private static final Log LOG = LogFactory.getLog(ModelAdapter.class);
 
     private static final ClipData CLIP_DATA_DUMMY = ClipData.newPlainText("", "");
 
@@ -51,6 +57,11 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
     }
 
     @Override
+    public void onViewRecycled(ViewHolder holder) {
+        super.onViewRecycled(holder);
+    }
+
+    @Override
     public int getItemCount() {
         return presenter.getModelCount();
     }
@@ -72,9 +83,14 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
         @BindView(R.id.text_view_texture_name)
         TextView textViewTextureName;
 
+        @BindView(R.id.image_button_delete_texture)
+        ImageButton imageButtonDeleteTexture;
+
         private final View.DragShadowBuilder dragShadowBuilder;
 
         private MainPresenter.ModelItemPresenter itemPresenter;
+
+        private MaterialDialog materialDialog;
 
         private ViewHolder(View itemView) {
             super(itemView);
@@ -162,6 +178,25 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
             }
         }
 
+        @Override
+        public void showDeleteTextureConfirmationDialog() {
+            if (materialDialog != null && materialDialog.isShowing()) {
+                // Skip to protect against double taps.
+                return;
+            }
+
+            if (materialDialog == null) {
+                materialDialog = new MaterialDialog.Builder(itemView.getContext())
+                        .content(R.string.dialog_content_confirm_delete_texture)
+                        .positiveText(R.string.dialog_ok)
+                        .negativeText(R.string.dialog_cancel)
+                        .onPositive((dialog, which) -> itemPresenter.onDelete(getAdapterPosition()))
+                        .build();
+            }
+
+            materialDialog.show();
+        }
+
         @OnClick(R.id.view_top)
         void onClickViewTop() {
             itemPresenter.onClickViewTop(getAdapterPosition());
@@ -171,6 +206,11 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
         boolean onLongClickViewTop() {
             itemPresenter.onLongClickViewTop(getAdapterPosition());
             return true;
+        }
+
+        @OnClick(R.id.image_button_delete_texture)
+        void onClickImageButtonDeleteTexture() {
+            itemPresenter.onClickImageButtonDeleteTexture(getAdapterPosition());
         }
     }
 }

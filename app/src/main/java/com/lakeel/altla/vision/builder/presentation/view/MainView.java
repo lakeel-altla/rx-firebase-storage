@@ -6,6 +6,8 @@ import com.lakeel.altla.vision.builder.presentation.model.Axis;
 
 import org.rajawali3d.renderer.ISurfaceRenderer;
 
+import android.support.annotation.StringRes;
+
 /**
  * Defines the main view.
  */
@@ -36,4 +38,6 @@ public interface MainView {
     void setRotateObjectAxisSelected(Axis axis, boolean selected);
 
     void setScaleObjectSelected(boolean selected);
+
+    void showSnackbar(@StringRes int resId);
 }

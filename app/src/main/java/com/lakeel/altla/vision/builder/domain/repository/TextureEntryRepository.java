@@ -16,4 +16,6 @@ public interface TextureEntryRepository {
     Observable<TextureEntry> findAllEntries();
 
     Observable<TextureReference> findReference(String id);
+
+    Single<String> delete(String id);
 }

@@ -10,4 +10,6 @@ public interface TextureCacheRepository {
     Observable<File> find(String fileId);
 
     Single<File> create(String fileId);
+
+    Single<String> delete(String fileId);
 }

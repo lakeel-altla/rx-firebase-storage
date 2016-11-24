@@ -101,6 +101,18 @@ public final class TextureEntryRepositoryImpl implements TextureEntryRepository 
                               }));
     }
 
+    @Override
+    public Single<String> delete(String id) {
+        // Use updateChildren(...) to atomize multiple reference deletes,
+        Map<String, Object> updates = new HashMap<>();
+        updates.put(PATH_TEXTURE_ENTRIES + "/" + id, null);
+        updates.put(PATH_TEXTURE_REFERENCES + "/" + id, null);
+        updates.put(PATH_TEXTURE_METADATAS + "/" + id, null);
+
+        Task<Void> task = getUserFolder().updateChildren(updates);
+        return RxGmsTask.asSingle(task).map(aVoid -> id);
+    }
+
     private DatabaseReference getUserFolder() {
         String userId = resolveUserId();
         return reference.child(userId);

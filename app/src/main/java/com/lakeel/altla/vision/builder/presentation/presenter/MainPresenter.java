@@ -8,6 +8,8 @@ import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.tango.OnFrameAvailableListener;
 import com.lakeel.altla.tango.TangoUpdateDispatcher;
+import com.lakeel.altla.vision.builder.R;
+import com.lakeel.altla.vision.builder.domain.usecase.DeleteTextureUseCase;
 import com.lakeel.altla.vision.builder.domain.usecase.DownloadTextureFileUseCase;
 import com.lakeel.altla.vision.builder.domain.usecase.FindAllTextureEntriesUseCase;
 import com.lakeel.altla.vision.builder.domain.usecase.FindFileBitmapUseCase;
@@ -64,6 +66,9 @@ public final class MainPresenter
 
     @Inject
     FindFileBitmapUseCase findFileBitmapUseCase;
+
+    @Inject
+    DeleteTextureUseCase deleteTextureUseCase;
 
     private final CompositeSubscription compositeSubscription = new CompositeSubscription();
 
@@ -335,6 +340,30 @@ public final class MainPresenter
         public void onLongClickViewTop(int position) {
             selection.setSelectedPosition(position);
             mItemView.startDrag();
+        }
+
+        public void onClickImageButtonDeleteTexture(int position) {
+            mItemView.showDeleteTextureConfirmationDialog();
+        }
+
+        public void onDelete(int position) {
+            TextureModel model = models.get(position);
+
+            LOG.d("Deleting the texture: id = %s", model.id);
+
+            Subscription subscription = deleteTextureUseCase
+                    .execute(model.id)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(id -> {
+                        LOG.d("Deleted the texture.");
+
+                        models.remove(position);
+                        view.updateModels();
+                        view.showSnackbar(R.string.snackbar_done);
+                    }, e -> {
+                        LOG.e(String.format("Failed to delete the texture: id = %s", model.id), e);
+                    });
+            compositeSubscription.add(subscription);
         }
 
         void setSelected(int selectedPosition, boolean selected) {

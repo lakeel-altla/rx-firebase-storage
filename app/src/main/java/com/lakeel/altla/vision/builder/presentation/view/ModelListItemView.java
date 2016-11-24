@@ -18,4 +18,6 @@ public interface ModelListItemView {
     void startDrag();
 
     void setSelected(int selectedPosition, boolean selected);
+
+    void showDeleteTextureConfirmationDialog();
 }
