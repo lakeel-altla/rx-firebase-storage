@@ -5,14 +5,16 @@ import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.builder.R;
 import com.lakeel.altla.vision.builder.domain.model.TextureMetadata;
 import com.lakeel.altla.vision.builder.domain.usecase.AddTextureUseCase;
+import com.lakeel.altla.vision.builder.domain.usecase.DownloadTextureFileUseCase;
 import com.lakeel.altla.vision.builder.domain.usecase.FindDocumentBitmapUseCase;
 import com.lakeel.altla.vision.builder.domain.usecase.FindDocumentFilenameUseCase;
+import com.lakeel.altla.vision.builder.domain.usecase.FindFileBitmapUseCase;
+import com.lakeel.altla.vision.builder.domain.usecase.FindTextureEntryUseCase;
 import com.lakeel.altla.vision.builder.domain.usecase.UpdateTextureUseCase;
+import com.lakeel.altla.vision.builder.presentation.model.EditTextureModel;
 import com.lakeel.altla.vision.builder.presentation.view.RegisterTextureView;
 
-import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -30,7 +32,14 @@ public final class RegisterTexturePresenter {
 
     private static final Log LOG = LogFactory.getLog(RegisterTexturePresenter.class);
 
-    private static final String STATE_ID = "id";
+    @Inject
+    FindTextureEntryUseCase findTextureEntryUseCase;
+
+    @Inject
+    DownloadTextureFileUseCase downloadTextureFileUseCase;
+
+    @Inject
+    FindFileBitmapUseCase findFileBitmapUseCase;
 
     @Inject
     FindDocumentBitmapUseCase findDocumentBitmapUseCase;
@@ -48,34 +57,73 @@ public final class RegisterTexturePresenter {
 
     private RegisterTextureView view;
 
-    private Uri uri;
-
-    private String filename;
-
     private long prevBytesTransferred;
 
-    private String id;
+    private final EditTextureModel model = new EditTextureModel();
+
+    private Uri pickedImageUri;
 
     @Inject
     public RegisterTexturePresenter() {
     }
 
     public void onCreate(@Nullable String id) {
-        this.id = id;
+        model.id = id;
     }
 
     public void onCreateView(@NonNull RegisterTextureView view) {
         this.view = view;
+    }
 
-        this.view.saveIdAsInstanceState(id);
+    public void onStart() {
+        LOG.d("onStart()");
+
+        if (model.id != null) {
+            // Load the texture information.
+            LOG.d("Loading the texture: id = %s", model.id);
+
+            // TODO: use the progress ring.
+
+            Subscription subscription = findTextureEntryUseCase
+                    // Find the texture entry to get its name.
+                    .execute(model.id)
+                    // Store the name into the model.
+                    .map(entry -> {
+                        model.name = entry.name;
+                        return model;
+                    })
+                    .toSingle()
+                    // Ensure the texture cache.
+                    .flatMap(model -> downloadTextureFileUseCase.execute(model.id, (totalBytes, bytesTransferred) -> {
+                        // Update the progress bar.
+                        // TODO
+                    }))
+                    // Load the bitmap from the cache.
+                    .flatMap(findFileBitmapUseCase::execute)
+                    // Store the bitmap into the model.
+                    .map(bitmap -> {
+                        model.bitmap = bitmap;
+                        return model;
+                    })
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(model -> {
+                        LOG.d("Loaded the texture.");
+
+                        if (pickedImageUri == null) {
+                            view.showModel(model);
+                        } else {
+                            loadPickedImage();
+                        }
+                    }, e -> {
+                        // TODO: How to recover.
+                        LOG.w(String.format("Failed to load the texture: id = %s", model.id), e);
+                    });
+            compositeSubscription.add(subscription);
+        }
     }
 
     public void onStop() {
         compositeSubscription.clear();
-    }
-
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putString(STATE_ID, id);
     }
 
     public void onClickButtonSelectDocument() {
@@ -83,23 +131,34 @@ public final class RegisterTexturePresenter {
     }
 
     public void onImagePicked(Uri uri) {
-        LOG.d("Loading the bitmap & the filename: uri = %s", uri);
+        pickedImageUri = uri;
+    }
+
+    private void loadPickedImage() {
+        LOG.d("Loading the bitmap & the filename: pickedImageUri = %s", pickedImageUri);
 
         Subscription subscription = findDocumentBitmapUseCase
-                .execute(uri)
-                .flatMap(bitmap -> findFilename(uri, bitmap))
+                .execute(pickedImageUri)
+                .map(bitmap -> {
+                    EditTextureModel model = new EditTextureModel();
+                    model.localUri = pickedImageUri;
+                    model.bitmap = bitmap;
+                    return model;
+                })
+                .flatMap(this::findFilename)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(bitmapAndFilename -> {
+                .subscribe(model -> {
                     LOG.d("Loaded the bitmap & the filename.");
 
-                    this.uri = uri;
-                    filename = bitmapAndFilename.filename;
+                    // Copy the finished model to the instance field model.
+                    this.model.localUri = model.localUri;
+                    this.model.bitmap = model.bitmap;
+                    this.model.name = model.name;
 
-                    view.showImage(bitmapAndFilename.bitmap);
-                    view.showFilename(bitmapAndFilename.filename);
+                    view.showModel(this.model);
                 }, e -> {
                     if (e instanceof FileNotFoundException) {
-                        LOG.w(String.format("The image could not be found: uri = %s", uri), e);
+                        LOG.w(String.format("The image could not be found: pickedImageUri = %s", pickedImageUri), e);
                         view.showSnackbar(R.string.snackbar_image_file_not_found);
                     } else if (e instanceof IOException) {
                         LOG.w("Closing file failed.", e);
@@ -111,9 +170,12 @@ public final class RegisterTexturePresenter {
         compositeSubscription.add(subscription);
     }
 
-    private Single<DocumentModel> findFilename(Uri uri, Bitmap bitmap) {
-        return findDocumentFilenameUseCase.execute(uri)
-                                          .map(filename -> new DocumentModel(bitmap, filename));
+    private Single<EditTextureModel> findFilename(EditTextureModel model) {
+        return findDocumentFilenameUseCase.execute(model.localUri)
+                                          .map(filename -> {
+                                              model.name = filename;
+                                              return model;
+                                          });
     }
 
     public void onClickButtonRegister() {
@@ -121,11 +183,11 @@ public final class RegisterTexturePresenter {
 
         TextureMetadata metadata = new TextureMetadata();
 
-        if (id == null) {
+        if (model.id == null) {
             LOG.i("Adding the texture.");
 
             Subscription subscription = addTextureUseCase
-                    .execute(filename, uri.toString(), metadata, (totalBytes, bytesTransferred) -> {
+                    .execute(model.name, model.localUri.toString(), metadata, (totalBytes, bytesTransferred) -> {
                         // The progress status.
                         long increment = bytesTransferred - prevBytesTransferred;
                         prevBytesTransferred = bytesTransferred;
@@ -136,7 +198,8 @@ public final class RegisterTexturePresenter {
                         // Done.
                         LOG.i("Added the texture: id = %s", id);
 
-                        this.id = id;
+                        // Store the id into the model.
+                        model.id = id;
 
                         view.hideUploadProgressDialog();
                         view.showSnackbar(R.string.snackbar_done);
@@ -149,15 +212,16 @@ public final class RegisterTexturePresenter {
                     });
             compositeSubscription.add(subscription);
         } else {
-            LOG.i("Updating the texture: id = %s", id);
+            LOG.i("Updating the texture: id = %s", model.id);
 
             Subscription subscription = updateTextureUseCase
-                    .execute(id, filename, uri.toString(), metadata, (totalBytes, bytesTransferred) -> {
-                        // The progress status.
-                        long increment = bytesTransferred - prevBytesTransferred;
-                        prevBytesTransferred = bytesTransferred;
-                        view.setUploadProgressDialogProgress(totalBytes, increment);
-                    })
+                    .execute(model.id, model.name, model.localUri.toString(), metadata,
+                             (totalBytes, bytesTransferred) -> {
+                                 // The progress status.
+                                 long increment = bytesTransferred - prevBytesTransferred;
+                                 prevBytesTransferred = bytesTransferred;
+                                 view.setUploadProgressDialogProgress(totalBytes, increment);
+                             })
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(id -> {
                         // Done.
@@ -176,28 +240,7 @@ public final class RegisterTexturePresenter {
         }
     }
 
-    public void afterFilenameChanged(String filename) {
-        this.filename = filename;
-    }
-
-    public static final class State {
-
-        private boolean editMode;
-
-        private String id;
-
-        private String name;
-    }
-
-    private class DocumentModel {
-
-        final Bitmap bitmap;
-
-        final String filename;
-
-        DocumentModel(Bitmap bitmap, String filename) {
-            this.bitmap = bitmap;
-            this.filename = filename;
-        }
+    public void afterNameChanged(String filename) {
+        model.name = filename;
     }
 }

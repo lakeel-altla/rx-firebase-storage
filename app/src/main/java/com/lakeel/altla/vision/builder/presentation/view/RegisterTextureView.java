@@ -1,6 +1,7 @@
 package com.lakeel.altla.vision.builder.presentation.view;
 
-import android.graphics.Bitmap;
+import com.lakeel.altla.vision.builder.presentation.model.EditTextureModel;
+
 import android.support.annotation.StringRes;
 
 public interface RegisterTextureView {
@@ -9,15 +10,11 @@ public interface RegisterTextureView {
 
     void showImagePicker();
 
-    void showImage(Bitmap bitmap);
-
-    void showFilename(String filename);
+    void showModel(EditTextureModel model);
 
     void showUploadProgressDialog();
 
     void setUploadProgressDialogProgress(long max, long diff);
 
     void hideUploadProgressDialog();
-
-    void saveIdAsInstanceState(String id);
 }

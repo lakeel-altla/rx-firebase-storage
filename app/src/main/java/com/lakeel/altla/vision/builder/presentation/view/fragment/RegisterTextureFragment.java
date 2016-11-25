@@ -1,6 +1,7 @@
 package com.lakeel.altla.vision.builder.presentation.view.fragment;
 
 import com.lakeel.altla.vision.builder.R;
+import com.lakeel.altla.vision.builder.presentation.model.EditTextureModel;
 import com.lakeel.altla.vision.builder.presentation.presenter.RegisterTexturePresenter;
 import com.lakeel.altla.vision.builder.presentation.view.RegisterTextureView;
 import com.lakeel.altla.vision.builder.presentation.view.activity.ActivityScopeContext;
@@ -9,7 +10,6 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -46,12 +46,10 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
     @BindView(R.id.image_view_texture)
     ImageView imageView;
 
-    @BindView(R.id.text_input_edit_text_filename)
-    TextInputEditText textInputEditTextFilename;
+    @BindView(R.id.text_input_edit_text_name)
+    TextInputEditText textInputEditTextName;
 
     private ProgressDialog progressDialog;
-
-    private String id;
 
     @NonNull
     public static RegisterTextureFragment newInstance(@Nullable String id) {
@@ -73,6 +71,8 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        String id = null;
+
         final Bundle arguments = getArguments();
         if (arguments != null) {
             id = arguments.getString(PARAM_ID);
@@ -92,6 +92,12 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        presenter.onStart();
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         presenter.onStop();
@@ -101,7 +107,7 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        presenter.onSaveInstanceState(outState);
+        // TODO
     }
 
     @Override
@@ -133,13 +139,9 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
     }
 
     @Override
-    public void showImage(Bitmap bitmap) {
-        imageView.setImageBitmap(bitmap);
-    }
-
-    @Override
-    public void showFilename(String filename) {
-        textInputEditTextFilename.setText(filename);
+    public void showModel(EditTextureModel model) {
+        imageView.setImageBitmap(model.bitmap);
+        textInputEditTextName.setText(model.name);
     }
 
     @Override
@@ -170,11 +172,6 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
         }
     }
 
-    @Override
-    public void saveIdAsInstanceState(String id) {
-        this.id = id;
-    }
-
     @OnClick(R.id.button_select_document)
     void onClickButtonSelectDocument() {
         presenter.onClickButtonSelectDocument();
@@ -185,8 +182,8 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
         presenter.onClickButtonRegister();
     }
 
-    @OnTextChanged(value = R.id.text_input_edit_text_filename, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
-    void afterFilenameChanged(Editable editable) {
-        presenter.afterFilenameChanged(editable.toString());
+    @OnTextChanged(value = R.id.text_input_edit_text_name, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
+    void afterNameChanged(Editable editable) {
+        presenter.afterNameChanged(editable.toString());
     }
 }
