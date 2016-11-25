@@ -191,7 +191,7 @@ public final class MainPresenter
     }
 
     public void onClickImageButtonAddModel() {
-        view.showRegisterSceneObjectFragment();
+        view.showEditTextureFragment(null);
     }
 
     public void onTouchButtonTranslateObject() {
@@ -295,15 +295,15 @@ public final class MainPresenter
 
     public final class ModelItemPresenter {
 
-        private ModelListItemView mItemView;
+        private ModelListItemView itemView;
 
         public void onCreateItemView(@NonNull ModelListItemView itemView) {
-            mItemView = itemView;
+            this.itemView = itemView;
         }
 
         public void onBind(int position) {
             TextureModel model = models.get(position);
-            mItemView.showModel(model);
+            itemView.showModel(model);
         }
 
         public void onLoadBitmap(int position) {
@@ -314,7 +314,7 @@ public final class MainPresenter
             Subscription subscription = downloadTextureFileUseCase
                     .execute(model.id, (totalBytes, bytesTransferred) -> {
                         // Update the progress bar.
-                        mItemView.showProgress((int) totalBytes, (int) bytesTransferred);
+                        itemView.showProgress((int) totalBytes, (int) bytesTransferred);
                     })
                     .flatMap(findFileBitmapUseCase::execute)
                     .observeOn(AndroidSchedulers.mainThread())
@@ -323,9 +323,9 @@ public final class MainPresenter
                         // Set the bitmap into the model.
                         model.bitmap = bitmap;
                         // Hide the progress bar.
-                        mItemView.hideProgress();
+                        itemView.hideProgress();
                         // Redraw.
-                        mItemView.showModel(model);
+                        itemView.showModel(model);
                     }, e -> {
                         // TODO: How to recover.
                         LOG.w(String.format("Failed to load the texture: id = %s", model.id), e);
@@ -339,11 +339,16 @@ public final class MainPresenter
 
         public void onLongClickViewTop(int position) {
             selection.setSelectedPosition(position);
-            mItemView.startDrag();
+            itemView.startDrag();
+        }
+
+        public void onClickImageButtonEditTexture(int position) {
+            TextureModel model = models.get(position);
+            view.showEditTextureFragment(model.id);
         }
 
         public void onClickImageButtonDeleteTexture(int position) {
-            mItemView.showDeleteTextureConfirmationDialog();
+            itemView.showDeleteTextureConfirmationDialog();
         }
 
         public void onDelete(int position) {
@@ -367,7 +372,7 @@ public final class MainPresenter
         }
 
         void setSelected(int selectedPosition, boolean selected) {
-            mItemView.setSelected(selectedPosition, selected);
+            itemView.setSelected(selectedPosition, selected);
         }
     }
 

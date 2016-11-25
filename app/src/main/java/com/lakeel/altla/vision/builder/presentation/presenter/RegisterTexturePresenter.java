@@ -4,9 +4,10 @@ import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.builder.R;
 import com.lakeel.altla.vision.builder.domain.model.TextureMetadata;
+import com.lakeel.altla.vision.builder.domain.usecase.AddTextureUseCase;
 import com.lakeel.altla.vision.builder.domain.usecase.FindDocumentBitmapUseCase;
 import com.lakeel.altla.vision.builder.domain.usecase.FindDocumentFilenameUseCase;
-import com.lakeel.altla.vision.builder.domain.usecase.RegisterTextureUseCase;
+import com.lakeel.altla.vision.builder.domain.usecase.UpdateTextureUseCase;
 import com.lakeel.altla.vision.builder.presentation.view.RegisterTextureView;
 
 import android.graphics.Bitmap;
@@ -17,7 +18,6 @@ import android.support.annotation.Nullable;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -39,7 +39,10 @@ public final class RegisterTexturePresenter {
     FindDocumentFilenameUseCase findDocumentFilenameUseCase;
 
     @Inject
-    RegisterTextureUseCase registerTextureUseCase;
+    AddTextureUseCase addTextureUseCase;
+
+    @Inject
+    UpdateTextureUseCase updateTextureUseCase;
 
     private final CompositeSubscription compositeSubscription = new CompositeSubscription();
 
@@ -57,19 +60,14 @@ public final class RegisterTexturePresenter {
     public RegisterTexturePresenter() {
     }
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        // Restore the uuid.
-        if (savedInstanceState != null) {
-            id = savedInstanceState.getString(STATE_ID);
-        }
-
-        if (id == null) {
-            id = UUID.randomUUID().toString();
-        }
+    public void onCreate(@Nullable String id) {
+        this.id = id;
     }
 
     public void onCreateView(@NonNull RegisterTextureView view) {
         this.view = view;
+
+        this.view.saveIdAsInstanceState(id);
     }
 
     public void onStop() {
@@ -113,53 +111,91 @@ public final class RegisterTexturePresenter {
         compositeSubscription.add(subscription);
     }
 
-    private Single<BitmapAndFilename> findFilename(Uri uri, Bitmap bitmap) {
+    private Single<DocumentModel> findFilename(Uri uri, Bitmap bitmap) {
         return findDocumentFilenameUseCase.execute(uri)
-                                          .map(filename -> new BitmapAndFilename(bitmap, filename));
+                                          .map(filename -> new DocumentModel(bitmap, filename));
     }
 
     public void onClickButtonRegister() {
-        LOG.i("Registering the texture: id = %s", id);
-
         view.showUploadProgressDialog();
 
         TextureMetadata metadata = new TextureMetadata();
 
-        Subscription subscription = registerTextureUseCase
-                .execute(id, filename, uri.toString(), metadata, (totalBytes, bytesTransferred) -> {
-                    // The progress status.
-                    long increment = bytesTransferred - prevBytesTransferred;
-                    prevBytesTransferred = bytesTransferred;
-                    view.setUploadProgressDialogProgress(totalBytes, increment);
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(entryId -> {
-                    // Done.
-                    LOG.i("Registered the texture.");
+        if (id == null) {
+            LOG.i("Adding the texture.");
 
-                    view.hideUploadProgressDialog();
-                    view.showSnackbar(R.string.snackbar_done);
-                }, e -> {
-                    // Failed.
-                    LOG.e("Failed to register the texture.", e);
+            Subscription subscription = addTextureUseCase
+                    .execute(filename, uri.toString(), metadata, (totalBytes, bytesTransferred) -> {
+                        // The progress status.
+                        long increment = bytesTransferred - prevBytesTransferred;
+                        prevBytesTransferred = bytesTransferred;
+                        view.setUploadProgressDialogProgress(totalBytes, increment);
+                    })
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(id -> {
+                        // Done.
+                        LOG.i("Added the texture: id = %s", id);
 
-                    view.hideUploadProgressDialog();
-                    view.showSnackbar(R.string.snackbar_failed);
-                });
-        compositeSubscription.add(subscription);
+                        this.id = id;
+
+                        view.hideUploadProgressDialog();
+                        view.showSnackbar(R.string.snackbar_done);
+                    }, e -> {
+                        // Failed.
+                        LOG.e("Failed to add the texture.", e);
+
+                        view.hideUploadProgressDialog();
+                        view.showSnackbar(R.string.snackbar_failed);
+                    });
+            compositeSubscription.add(subscription);
+        } else {
+            LOG.i("Updating the texture: id = %s", id);
+
+            Subscription subscription = updateTextureUseCase
+                    .execute(id, filename, uri.toString(), metadata, (totalBytes, bytesTransferred) -> {
+                        // The progress status.
+                        long increment = bytesTransferred - prevBytesTransferred;
+                        prevBytesTransferred = bytesTransferred;
+                        view.setUploadProgressDialogProgress(totalBytes, increment);
+                    })
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(id -> {
+                        // Done.
+                        LOG.i("Updated the texture.");
+
+                        view.hideUploadProgressDialog();
+                        view.showSnackbar(R.string.snackbar_done);
+                    }, e -> {
+                        // Failed.
+                        LOG.e("Failed to update the texture.", e);
+
+                        view.hideUploadProgressDialog();
+                        view.showSnackbar(R.string.snackbar_failed);
+                    });
+            compositeSubscription.add(subscription);
+        }
     }
 
     public void afterFilenameChanged(String filename) {
         this.filename = filename;
     }
 
-    private class BitmapAndFilename {
+    public static final class State {
+
+        private boolean editMode;
+
+        private String id;
+
+        private String name;
+    }
+
+    private class DocumentModel {
 
         final Bitmap bitmap;
 
         final String filename;
 
-        BitmapAndFilename(Bitmap bitmap, String filename) {
+        DocumentModel(Bitmap bitmap, String filename) {
             this.bitmap = bitmap;
             this.filename = filename;
         }

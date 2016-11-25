@@ -18,4 +18,6 @@ public interface RegisterTextureView {
     void setUploadProgressDialogProgress(long max, long diff);
 
     void hideUploadProgressDialog();
+
+    void saveIdAsInstanceState(String id);
 }

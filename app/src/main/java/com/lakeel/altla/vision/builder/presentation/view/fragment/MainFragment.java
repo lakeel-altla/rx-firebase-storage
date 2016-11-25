@@ -18,6 +18,7 @@ import org.rajawali3d.view.TextureView;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -226,8 +227,8 @@ public final class MainFragment extends Fragment implements MainView {
     }
 
     @Override
-    public void showRegisterSceneObjectFragment() {
-        interactionListener.onShowRegisterSceneObjectFragment();
+    public void showEditTextureFragment(@Nullable String id) {
+        interactionListener.onShowEditTextureFragment(id);
     }
 
     @Override
@@ -384,6 +385,6 @@ public final class MainFragment extends Fragment implements MainView {
 
     public interface InteractionListener {
 
-        void onShowRegisterSceneObjectFragment();
+        void onShowEditTextureFragment(@Nullable String id);
     }
 }

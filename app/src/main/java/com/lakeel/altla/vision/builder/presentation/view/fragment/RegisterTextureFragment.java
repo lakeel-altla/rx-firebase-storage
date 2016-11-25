@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
@@ -34,6 +35,8 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
 
     private static final int REQUEST_CODE_ACTION_OPEN_DOCUMENT = 0;
 
+    private static final String PARAM_ID = "id";
+
     @Inject
     RegisterTexturePresenter presenter;
 
@@ -48,8 +51,15 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
 
     private ProgressDialog progressDialog;
 
-    public static RegisterTextureFragment newInstance() {
-        return new RegisterTextureFragment();
+    private String id;
+
+    @NonNull
+    public static RegisterTextureFragment newInstance(@Nullable String id) {
+        RegisterTextureFragment fragment = new RegisterTextureFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(PARAM_ID, id);
+        fragment.setArguments(bundle);
+        return fragment;
     }
 
     @Override
@@ -63,7 +73,12 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        presenter.onCreate(savedInstanceState);
+        final Bundle arguments = getArguments();
+        if (arguments != null) {
+            id = arguments.getString(PARAM_ID);
+        }
+
+        presenter.onCreate(id);
     }
 
     @Override
@@ -153,6 +168,11 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.hide();
         }
+    }
+
+    @Override
+    public void saveIdAsInstanceState(String id) {
+        this.id = id;
     }
 
     @OnClick(R.id.button_select_document)

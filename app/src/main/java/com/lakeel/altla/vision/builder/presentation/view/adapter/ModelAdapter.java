@@ -208,6 +208,11 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
             return true;
         }
 
+        @OnClick(R.id.image_button_edit_texture)
+        void onClickImageButtonEditTexture() {
+            itemPresenter.onClickImageButtonEditTexture(getAdapterPosition());
+        }
+
         @OnClick(R.id.image_button_delete_texture)
         void onClickImageButtonDeleteTexture() {
             itemPresenter.onClickImageButtonDeleteTexture(getAdapterPosition());

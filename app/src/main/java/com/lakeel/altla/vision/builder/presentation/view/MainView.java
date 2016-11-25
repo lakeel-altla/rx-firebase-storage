@@ -6,6 +6,7 @@ import com.lakeel.altla.vision.builder.presentation.model.Axis;
 
 import org.rajawali3d.renderer.ISurfaceRenderer;
 
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
 /**
@@ -19,7 +20,7 @@ public interface MainView {
 
     void setModelPaneVisible(boolean visible);
 
-    void showRegisterSceneObjectFragment();
+    void showEditTextureFragment(@Nullable String id);
 
     void updateModels();
 
