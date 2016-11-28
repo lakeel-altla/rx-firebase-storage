@@ -15,9 +15,9 @@ import rx.Observable;
 import rx.Single;
 import rx.schedulers.Schedulers;
 
-public final class DownloadTextureFileUseCase {
+public final class EnsureTextureCacheUseCase {
 
-    private static final Log LOG = LogFactory.getLog(DownloadTextureFileUseCase.class);
+    private static final Log LOG = LogFactory.getLog(EnsureTextureCacheUseCase.class);
 
     @Inject
     TextureEntryRepository textureEntryRepository;
@@ -29,7 +29,7 @@ public final class DownloadTextureFileUseCase {
     TextureFileRepository textureFileRepository;
 
     @Inject
-    public DownloadTextureFileUseCase() {
+    public EnsureTextureCacheUseCase() {
     }
 
     public Single<File> execute(String id, OnProgressListener onProgressListener) {

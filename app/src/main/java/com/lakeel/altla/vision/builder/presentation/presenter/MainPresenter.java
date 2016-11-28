@@ -10,7 +10,7 @@ import com.lakeel.altla.tango.OnFrameAvailableListener;
 import com.lakeel.altla.tango.TangoUpdateDispatcher;
 import com.lakeel.altla.vision.builder.R;
 import com.lakeel.altla.vision.builder.domain.usecase.DeleteTextureUseCase;
-import com.lakeel.altla.vision.builder.domain.usecase.DownloadTextureFileUseCase;
+import com.lakeel.altla.vision.builder.domain.usecase.EnsureTextureCacheUseCase;
 import com.lakeel.altla.vision.builder.domain.usecase.FindAllTextureEntriesUseCase;
 import com.lakeel.altla.vision.builder.domain.usecase.FindFileBitmapUseCase;
 import com.lakeel.altla.vision.builder.presentation.di.module.Names;
@@ -62,7 +62,7 @@ public final class MainPresenter
     FindAllTextureEntriesUseCase findAllTextureEntriesUseCase;
 
     @Inject
-    DownloadTextureFileUseCase downloadTextureFileUseCase;
+    EnsureTextureCacheUseCase ensureTextureCacheUseCase;
 
     @Inject
     FindFileBitmapUseCase findFileBitmapUseCase;
@@ -138,7 +138,7 @@ public final class MainPresenter
 //    private void downloadTexture(TextureEntry entry) {
 //        LOG.d("Downloading the texture: entry = %s", entry);
 //
-//        Subscription subscription = downloadTextureFileUseCase
+//        Subscription subscription = ensureTextureCacheUseCase
 //                .execute(entry.id, (totalBytes, bytesTransferred) -> {
 //                    // TODO
 //                    LOG.v("The progress status: totalBytes = %d, bytesTransferred = %d", totalBytes, bytesTransferred);
@@ -311,7 +311,7 @@ public final class MainPresenter
 
             LOG.d("Loading the texture: id = %s", model.id);
 
-            Subscription subscription = downloadTextureFileUseCase
+            Subscription subscription = ensureTextureCacheUseCase
                     .execute(model.id, (totalBytes, bytesTransferred) -> {
                         // Update the progress bar.
                         itemView.showProgress((int) totalBytes, (int) bytesTransferred);

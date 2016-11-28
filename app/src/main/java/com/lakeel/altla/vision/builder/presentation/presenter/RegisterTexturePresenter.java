@@ -5,7 +5,7 @@ import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.builder.R;
 import com.lakeel.altla.vision.builder.domain.model.TextureMetadata;
 import com.lakeel.altla.vision.builder.domain.usecase.AddTextureUseCase;
-import com.lakeel.altla.vision.builder.domain.usecase.DownloadTextureFileUseCase;
+import com.lakeel.altla.vision.builder.domain.usecase.EnsureTextureCacheUseCase;
 import com.lakeel.altla.vision.builder.domain.usecase.FindDocumentBitmapUseCase;
 import com.lakeel.altla.vision.builder.domain.usecase.FindDocumentFilenameUseCase;
 import com.lakeel.altla.vision.builder.domain.usecase.FindFileBitmapUseCase;
@@ -36,7 +36,7 @@ public final class RegisterTexturePresenter {
     FindTextureEntryUseCase findTextureEntryUseCase;
 
     @Inject
-    DownloadTextureFileUseCase downloadTextureFileUseCase;
+    EnsureTextureCacheUseCase ensureTextureCacheUseCase;
 
     @Inject
     FindFileBitmapUseCase findFileBitmapUseCase;
@@ -94,7 +94,7 @@ public final class RegisterTexturePresenter {
                     })
                     .toSingle()
                     // Ensure the texture cache.
-                    .flatMap(model -> downloadTextureFileUseCase.execute(model.id, (totalBytes, bytesTransferred) -> {
+                    .flatMap(model -> ensureTextureCacheUseCase.execute(model.id, (totalBytes, bytesTransferred) -> {
                         // Update the progress bar.
                         // TODO
                     }))
