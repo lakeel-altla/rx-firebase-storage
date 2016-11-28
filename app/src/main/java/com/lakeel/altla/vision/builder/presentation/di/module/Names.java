@@ -14,9 +14,9 @@ public final class Names {
 
     static final String FIREBASE_STORAGE_URI = "firebaseStorage.uri";
 
-    static final String FIREBASE_STORAGE_REFERENCE_DIRECTORY_ROOT = "firebaseStorage.reference.directory.root";
-
-    static final String FIREBASE_STORAGE_REFERENCE_DIRECTORY_TEXTURES = "firebaseStorage.reference.directory.textures";
+    static final String FIREBASE_STORAGE_REFERENCE_APP_ROOT = "firebaseStorage.reference.directory.root";
+//
+//    static final String FIREBASE_STORAGE_REFERENCE_DIRECTORY_TEXTURES = "firebaseStorage.reference.directory.textures";
 
     private Names() {
     }

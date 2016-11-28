@@ -28,7 +28,7 @@ public final class FirebaseRepositoryModule {
     @ActivityScope
     @Provides
     public TextureFileRepository provideTextureFileRepository(
-            @Named(Names.FIREBASE_STORAGE_REFERENCE_DIRECTORY_TEXTURES) StorageReference reference) {
-        return new TextureFileRepositoryImpl(reference);
+            @Named(Names.FIREBASE_STORAGE_REFERENCE_APP_ROOT) StorageReference reference, FirebaseAuth auth) {
+        return new TextureFileRepositoryImpl(reference, auth);
     }
 }

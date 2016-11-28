@@ -12,28 +12,17 @@ import dagger.Provides;
 @Module
 public final class FirebaseStorageModule {
 
-    private static final String DIRECTORY_TEXTURES = "builder/textures";
-
     @Singleton
     @Provides
     public FirebaseStorage provideFirebaseStorage() {
         return FirebaseStorage.getInstance();
     }
 
-    @Named(Names.FIREBASE_STORAGE_REFERENCE_DIRECTORY_ROOT)
+    @Named(Names.FIREBASE_STORAGE_REFERENCE_APP_ROOT)
     @Singleton
     @Provides
-    public StorageReference provideRootReference(
-            FirebaseStorage storage,
-            @Named(Names.FIREBASE_STORAGE_URI) String uri) {
+    public StorageReference provideRootReference(FirebaseStorage storage,
+                                                 @Named(Names.FIREBASE_STORAGE_URI) String uri) {
         return storage.getReferenceFromUrl(uri);
-    }
-
-    @Named(Names.FIREBASE_STORAGE_REFERENCE_DIRECTORY_TEXTURES)
-    @Singleton
-    @Provides
-    public StorageReference provideTexturesDirectoryReference(
-            @Named(Names.FIREBASE_STORAGE_REFERENCE_DIRECTORY_ROOT) StorageReference root) {
-        return root.child(DIRECTORY_TEXTURES);
     }
 }
