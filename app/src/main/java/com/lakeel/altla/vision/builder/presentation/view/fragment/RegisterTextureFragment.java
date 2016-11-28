@@ -53,6 +53,8 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
     @BindView(R.id.text_input_edit_text_name)
     TextInputEditText textInputEditTextName;
 
+    private InteractionListener interactionListener;
+
     private ProgressDialog progressDialog;
 
     @NonNull
@@ -69,6 +71,7 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
         super.onAttach(context);
 
         ActivityScopeContext.class.cast(context).getActivityComponent().inject(this);
+        interactionListener = InteractionListener.class.cast(context);
     }
 
     @Override
@@ -91,6 +94,9 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
         ButterKnife.bind(this, view);
 
         presenter.onCreateView(this);
+
+        interactionListener.animateHomeIconToArrow();
+//        setHasOptionsMenu(true);
 
         return view;
     }
@@ -199,5 +205,10 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
     @OnTextChanged(value = R.id.text_input_edit_text_name, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     void afterNameChanged(Editable editable) {
         presenter.afterNameChanged(editable.toString());
+    }
+
+    public interface InteractionListener {
+
+        void animateHomeIconToArrow();
     }
 }

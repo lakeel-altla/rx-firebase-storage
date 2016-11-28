@@ -172,6 +172,9 @@ public final class MainFragment extends Fragment implements MainView {
         });
         textureView.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
 
+        interactionListener.animateHomeIconToBurger();
+//        setHasOptionsMenu(true);
+
         return view;
     }
 
@@ -386,5 +389,7 @@ public final class MainFragment extends Fragment implements MainView {
     public interface InteractionListener {
 
         void onShowEditTextureFragment(@Nullable String id);
+
+        void animateHomeIconToBurger();
     }
 }

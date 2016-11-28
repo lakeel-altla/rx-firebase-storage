@@ -8,6 +8,7 @@ import com.google.atap.tangoservice.TangoPoseData;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import com.balysv.materialmenu.MaterialMenuDrawable;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.tango.TangoUpdateDispatcher;
@@ -21,12 +22,12 @@ import com.lakeel.altla.vision.builder.presentation.view.fragment.SignInFragment
 import com.projecttango.tangosupport.TangoSupport;
 import com.squareup.picasso.Picasso;
 
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -48,6 +49,7 @@ public final class MainActivity extends AppCompatActivity
         implements ActivityScopeContext,
                    SignInFragment.OnShowMainFragmentListener,
                    MainFragment.InteractionListener,
+                   RegisterTextureFragment.InteractionListener,
                    NavigationView.OnNavigationItemSelectedListener {
 
     private static final Log LOG = LogFactory.getLog(MainActivity.class);
@@ -75,9 +77,11 @@ public final class MainActivity extends AppCompatActivity
     @BindView(R.id.navigation_view)
     NavigationView navigationView;
 
+    private ActivityComponent activityComponent;
+
     private NavigationViewHeader navigationViewHeader;
 
-    private ActivityComponent activityComponent;
+    private MaterialMenuDrawable materialMenu;
 
     static {
         FRAME_PAIRS = new ArrayList<>();
@@ -99,16 +103,21 @@ public final class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        // Enable the toolbar and the material menu.
         setSupportActionBar(toolbar);
+        materialMenu = new MaterialMenuDrawable(this, Color.WHITE, MaterialMenuDrawable.Stroke.THIN);
+        toolbar.setNavigationIcon(materialMenu);
 
+        // Using Material Menu, Construct without the toolbar and do not call ActionBarDrawerToggle#syncState().
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
+//        toggle.syncState();
 
         navigationView.setNavigationItemSelectedListener(this);
         navigationViewHeader = new NavigationViewHeader(navigationView);
-//        navigationViewHeaderLayout = navigationView.getHeaderView(0);
+
+        materialMenu.setVisible(false);
 
         SignInFragment fragment = SignInFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
@@ -169,6 +178,8 @@ public final class MainActivity extends AppCompatActivity
 
     @Override
     public void onShowMainFragment() {
+        materialMenu.setVisible(true);
+
         MainFragment fragment = MainFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
                                    .replace(R.id.fragment_container, fragment)
@@ -192,8 +203,20 @@ public final class MainActivity extends AppCompatActivity
         getSupportFragmentManager().beginTransaction()
                                    .addToBackStack(null)
                                    .replace(R.id.fragment_container, fragment)
-                                   .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+//                                   .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                                    .commit();
+    }
+
+    @Override
+    public void animateHomeIconToBurger() {
+        LOG.d("animateHomeIconToBurger()");
+        materialMenu.animateIconState(MaterialMenuDrawable.IconState.BURGER);
+    }
+
+    @Override
+    public void animateHomeIconToArrow() {
+        LOG.d("animateHomeIconToArrow()");
+        materialMenu.animateIconState(MaterialMenuDrawable.IconState.ARROW);
     }
 
     class NavigationViewHeader implements FirebaseAuth.AuthStateListener {
