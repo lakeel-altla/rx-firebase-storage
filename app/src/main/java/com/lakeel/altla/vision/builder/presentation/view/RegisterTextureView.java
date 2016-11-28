@@ -18,6 +18,8 @@ public interface RegisterTextureView {
 
     void hideUploadProgressDialog();
 
+    void showTexture(boolean visible);
+
     void showLoadTextureProgress(int max, int progress);
 
     void hideLoadTextureProgress();

@@ -78,11 +78,13 @@ public final class RegisterTexturePresenter {
     public void onStart() {
         LOG.d("onStart()");
 
+        // The initial UI state.
+        view.showTexture(false);
+        view.hideLoadTextureProgress();
+
         if (model.id != null) {
             // Load the texture information.
             LOG.d("Loading the texture: id = %s", model.id);
-
-            // TODO: use the progress ring.
 
             Subscription subscription = findTextureEntryUseCase
                     // Find the texture entry to get its name.
@@ -141,6 +143,7 @@ public final class RegisterTexturePresenter {
                 .subscribe(model -> {
                     LOG.d("Loaded the bitmap from the texture cache.");
 
+                    view.showTexture(true);
                     view.hideLoadTextureProgress();
                     view.showModel(model);
                 }, e -> {
@@ -178,6 +181,7 @@ public final class RegisterTexturePresenter {
                         this.model.name = model.name;
                     }
 
+                    view.showTexture(true);
                     view.showModel(this.model);
                 }, e -> {
                     if (e instanceof FileNotFoundException) {

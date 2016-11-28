@@ -45,7 +45,7 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
     View viewTop;
 
     @BindView(R.id.image_view_texture)
-    ImageView imageView;
+    ImageView imageViewTexture;
 
     @BindView(R.id.progress_bar_load_texture)
     ProgressBar progressBarLoadTexture;
@@ -144,7 +144,7 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
 
     @Override
     public void showModel(EditTextureModel model) {
-        imageView.setImageBitmap(model.bitmap);
+        imageViewTexture.setImageBitmap(model.bitmap);
         textInputEditTextName.setText(model.name);
     }
 
@@ -174,6 +174,11 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.hide();
         }
+    }
+
+    @Override
+    public void showTexture(boolean visible) {
+        imageViewTexture.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     @Override
