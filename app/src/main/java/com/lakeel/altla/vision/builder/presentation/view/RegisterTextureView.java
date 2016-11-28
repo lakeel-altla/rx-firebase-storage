@@ -20,7 +20,5 @@ public interface RegisterTextureView {
 
     void showTexture(boolean visible);
 
-    void showLoadTextureProgress(int max, int progress);
-
-    void hideLoadTextureProgress();
+    void showLoadTextureProgress(boolean visible);
 }

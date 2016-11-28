@@ -182,14 +182,8 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
     }
 
     @Override
-    public void showLoadTextureProgress(int max, int progress) {
-        progressBarLoadTexture.setMax(max);
-        progressBarLoadTexture.setProgress(progress);
-    }
-
-    @Override
-    public void hideLoadTextureProgress() {
-        progressBarLoadTexture.setVisibility(View.GONE);
+    public void showLoadTextureProgress(boolean visible) {
+        progressBarLoadTexture.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     @OnClick(R.id.button_select_document)

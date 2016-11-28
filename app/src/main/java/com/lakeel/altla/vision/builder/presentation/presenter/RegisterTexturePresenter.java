@@ -80,7 +80,7 @@ public final class RegisterTexturePresenter {
 
         // The initial UI state.
         view.showTexture(false);
-        view.hideLoadTextureProgress();
+        view.showLoadTextureProgress(false);
 
         if (model.id != null) {
             // Load the texture information.
@@ -109,6 +109,8 @@ public final class RegisterTexturePresenter {
                         LOG.w(String.format("Failed to load the texture: id = %s", model.id), e);
                     });
             compositeSubscription.add(subscription);
+        } else if (pickedImageUri != null) {
+            loadPickedImage();
         }
     }
 
@@ -127,11 +129,10 @@ public final class RegisterTexturePresenter {
     private void loadCachedTexture(String id) {
         LOG.d("Loading the bitmap from the texture cache: id = %s", id);
 
+        view.showLoadTextureProgress(true);
+
         Subscription subscription = ensureTextureCacheUseCase
-                .execute(id, (totalBytes, bytesTransferred) -> {
-                    // Update the progress bar.
-                    view.showLoadTextureProgress((int) totalBytes, (int) bytesTransferred);
-                })
+                .execute(id, null)
                 // Load the bitmap from the cache.
                 .flatMap(findFileBitmapUseCase::execute)
                 // Store the bitmap into the model.
@@ -144,13 +145,13 @@ public final class RegisterTexturePresenter {
                     LOG.d("Loaded the bitmap from the texture cache.");
 
                     view.showTexture(true);
-                    view.hideLoadTextureProgress();
+                    view.showLoadTextureProgress(false);
                     view.showModel(model);
                 }, e -> {
                     // TODO: How to recover.
                     LOG.w(String.format("Failed to load the bitmap from the texture cache: id = %s", id), e);
 
-                    view.hideLoadTextureProgress();
+                    view.showLoadTextureProgress(false);
                 });
 
         compositeSubscription.add(subscription);
@@ -158,6 +159,8 @@ public final class RegisterTexturePresenter {
 
     private void loadPickedImage() {
         LOG.d("Loading the bitmap & the filename: pickedImageUri = %s", pickedImageUri);
+
+        view.showLoadTextureProgress(true);
 
         Subscription subscription = findDocumentBitmapUseCase
                 .execute(pickedImageUri)
@@ -177,13 +180,16 @@ public final class RegisterTexturePresenter {
                     this.model.bitmap = model.bitmap;
 
                     // Set a name as the initial value if it is null or empty yet.
-                    if (model.name == null || model.name.length() == 0) {
+                    if (this.model.name == null || this.model.name.length() == 0) {
                         this.model.name = model.name;
                     }
 
                     view.showTexture(true);
+                    view.showLoadTextureProgress(false);
                     view.showModel(this.model);
                 }, e -> {
+                    view.showLoadTextureProgress(false);
+
                     if (e instanceof FileNotFoundException) {
                         LOG.w(String.format("The image could not be found: pickedImageUri = %s", pickedImageUri), e);
                         view.showSnackbar(R.string.snackbar_image_file_not_found);
