@@ -41,10 +41,15 @@
             android:layout_below="@id/view_group_image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
         <android.support.design.widget.TextInputEditText
                 android:id="@+id/text_input_edit_text_name"
+                android:inputType="text"
+                android:maxLength="256"
+                android:hint="@string/hint_edit_texure_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
+
     </android.support.design.widget.TextInputLayout>
 
     <Button android:id="@+id/button_register"
