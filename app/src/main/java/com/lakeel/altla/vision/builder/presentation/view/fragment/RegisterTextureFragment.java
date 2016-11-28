@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import javax.inject.Inject;
 
@@ -45,6 +46,9 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
 
     @BindView(R.id.image_view_texture)
     ImageView imageView;
+
+    @BindView(R.id.progress_bar_loading_texture)
+    ProgressBar progressBarLoadingTexture;
 
     @BindView(R.id.text_input_edit_text_name)
     TextInputEditText textInputEditTextName;
@@ -170,6 +174,17 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.hide();
         }
+    }
+
+    @Override
+    public void showLoadTextureProgress(int max, int progress) {
+        progressBarLoadingTexture.setMax(max);
+        progressBarLoadingTexture.setProgress(progress);
+    }
+
+    @Override
+    public void hideLoadTextureProgress() {
+        progressBarLoadingTexture.setVisibility(View.GONE);
     }
 
     @OnClick(R.id.button_select_document)

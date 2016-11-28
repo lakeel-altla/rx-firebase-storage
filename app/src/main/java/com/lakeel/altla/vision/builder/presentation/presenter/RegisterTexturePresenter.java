@@ -93,24 +93,12 @@ public final class RegisterTexturePresenter {
                         return model;
                     })
                     .toSingle()
-                    // Ensure the texture cache.
-                    .flatMap(model -> ensureTextureCacheUseCase.execute(model.id, (totalBytes, bytesTransferred) -> {
-                        // Update the progress bar.
-                        // TODO
-                    }))
-                    // Load the bitmap from the cache.
-                    .flatMap(findFileBitmapUseCase::execute)
-                    // Store the bitmap into the model.
-                    .map(bitmap -> {
-                        model.bitmap = bitmap;
-                        return model;
-                    })
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(model -> {
                         LOG.d("Loaded the texture.");
 
                         if (pickedImageUri == null) {
-                            view.showModel(model);
+                            loadCachedTexture(model.id);
                         } else {
                             loadPickedImage();
                         }
@@ -132,6 +120,37 @@ public final class RegisterTexturePresenter {
 
     public void onImagePicked(Uri uri) {
         pickedImageUri = uri;
+    }
+
+    private void loadCachedTexture(String id) {
+        LOG.d("Loading the bitmap from the texture cache: id = %s", id);
+
+        Subscription subscription = ensureTextureCacheUseCase
+                .execute(id, (totalBytes, bytesTransferred) -> {
+                    // Update the progress bar.
+                    view.showLoadTextureProgress((int) totalBytes, (int) bytesTransferred);
+                })
+                // Load the bitmap from the cache.
+                .flatMap(findFileBitmapUseCase::execute)
+                // Store the bitmap into the model.
+                .map(bitmap -> {
+                    model.bitmap = bitmap;
+                    return model;
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(model -> {
+                    LOG.d("Loaded the bitmap from the texture cache.");
+
+                    view.hideLoadTextureProgress();
+                    view.showModel(model);
+                }, e -> {
+                    // TODO: How to recover.
+                    LOG.w(String.format("Failed to load the bitmap from the texture cache: id = %s", id), e);
+
+                    view.hideLoadTextureProgress();
+                });
+
+        compositeSubscription.add(subscription);
     }
 
     private void loadPickedImage() {
