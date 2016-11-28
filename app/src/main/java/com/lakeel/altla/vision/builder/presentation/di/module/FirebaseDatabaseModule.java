@@ -14,8 +14,6 @@ public final class FirebaseDatabaseModule {
 
     private static final String PATH_APP_ROOT = "builder";
 
-    private static final String PATH_TEXTURES = "builder/textures";
-
     @Singleton
     @Provides
     public FirebaseDatabase provideFirebaseDatabase() {
@@ -35,14 +33,5 @@ public final class FirebaseDatabaseModule {
     public DatabaseReference provideAppRootReference(
             @Named(Names.FIREBASE_DATABASE_REFERENCE_ROOT) DatabaseReference root) {
         return root.child(PATH_APP_ROOT);
-    }
-
-
-    @Named(Names.FIREBASE_DATABASE_REFERENCE_TEXTURES)
-    @Singleton
-    @Provides
-    public DatabaseReference provideTexturesReference(
-            @Named(Names.FIREBASE_DATABASE_REFERENCE_ROOT) DatabaseReference root) {
-        return root.child(PATH_TEXTURES);
     }
 }
