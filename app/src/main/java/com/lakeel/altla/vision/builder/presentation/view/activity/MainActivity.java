@@ -6,7 +6,10 @@ import com.google.atap.tangoservice.TangoConfig;
 import com.google.atap.tangoservice.TangoCoordinateFramePair;
 import com.google.atap.tangoservice.TangoPoseData;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
+import com.lakeel.altla.android.log.Log;
+import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.tango.TangoUpdateDispatcher;
 import com.lakeel.altla.vision.builder.R;
 import com.lakeel.altla.vision.builder.presentation.app.MyApplication;
@@ -16,7 +19,9 @@ import com.lakeel.altla.vision.builder.presentation.view.fragment.MainFragment;
 import com.lakeel.altla.vision.builder.presentation.view.fragment.RegisterTextureFragment;
 import com.lakeel.altla.vision.builder.presentation.view.fragment.SignInFragment;
 import com.projecttango.tangosupport.TangoSupport;
+import com.squareup.picasso.Picasso;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,6 +33,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +49,8 @@ public final class MainActivity extends AppCompatActivity
                    SignInFragment.OnShowMainFragmentListener,
                    MainFragment.InteractionListener,
                    NavigationView.OnNavigationItemSelectedListener {
+
+    private static final Log LOG = LogFactory.getLog(MainActivity.class);
 
     private static final List<TangoCoordinateFramePair> FRAME_PAIRS;
 
@@ -65,6 +74,8 @@ public final class MainActivity extends AppCompatActivity
 
     @BindView(R.id.navigation_view)
     NavigationView navigationView;
+
+    private NavigationViewHeader navigationViewHeader;
 
     private ActivityComponent activityComponent;
 
@@ -96,11 +107,25 @@ public final class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         navigationView.setNavigationItemSelectedListener(this);
+        navigationViewHeader = new NavigationViewHeader(navigationView);
+//        navigationViewHeaderLayout = navigationView.getHeaderView(0);
 
         SignInFragment fragment = SignInFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
                                    .replace(R.id.fragment_container, fragment)
                                    .commit();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseAuth.getInstance().addAuthStateListener(navigationViewHeader);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        FirebaseAuth.getInstance().removeAuthStateListener(navigationViewHeader);
     }
 
     @Override
@@ -169,5 +194,38 @@ public final class MainActivity extends AppCompatActivity
                                    .replace(R.id.fragment_container, fragment)
                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                                    .commit();
+    }
+
+    class NavigationViewHeader implements FirebaseAuth.AuthStateListener {
+
+        @BindView(R.id.image_view_user_photo)
+        ImageView imageViewUserPhoto;
+
+        @BindView(R.id.text_view_user_name)
+        TextView textViewUserName;
+
+        @BindView(R.id.text_view_user_email)
+        TextView textViewUserEmail;
+
+        private NavigationViewHeader(@NonNull NavigationView navigationView) {
+            ButterKnife.bind(this, navigationView.getHeaderView(0));
+        }
+
+        @Override
+        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            if (user != null) {
+                Uri photoUri = user.getPhotoUrl();
+                if (photoUri != null) {
+                    Picasso.with(MainActivity.this).load(photoUri).into(imageViewUserPhoto);
+                }
+                textViewUserName.setText(user.getDisplayName());
+                textViewUserEmail.setText(user.getEmail());
+            } else {
+                imageViewUserPhoto.setImageBitmap(null);
+                textViewUserName.setText(null);
+                textViewUserEmail.setText(null);
+            }
+        }
     }
 }
