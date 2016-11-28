@@ -172,7 +172,11 @@ public final class RegisterTexturePresenter {
                     // Copy the finished model to the instance field model.
                     this.model.localUri = model.localUri;
                     this.model.bitmap = model.bitmap;
-                    this.model.name = model.name;
+
+                    // Set a name as the initial value if it is null or empty yet.
+                    if (model.name == null || model.name.length() == 0) {
+                        this.model.name = model.name;
+                    }
 
                     view.showModel(this.model);
                 }, e -> {
