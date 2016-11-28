@@ -47,8 +47,8 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
     @BindView(R.id.image_view_texture)
     ImageView imageView;
 
-    @BindView(R.id.progress_bar_loading_texture)
-    ProgressBar progressBarLoadingTexture;
+    @BindView(R.id.progress_bar_load_texture)
+    ProgressBar progressBarLoadTexture;
 
     @BindView(R.id.text_input_edit_text_name)
     TextInputEditText textInputEditTextName;
@@ -178,13 +178,13 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
 
     @Override
     public void showLoadTextureProgress(int max, int progress) {
-        progressBarLoadingTexture.setMax(max);
-        progressBarLoadingTexture.setProgress(progress);
+        progressBarLoadTexture.setMax(max);
+        progressBarLoadTexture.setProgress(progress);
     }
 
     @Override
     public void hideLoadTextureProgress() {
-        progressBarLoadingTexture.setVisibility(View.GONE);
+        progressBarLoadTexture.setVisibility(View.GONE);
     }
 
     @OnClick(R.id.button_select_document)

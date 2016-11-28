@@ -74,8 +74,8 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
         @BindView(R.id.image_view_texture)
         ImageView imageViewTexture;
 
-        @BindView(R.id.progress_bar_loading_texture)
-        ProgressBar progressBarLoadingTexture;
+        @BindView(R.id.progress_bar_load_texture)
+        ProgressBar progressBarLoadTexture;
 
         @BindView(R.id.view_group_texture_detail)
         ViewGroup viewGroupTextureDetail;
@@ -119,7 +119,7 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
 
             // Hide.
             imageViewTexture.setVisibility(View.GONE);
-            progressBarLoadingTexture.setVisibility(View.GONE);
+            progressBarLoadTexture.setVisibility(View.GONE);
             viewGroupTextureDetail.setVisibility(View.GONE);
         }
 
@@ -139,25 +139,25 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
             if (model.bitmap == null) {
                 // Load the bitmap.
                 imageViewTexture.setVisibility(View.GONE);
-                progressBarLoadingTexture.setVisibility(View.VISIBLE);
+                progressBarLoadTexture.setVisibility(View.VISIBLE);
                 itemPresenter.onLoadBitmap(getAdapterPosition());
             } else {
                 // Show the bitmap and hide the progress bar.
                 imageViewTexture.setImageBitmap(model.bitmap);
                 imageViewTexture.setVisibility(View.VISIBLE);
-                progressBarLoadingTexture.setVisibility(View.GONE);
+                progressBarLoadTexture.setVisibility(View.GONE);
             }
         }
 
         @Override
         public void showProgress(int max, int progress) {
-            progressBarLoadingTexture.setMax(max);
-            progressBarLoadingTexture.setProgress(progress);
+            progressBarLoadTexture.setMax(max);
+            progressBarLoadTexture.setProgress(progress);
         }
 
         @Override
         public void hideProgress() {
-            progressBarLoadingTexture.setVisibility(View.GONE);
+            progressBarLoadTexture.setVisibility(View.GONE);
         }
 
         @Override
