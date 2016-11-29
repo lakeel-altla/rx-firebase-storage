@@ -56,9 +56,8 @@ public final class UpdateTextureUseCase {
     private Single<Model> resolveFileId(Model model) {
         // Find the existing entry.
         return textureEntryRepository.findReference(model.id)
-                                     // Delete a previous file if it exists.
-                                     .flatMap(reference -> textureFileRepository.delete(reference.fileId)
-                                                                                .toObservable())
+                                     // Get its file id.
+                                     .map(reference -> reference.fileId)
                                      // Create a new file id if no previous file exists.
                                      .defaultIfEmpty(UUID.randomUUID().toString())
                                      .map(fileId -> {
