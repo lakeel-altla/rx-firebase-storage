@@ -5,7 +5,7 @@ import com.lakeel.altla.vision.builder.presentation.presenter.MainPresenter;
 
 import android.support.annotation.NonNull;
 
-public interface ModelListItemView {
+public interface TextureModelListItemView {
 
     void setItemPresenter(@NonNull MainPresenter.ModelItemPresenter itemPresenter);
 

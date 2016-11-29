@@ -6,7 +6,7 @@ import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.builder.R;
 import com.lakeel.altla.vision.builder.presentation.model.TextureModel;
 import com.lakeel.altla.vision.builder.presentation.presenter.MainPresenter;
-import com.lakeel.altla.vision.builder.presentation.view.ModelListItemView;
+import com.lakeel.altla.vision.builder.presentation.view.TextureModelListItemView;
 
 import android.content.ClipData;
 import android.support.annotation.NonNull;
@@ -25,39 +25,39 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
 
-public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHolder> {
+public final class TextureModelAdapter extends RecyclerView.Adapter<TextureModelAdapter.ViewHolderTexture> {
 
-    private static final Log LOG = LogFactory.getLog(ModelAdapter.class);
+    private static final Log LOG = LogFactory.getLog(TextureModelAdapter.class);
 
     private static final ClipData CLIP_DATA_DUMMY = ClipData.newPlainText("", "");
 
     private final MainPresenter presenter;
 
-    public ModelAdapter(MainPresenter presenter) {
+    public TextureModelAdapter(MainPresenter presenter) {
         this.presenter = presenter;
     }
 
     private LayoutInflater inflater;
 
     @Override
-    public final ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public final ViewHolderTexture onCreateViewHolder(ViewGroup parent, int viewType) {
         if (inflater == null) {
             inflater = LayoutInflater.from(parent.getContext());
         }
 
         View view = inflater.inflate(R.layout.item_model, parent, false);
-        ViewHolder holder = new ViewHolder(view);
+        ViewHolderTexture holder = new ViewHolderTexture(view);
         presenter.onCreateItemView(holder);
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolderTexture holder, int position) {
         holder.onBind(position);
     }
 
     @Override
-    public void onViewRecycled(ViewHolder holder) {
+    public void onViewRecycled(ViewHolderTexture holder) {
         super.onViewRecycled(holder);
     }
 
@@ -66,7 +66,7 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
         return presenter.getModelCount();
     }
 
-    public final class ViewHolder extends RecyclerView.ViewHolder implements ModelListItemView {
+    public final class ViewHolderTexture extends RecyclerView.ViewHolder implements TextureModelListItemView {
 
         @BindView(R.id.view_top)
         View viewTop;
@@ -92,7 +92,7 @@ public final class ModelAdapter extends RecyclerView.Adapter<ModelAdapter.ViewHo
 
         private MaterialDialog materialDialog;
 
-        private ViewHolder(View itemView) {
+        private ViewHolderTexture(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
 

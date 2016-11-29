@@ -10,7 +10,7 @@ import com.lakeel.altla.vision.builder.presentation.model.Axis;
 import com.lakeel.altla.vision.builder.presentation.presenter.MainPresenter;
 import com.lakeel.altla.vision.builder.presentation.view.MainView;
 import com.lakeel.altla.vision.builder.presentation.view.activity.ActivityScopeContext;
-import com.lakeel.altla.vision.builder.presentation.view.adapter.ModelAdapter;
+import com.lakeel.altla.vision.builder.presentation.view.adapter.TextureModelAdapter;
 
 import org.rajawali3d.renderer.ISurfaceRenderer;
 import org.rajawali3d.view.ISurface;
@@ -95,8 +95,6 @@ public final class MainFragment extends Fragment implements MainView {
 
     private GestureDetectorCompat gestureDetector;
 
-//    private AlertDialog alertDialog;
-
     private InteractionListener interactionListener;
 
     public static MainFragment newInstance() {
@@ -146,7 +144,7 @@ public final class MainFragment extends Fragment implements MainView {
         presenter.onCreateView(this);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        recyclerView.setAdapter(new ModelAdapter(presenter));
+        recyclerView.setAdapter(new TextureModelAdapter(presenter));
 
         textureView.setFrameRate(60d);
         textureView.setRenderMode(ISurface.RENDERMODE_WHEN_DIRTY);
@@ -219,7 +217,7 @@ public final class MainFragment extends Fragment implements MainView {
     }
 
     @Override
-    public void setModelPaneVisible(boolean visible) {
+    public void setTextureModelPaneVisible(boolean visible) {
         if (visible) {
             viewGroupModelPane.setVisibility(View.VISIBLE);
             fabToggleModelPane.setImageResource(R.drawable.ic_expand_more_black_24dp);
@@ -235,7 +233,7 @@ public final class MainFragment extends Fragment implements MainView {
     }
 
     @Override
-    public void updateModels() {
+    public void updateTextureModelPane() {
         recyclerView.getAdapter().notifyDataSetChanged();
     }
 

@@ -18,7 +18,7 @@ import com.lakeel.altla.vision.builder.presentation.model.Axis;
 import com.lakeel.altla.vision.builder.presentation.model.ObjectEditMode;
 import com.lakeel.altla.vision.builder.presentation.model.TextureModel;
 import com.lakeel.altla.vision.builder.presentation.view.MainView;
-import com.lakeel.altla.vision.builder.presentation.view.ModelListItemView;
+import com.lakeel.altla.vision.builder.presentation.view.TextureModelListItemView;
 import com.lakeel.altla.vision.builder.presentation.view.renderer.MainRenderer;
 
 import android.content.Context;
@@ -103,7 +103,7 @@ public final class MainPresenter
         renderer.setOnPickedObjectChangedListener(this);
         this.view.setSurfaceRenderer(renderer);
 
-        this.view.setModelPaneVisible(false);
+        this.view.setTextureModelPaneVisible(false);
         this.view.setObjectMenuVisible(false);
         this.view.setTranslateObjectSelected(false);
         this.view.setRotateObjectSelected(false);
@@ -126,7 +126,7 @@ public final class MainPresenter
 
                     TextureModel model = new TextureModel(entry.id, entry.name);
                     models.add(model);
-                    view.updateModels();
+                    view.updateTextureModelPane();
                 }, e -> {
                     LOG.e("Failed to find all entries.", e);
                 }, () -> {
@@ -187,7 +187,7 @@ public final class MainPresenter
 
     public void onClickFabToggleModelPane() {
         isModelPaneVisible = !isModelPaneVisible;
-        view.setModelPaneVisible(isModelPaneVisible);
+        view.setTextureModelPaneVisible(isModelPaneVisible);
     }
 
     public void onClickImageButtonAddModel() {
@@ -247,7 +247,7 @@ public final class MainPresenter
         return models.size();
     }
 
-    public void onCreateItemView(@NonNull ModelListItemView itemView) {
+    public void onCreateItemView(@NonNull TextureModelListItemView itemView) {
         ModelItemPresenter itemPresenter = new ModelItemPresenter();
         itemPresenter.onCreateItemView(itemView);
         itemView.setItemPresenter(itemPresenter);
@@ -295,9 +295,9 @@ public final class MainPresenter
 
     public final class ModelItemPresenter {
 
-        private ModelListItemView itemView;
+        private TextureModelListItemView itemView;
 
-        public void onCreateItemView(@NonNull ModelListItemView itemView) {
+        public void onCreateItemView(@NonNull TextureModelListItemView itemView) {
             this.itemView = itemView;
         }
 
@@ -363,7 +363,7 @@ public final class MainPresenter
                         LOG.d("Deleted the texture.");
 
                         models.remove(position);
-                        view.updateModels();
+                        view.updateTextureModelPane();
                         view.showSnackbar(R.string.snackbar_done);
                     }, e -> {
                         LOG.e(String.format("Failed to delete the texture: id = %s", model.id), e);

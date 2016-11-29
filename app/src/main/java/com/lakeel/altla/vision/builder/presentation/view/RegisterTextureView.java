@@ -6,9 +6,11 @@ import android.support.annotation.StringRes;
 
 public interface RegisterTextureView {
 
-    void showSnackbar(@StringRes int resId);
+    void showLocalTexturePicker();
 
-    void showImagePicker();
+    void setTextureVisible(boolean visible);
+
+    void setLoadTextureProgressVisible(boolean visible);
 
     void showModel(EditTextureModel model);
 
@@ -18,7 +20,5 @@ public interface RegisterTextureView {
 
     void hideUploadProgressDialog();
 
-    void showTexture(boolean visible);
-
-    void showLoadTextureProgress(boolean visible);
+    void showSnackbar(@StringRes int resId);
 }

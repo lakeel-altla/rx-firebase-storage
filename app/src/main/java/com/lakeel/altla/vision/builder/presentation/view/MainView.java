@@ -18,11 +18,9 @@ public interface MainView {
 
     void setSurfaceRenderer(ISurfaceRenderer renderer);
 
-    void setModelPaneVisible(boolean visible);
+    void setTextureModelPaneVisible(boolean visible);
 
-    void showEditTextureFragment(@Nullable String id);
-
-    void updateModels();
+    void updateTextureModelPane();
 
     void setObjectMenuVisible(boolean visible);
 
@@ -39,6 +37,8 @@ public interface MainView {
     void setRotateObjectAxisSelected(Axis axis, boolean selected);
 
     void setScaleObjectSelected(boolean selected);
+
+    void showEditTextureFragment(@Nullable String id);
 
     void showSnackbar(@StringRes int resId);
 }

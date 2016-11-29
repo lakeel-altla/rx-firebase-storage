@@ -79,8 +79,8 @@ public final class RegisterTexturePresenter {
         LOG.d("onStart()");
 
         // The initial UI state.
-        view.showTexture(false);
-        view.showLoadTextureProgress(false);
+        view.setTextureVisible(false);
+        view.setLoadTextureProgressVisible(false);
 
         if (model.id != null) {
             // Load the texture information.
@@ -119,7 +119,7 @@ public final class RegisterTexturePresenter {
     }
 
     public void onClickButtonSelectDocument() {
-        view.showImagePicker();
+        view.showLocalTexturePicker();
     }
 
     public void onImagePicked(Uri uri) {
@@ -129,7 +129,7 @@ public final class RegisterTexturePresenter {
     private void loadCachedTexture(String id) {
         LOG.d("Loading the bitmap from the texture cache: id = %s", id);
 
-        view.showLoadTextureProgress(true);
+        view.setLoadTextureProgressVisible(true);
 
         Subscription subscription = ensureTextureCacheUseCase
                 .execute(id, null)
@@ -144,14 +144,14 @@ public final class RegisterTexturePresenter {
                 .subscribe(model -> {
                     LOG.d("Loaded the bitmap from the texture cache.");
 
-                    view.showTexture(true);
-                    view.showLoadTextureProgress(false);
+                    view.setTextureVisible(true);
+                    view.setLoadTextureProgressVisible(false);
                     view.showModel(model);
                 }, e -> {
                     // TODO: How to recover.
                     LOG.w(String.format("Failed to load the bitmap from the texture cache: id = %s", id), e);
 
-                    view.showLoadTextureProgress(false);
+                    view.setLoadTextureProgressVisible(false);
                 });
 
         compositeSubscription.add(subscription);
@@ -160,7 +160,7 @@ public final class RegisterTexturePresenter {
     private void loadPickedImage() {
         LOG.d("Loading the bitmap & the filename: pickedImageUri = %s", pickedImageUri);
 
-        view.showLoadTextureProgress(true);
+        view.setLoadTextureProgressVisible(true);
 
         Subscription subscription = findDocumentBitmapUseCase
                 .execute(pickedImageUri)
@@ -184,11 +184,11 @@ public final class RegisterTexturePresenter {
                         this.model.name = model.name;
                     }
 
-                    view.showTexture(true);
-                    view.showLoadTextureProgress(false);
+                    view.setTextureVisible(true);
+                    view.setLoadTextureProgressVisible(false);
                     view.showModel(this.model);
                 }, e -> {
-                    view.showLoadTextureProgress(false);
+                    view.setLoadTextureProgressVisible(false);
 
                     if (e instanceof FileNotFoundException) {
                         LOG.w(String.format("The image could not be found: pickedImageUri = %s", pickedImageUri), e);

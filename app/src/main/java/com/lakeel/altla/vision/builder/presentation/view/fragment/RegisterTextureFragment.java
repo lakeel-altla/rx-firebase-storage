@@ -135,12 +135,7 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
     }
 
     @Override
-    public void showSnackbar(@StringRes int resId) {
-        Snackbar.make(viewTop, resId, Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void showImagePicker() {
+    public void showLocalTexturePicker() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT)
                 .addCategory(Intent.CATEGORY_OPENABLE)
                 .setType("image/*");
@@ -183,13 +178,18 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
     }
 
     @Override
-    public void showTexture(boolean visible) {
+    public void setTextureVisible(boolean visible) {
         imageViewTexture.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     @Override
-    public void showLoadTextureProgress(boolean visible) {
+    public void setLoadTextureProgressVisible(boolean visible) {
         progressBarLoadTexture.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void showSnackbar(@StringRes int resId) {
+        Snackbar.make(viewTop, resId, Snackbar.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.button_select_document)
