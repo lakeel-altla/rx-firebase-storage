@@ -1,5 +1,7 @@
 package com.lakeel.altla.vision.builder.presentation.view.fragment;
 
+import com.lakeel.altla.android.log.Log;
+import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.builder.R;
 import com.lakeel.altla.vision.builder.presentation.model.EditTextureModel;
 import com.lakeel.altla.vision.builder.presentation.presenter.RegisterTexturePresenter;
@@ -34,6 +36,8 @@ import butterknife.OnClick;
 import butterknife.OnTextChanged;
 
 public final class RegisterTextureFragment extends Fragment implements RegisterTextureView {
+
+    private static final Log LOG = LogFactory.getLog(RegisterTextureFragment.class);
 
     private static final int REQUEST_CODE_ACTION_OPEN_DOCUMENT = 0;
 
@@ -117,13 +121,6 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        // TODO
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -142,7 +139,7 @@ public final class RegisterTextureFragment extends Fragment implements RegisterT
             if (Activity.RESULT_OK == resultCode) {
                 Uri uri = (data != null) ? data.getData() : null;
                 if (uri != null) {
-                    presenter.onImagePicked(uri);
+                    presenter.onLocalTextureSelected(uri);
                 }
             }
         } else {
