@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Date;
 
 public final class TangoAreaDescriptionMetaDataHelper {
 
@@ -29,14 +28,12 @@ public final class TangoAreaDescriptionMetaDataHelper {
         setString(data, TangoAreaDescriptionMetaData.KEY_NAME, value);
     }
 
-    public static Date getMsSinceEpoch(@NonNull TangoAreaDescriptionMetaData data) {
-        long ms = getLong(data, TangoAreaDescriptionMetaData.KEY_DATE_MS_SINCE_EPOCH);
-        return new Date(ms);
+    public static long getMsSinceEpoch(@NonNull TangoAreaDescriptionMetaData data) {
+        return getLong(data, TangoAreaDescriptionMetaData.KEY_DATE_MS_SINCE_EPOCH);
     }
 
-    public static void setMsSinceEpoch(@NonNull TangoAreaDescriptionMetaData data, Date value) {
-        long ms = value.getTime();
-        setLong(data, TangoAreaDescriptionMetaData.KEY_DATE_MS_SINCE_EPOCH, ms);
+    public static void setMsSinceEpoch(@NonNull TangoAreaDescriptionMetaData data, long value) {
+        setLong(data, TangoAreaDescriptionMetaData.KEY_DATE_MS_SINCE_EPOCH, value);
     }
 
     public static double[] getTransformation(@NonNull TangoAreaDescriptionMetaData data) {
