@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 
 public final class TangoIntents {
 
-    private static final String PACKAGE_NAME = "com.projecttango.tango";
+    private static final String PACKAGE_NAME = "com.google.tango";
 
     private static final String CLASS_NAME = "com.google.atap.tango.RequestImportExportActivity";
 
