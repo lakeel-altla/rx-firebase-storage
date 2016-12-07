@@ -61,11 +61,13 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.balysv.materialmenu:material-menu:2.0.0'
 
+    debugCompile project(path: ':vision-core', configuration: 'debug')
     debugCompile project(path: ':tango-helper', configuration: 'debug')
     debugCompile project(path: ':tango-rajawali', configuration: 'debug')
     debugCompile project(path: ':rajawali-pool', configuration: 'debug')
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4'
 
+    releaseCompile project(path: ':vision-core', configuration: 'debug')
     releaseCompile project(path: ':tango-helper', configuration: 'release')
     releaseCompile project(path: ':tango-rajawali', configuration: 'release')
     releaseCompile project(path: ':rajawali-pool', configuration: 'release')
