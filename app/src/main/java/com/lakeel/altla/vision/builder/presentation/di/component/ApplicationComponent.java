@@ -6,6 +6,7 @@ import com.lakeel.altla.vision.builder.presentation.di.module.ConfigModule;
 import com.lakeel.altla.vision.builder.presentation.di.module.FirebaseAuthModule;
 import com.lakeel.altla.vision.builder.presentation.di.module.FirebaseDatabaseModule;
 import com.lakeel.altla.vision.builder.presentation.di.module.FirebaseStorageModule;
+import com.lakeel.altla.vision.builder.presentation.di.module.GoogleSignInModule;
 import com.lakeel.altla.vision.builder.presentation.di.module.Names;
 
 import android.content.Context;
@@ -19,6 +20,7 @@ import dagger.Component;
 @Singleton
 @Component(modules = { ApplicationModule.class,
                        ConfigModule.class,
+                       GoogleSignInModule.class,
                        FirebaseAuthModule.class,
                        FirebaseDatabaseModule.class,
                        FirebaseStorageModule.class })

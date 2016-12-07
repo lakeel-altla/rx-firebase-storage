@@ -4,6 +4,7 @@ import com.lakeel.altla.vision.builder.presentation.di.ActivityScope;
 import com.lakeel.altla.vision.builder.presentation.di.module.ActivityModule;
 import com.lakeel.altla.vision.builder.presentation.di.module.AndroidRepositoryModule;
 import com.lakeel.altla.vision.builder.presentation.di.module.FirebaseRepositoryModule;
+import com.lakeel.altla.vision.builder.presentation.di.module.GoogleApiModule;
 import com.lakeel.altla.vision.builder.presentation.di.module.PresenterModule;
 import com.lakeel.altla.vision.builder.presentation.di.module.RepositoryModule;
 import com.lakeel.altla.vision.builder.presentation.view.activity.MainActivity;
@@ -18,6 +19,7 @@ import dagger.Subcomponent;
  */
 @ActivityScope
 @Subcomponent(modules = { ActivityModule.class,
+                          GoogleApiModule.class,
                           PresenterModule.class,
                           RepositoryModule.class,
                           AndroidRepositoryModule.class,

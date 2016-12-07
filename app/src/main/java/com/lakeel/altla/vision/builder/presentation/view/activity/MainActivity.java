@@ -119,12 +119,7 @@ public final class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         navigationViewHeader = new NavigationViewHeader(navigationView);
 
-        materialMenu.setVisible(false);
-
-        SignInFragment fragment = SignInFragment.newInstance();
-        getSupportFragmentManager().beginTransaction()
-                                   .replace(R.id.fragment_container, fragment)
-                                   .commit();
+        showSignInFragment();
     }
 
     @Override
@@ -174,6 +169,18 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.nav_sign_out) {
+            FirebaseAuth.getInstance().signOut();
+            showSignInFragment();
+        }
+
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    @Override
     public ActivityComponent getActivityComponent() {
         return activityComponent;
     }
@@ -186,17 +193,6 @@ public final class MainActivity extends AppCompatActivity
         getSupportFragmentManager().beginTransaction()
                                    .replace(R.id.fragment_container, fragment)
                                    .commit();
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.nav_sign_out) {
-            FirebaseAuth.getInstance().signOut();
-        }
-
-        drawerLayout.closeDrawer(GravityCompat.START);
-        return true;
     }
 
     @Override
@@ -224,6 +220,15 @@ public final class MainActivity extends AppCompatActivity
     @Override
     public void openDrawer() {
         drawerLayout.openDrawer(GravityCompat.START);
+    }
+
+    private void showSignInFragment() {
+        materialMenu.setVisible(false);
+
+        SignInFragment fragment = SignInFragment.newInstance();
+        getSupportFragmentManager().beginTransaction()
+                                   .replace(R.id.fragment_container, fragment)
+                                   .commit();
     }
 
     class NavigationViewHeader implements FirebaseAuth.AuthStateListener {

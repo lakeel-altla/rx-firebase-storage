@@ -2,9 +2,7 @@ package com.lakeel.altla.vision.builder.presentation.presenter;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -29,14 +27,14 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Defines the presenter for {@link SignInView}.
  */
-public final class SignInPresenter implements GoogleApiClient.OnConnectionFailedListener {
+public final class SignInPresenter {
 
     private static final Log LOG = LogFactory.getLog(SignInPresenter.class);
 
     private static final int REQUEST_CODE_GOOGLE_SIGN_IN = 0;
 
     @Inject
-    GoogleSignInOptions googleSignInOptions;
+    GoogleApiClient googleApiClient;
 
     @Inject
     AppCompatActivity activity;
@@ -49,8 +47,6 @@ public final class SignInPresenter implements GoogleApiClient.OnConnectionFailed
     private final FirebaseAuth.AuthStateListener authStateListener;
 
     private SignInView view;
-
-    private GoogleApiClient googleApiClient;
 
     private boolean mIsSignedInDetected;
 
@@ -75,19 +71,8 @@ public final class SignInPresenter implements GoogleApiClient.OnConnectionFailed
         };
     }
 
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        LOG.e("onConnectionFailed: %s", connectionResult);
-        view.showSnackbar(R.string.snackbar_google_api_client_connection_failed);
-    }
-
     public void onCreateView(@NonNull SignInView view) {
         this.view = view;
-
-        googleApiClient = new GoogleApiClient.Builder(activity)
-                .enableAutoManage(activity, this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, googleSignInOptions)
-                .build();
     }
 
     public void onStart() {

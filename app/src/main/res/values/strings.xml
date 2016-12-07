@@ -31,5 +31,6 @@
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_content_confirm_delete_texture">Are you sure you want to delete the selected texture ?</string>
     <string name="hint_edit_texure_name">The texture name.</string>
+    <string name="toast_google_api_client_connection_failed">Google Play Services error.</string>
 
 </resources>
