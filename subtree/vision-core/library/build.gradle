@@ -1,0 +1,51 @@
+apply plugin: 'com.android.library'
+
+// retrolambda
+apply plugin: 'me.tatarka.retrolambda'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.1"
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+repositories {
+    maven {
+        url 'https://lakeel-altla.github.io/maven-repository'
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:design:25.0.1'
+    compile 'com.google.dagger:dagger:2.7'
+    compile 'com.jakewharton:butterknife:8.4.0'
+    compile 'io.reactivex:rxjava:1.1.10'
+    compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'com.google.android.gms:play-services-auth:10.0.0'
+    compile 'com.google.firebase:firebase-auth:10.0.0'
+    compile 'com.google.firebase:firebase-storage:10.0.0'
+    compile 'com.google.firebase:firebase-database:10.0.0'
+    compile 'com.lakeel.altla:android-log:0.0.2'
+    compile 'com.lakeel.altla:rx-gms-tasks:1.0.1'
+    compile 'com.lakeel.altla:rx-firebase-database:1.0.0'
+    compile 'com.lakeel.altla:rx-firebase-storage:1.0.0'
+}
