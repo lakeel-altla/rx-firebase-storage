@@ -15,9 +15,6 @@ import android.support.annotation.NonNull;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
-
 /**
  * Defines our application class.
  */
@@ -49,15 +46,6 @@ public final class MyApplication extends MultiDexApplication {
 
         // Altla Log
         LogFactory.setDebug(BuildConfig.DEBUG);
-
-        // Realm
-        Realm.init(this);
-        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder()
-                .deleteRealmIfMigrationNeeded()
-                .build();
-        // Delete Realm between app restarts.
-//        Realm.deleteRealm(realmConfiguration);
-        Realm.setDefaultConfiguration(realmConfiguration);
     }
 
     /**

@@ -13,9 +13,6 @@ buildscript {
         // retrolambda
         classpath 'me.tatarka:gradle-retrolambda:3.2.5'
 
-        // realm
-        classpath "io.realm:realm-gradle-plugin:2.0.0"
-
         // google-services plugin to use firebase.
         classpath 'com.google.gms:google-services:3.0.0'
 
