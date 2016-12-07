@@ -6,7 +6,7 @@ import com.lakeel.altla.vision.builder.R;
 import com.lakeel.altla.vision.builder.presentation.model.EditTextureModel;
 import com.lakeel.altla.vision.builder.presentation.presenter.RegisterTexturePresenter;
 import com.lakeel.altla.vision.builder.presentation.view.RegisterTextureView;
-import com.lakeel.altla.vision.builder.presentation.view.activity.ActivityScopeContext;
+import com.lakeel.altla.vision.builder.presentation.di.ActivityScopeContext;
 
 import android.app.Activity;
 import android.app.ProgressDialog;

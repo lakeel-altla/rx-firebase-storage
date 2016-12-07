@@ -10,7 +10,7 @@ import com.lakeel.altla.vision.builder.presentation.model.Axis;
 import com.lakeel.altla.vision.builder.presentation.presenter.MainPresenter;
 import com.lakeel.altla.vision.builder.presentation.view.MainView;
 import com.lakeel.altla.vision.builder.presentation.view.NavigationViewHost;
-import com.lakeel.altla.vision.builder.presentation.view.activity.ActivityScopeContext;
+import com.lakeel.altla.vision.builder.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.builder.presentation.view.adapter.TextureModelAdapter;
 
 import org.rajawali3d.renderer.ISurfaceRenderer;

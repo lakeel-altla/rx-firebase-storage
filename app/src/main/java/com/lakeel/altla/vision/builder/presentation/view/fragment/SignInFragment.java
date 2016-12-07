@@ -5,7 +5,7 @@ import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.builder.R;
 import com.lakeel.altla.vision.builder.presentation.presenter.SignInPresenter;
 import com.lakeel.altla.vision.builder.presentation.view.SignInView;
-import com.lakeel.altla.vision.builder.presentation.view.activity.ActivityScopeContext;
+import com.lakeel.altla.vision.builder.presentation.di.ActivityScopeContext;
 
 import android.app.ProgressDialog;
 import android.content.Context;
