@@ -9,6 +9,7 @@ import com.lakeel.altla.vision.builder.R;
 import com.lakeel.altla.vision.builder.presentation.model.Axis;
 import com.lakeel.altla.vision.builder.presentation.presenter.MainPresenter;
 import com.lakeel.altla.vision.builder.presentation.view.MainView;
+import com.lakeel.altla.vision.builder.presentation.view.NavigationViewHost;
 import com.lakeel.altla.vision.builder.presentation.view.activity.ActivityScopeContext;
 import com.lakeel.altla.vision.builder.presentation.view.adapter.TextureModelAdapter;
 
@@ -29,6 +30,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.DragEvent;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -171,7 +173,7 @@ public final class MainFragment extends Fragment implements MainView {
         textureView.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
 
         interactionListener.animateHomeIconToBurger();
-//        setHasOptionsMenu(true);
+        setHasOptionsMenu(true);
 
         return view;
     }
@@ -204,6 +206,19 @@ public final class MainFragment extends Fragment implements MainView {
 
         presenter.onPause();
         textureView.onPause();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                NavigationViewHost.class.cast(getContext()).openDrawer();
+                return true;
+            default:
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

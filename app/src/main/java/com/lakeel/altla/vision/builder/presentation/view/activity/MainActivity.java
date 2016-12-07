@@ -16,6 +16,7 @@ import com.lakeel.altla.vision.builder.R;
 import com.lakeel.altla.vision.builder.presentation.app.MyApplication;
 import com.lakeel.altla.vision.builder.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.builder.presentation.di.module.ActivityModule;
+import com.lakeel.altla.vision.builder.presentation.view.NavigationViewHost;
 import com.lakeel.altla.vision.builder.presentation.view.fragment.MainFragment;
 import com.lakeel.altla.vision.builder.presentation.view.fragment.RegisterTextureFragment;
 import com.lakeel.altla.vision.builder.presentation.view.fragment.SignInFragment;
@@ -46,7 +47,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public final class MainActivity extends AppCompatActivity
-        implements ActivityScopeContext,
+        implements ActivityScopeContext, NavigationViewHost,
                    SignInFragment.OnShowMainFragmentListener,
                    MainFragment.InteractionListener,
                    RegisterTextureFragment.InteractionListener,
@@ -217,6 +218,11 @@ public final class MainActivity extends AppCompatActivity
     public void animateHomeIconToArrow() {
         LOG.d("animateHomeIconToArrow()");
         materialMenu.animateIconState(MaterialMenuDrawable.IconState.ARROW);
+    }
+
+    @Override
+    public void openDrawer() {
+        drawerLayout.openDrawer(GravityCompat.START);
     }
 
     class NavigationViewHeader implements FirebaseAuth.AuthStateListener {
