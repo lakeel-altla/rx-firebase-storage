@@ -1,6 +1,5 @@
 package com.lakeel.altla.vision.builder.presentation.di.component;
 
-import com.lakeel.altla.vision.builder.presentation.di.ActivityScope;
 import com.lakeel.altla.vision.builder.presentation.di.module.ActivityModule;
 import com.lakeel.altla.vision.builder.presentation.di.module.AndroidRepositoryModule;
 import com.lakeel.altla.vision.builder.presentation.di.module.FirebaseRepositoryModule;
@@ -11,6 +10,7 @@ import com.lakeel.altla.vision.builder.presentation.view.activity.MainActivity;
 import com.lakeel.altla.vision.builder.presentation.view.fragment.MainFragment;
 import com.lakeel.altla.vision.builder.presentation.view.fragment.RegisterTextureFragment;
 import com.lakeel.altla.vision.builder.presentation.view.fragment.SignInFragment;
+import com.lakeel.altla.vision.di.ActivityScope;
 
 import dagger.Subcomponent;
 

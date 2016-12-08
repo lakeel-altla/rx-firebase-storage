@@ -6,7 +6,7 @@ import com.google.atap.tangoservice.TangoConfig;
 
 import com.lakeel.altla.tango.TangoUpdateDispatcher;
 import com.lakeel.altla.tango.TangoUxListener;
-import com.lakeel.altla.vision.builder.presentation.di.ActivityScope;
+import com.lakeel.altla.vision.di.ActivityScope;
 
 import android.content.ContentResolver;
 import android.content.Context;

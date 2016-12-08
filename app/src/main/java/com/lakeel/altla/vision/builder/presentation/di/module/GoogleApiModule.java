@@ -7,7 +7,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.builder.R;
-import com.lakeel.altla.vision.builder.presentation.di.ActivityScope;
+import com.lakeel.altla.vision.di.ActivityScope;
 
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;

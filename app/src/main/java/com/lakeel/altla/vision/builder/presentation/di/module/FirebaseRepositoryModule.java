@@ -7,10 +7,10 @@ import com.google.firebase.storage.StorageReference;
 import com.lakeel.altla.vision.data.repository.firebase.TextureEntryRepositoryImpl;
 import com.lakeel.altla.vision.data.repository.firebase.TextureFileMetadataRepositoryImpl;
 import com.lakeel.altla.vision.data.repository.firebase.TextureFileRepositoryImpl;
+import com.lakeel.altla.vision.di.ActivityScope;
 import com.lakeel.altla.vision.domain.repository.TextureEntryRepository;
 import com.lakeel.altla.vision.domain.repository.TextureFileMetadataRepository;
 import com.lakeel.altla.vision.domain.repository.TextureFileRepository;
-import com.lakeel.altla.vision.builder.presentation.di.ActivityScope;
 
 import javax.inject.Named;
 
