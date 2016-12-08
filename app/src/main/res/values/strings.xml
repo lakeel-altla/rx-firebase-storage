@@ -15,14 +15,18 @@
     <string name="snackbar_done">Done.</string>
     <string name="snackbar_google_sign_in_failed">Google Sign-In failed.</string>
     <string name="snackbar_google_sign_in_reqiured">Sign-in required.</string>
+    <string name="snackbar_area_learning_permission_required">Area Learning permission required.</string>
     <string name="snackbar_image_file_not_found">Image file not found.</string>
     <string name="snackbar_unexpected_error_occured">Error.</string>
+    <string name="snackbar_action_request_permission">Request permission</string>
 
     <string name="toast_google_api_client_connection_failed">Google Play Services error.</string>
 
     <string name="progress_dialog_signin_in">Signing in...</string>
     <string name="progress_dialog_upload">Uploading...</string>
 
+    <string name="nav_scene_builder">Scene builder</string>
+    <string name="nav_area_description_list">Area description list</string>
     <string name="nav_sign_out">Sign out</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>

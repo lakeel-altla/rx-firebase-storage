@@ -3,9 +3,9 @@ package com.lakeel.altla.vision.builder.presentation.view.fragment;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.builder.R;
+import com.lakeel.altla.vision.builder.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.builder.presentation.presenter.SignInPresenter;
 import com.lakeel.altla.vision.builder.presentation.view.SignInView;
-import com.lakeel.altla.vision.builder.presentation.di.ActivityScopeContext;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -84,8 +84,8 @@ public final class SignInFragment extends Fragment implements SignInView {
     }
 
     @Override
-    public void showMainFragment() {
-        listener.onShowMainFragment();
+    public void showTangoPermissionFragment() {
+        listener.onShowTangoPermissionFragment();
     }
 
     @Override
@@ -95,10 +95,7 @@ public final class SignInFragment extends Fragment implements SignInView {
 
     @Override
     public void showProgressDialog() {
-        if (progressDialog == null) {
-            progressDialog = new ProgressDialog(getContext());
-        }
-
+        progressDialog = new ProgressDialog(getContext());
         progressDialog.setMessage(getString(R.string.progress_dialog_signin_in));
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
@@ -109,6 +106,7 @@ public final class SignInFragment extends Fragment implements SignInView {
     public void hideProgressDialog() {
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.hide();
+            progressDialog = null;
         }
     }
 
@@ -119,6 +117,6 @@ public final class SignInFragment extends Fragment implements SignInView {
 
     public interface OnShowMainFragmentListener {
 
-        void onShowMainFragment();
+        void onShowTangoPermissionFragment();
     }
 }

@@ -2,10 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="none">
+        <item android:id="@+id/nav_scene_builder"
+              android:title="@string/nav_scene_builder"/>
+        <item android:id="@+id/nav_area_description_list"
+              android:title="@string/nav_area_description_list"/>
+    </group>
 
+    <group android:checkableBehavior="none">
         <item android:id="@+id/nav_sign_out"
               android:title="@string/nav_sign_out"/>
-
     </group>
 
 </menu>

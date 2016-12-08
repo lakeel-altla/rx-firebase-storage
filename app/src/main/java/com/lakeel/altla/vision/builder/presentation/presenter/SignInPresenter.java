@@ -60,7 +60,7 @@ public final class SignInPresenter {
                 if (!mIsSignedInDetected) {
                     LOG.i("Signed in to firebase: %s", user.getUid());
                     view.hideProgressDialog();
-                    view.showMainFragment();
+                    view.showTangoPermissionFragment();
                     mIsSignedInDetected = true;
                 } else {
                     LOG.d("onAuthStateChanged() is fired twice.");

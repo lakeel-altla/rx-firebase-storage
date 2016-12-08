@@ -4,10 +4,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.StorageReference;
 
+import com.lakeel.altla.vision.data.repository.firebase.AreaDescriptionEntryRepositoryImpl;
 import com.lakeel.altla.vision.data.repository.firebase.TextureEntryRepositoryImpl;
 import com.lakeel.altla.vision.data.repository.firebase.TextureFileMetadataRepositoryImpl;
 import com.lakeel.altla.vision.data.repository.firebase.TextureFileRepositoryImpl;
 import com.lakeel.altla.vision.di.ActivityScope;
+import com.lakeel.altla.vision.domain.repository.AreaDescriptionEntryRepository;
 import com.lakeel.altla.vision.domain.repository.TextureEntryRepository;
 import com.lakeel.altla.vision.domain.repository.TextureFileMetadataRepository;
 import com.lakeel.altla.vision.domain.repository.TextureFileRepository;
@@ -39,5 +41,12 @@ public final class FirebaseRepositoryModule {
     public TextureFileMetadataRepository provideTextureFileMetadataRepository(
             @Named(Names.FIREBASE_STORAGE_REFERENCE_APP_ROOT) StorageReference reference, FirebaseAuth auth) {
         return new TextureFileMetadataRepositoryImpl(reference, auth);
+    }
+
+    @ActivityScope
+    @Provides
+    public AreaDescriptionEntryRepository provideAreaDescriptionEntryRepository(
+            @Named(Names.FIREBASE_DATABASE_REFERENCE_APP_ROOT) DatabaseReference reference, FirebaseAuth auth) {
+        return new AreaDescriptionEntryRepositoryImpl(reference, auth);
     }
 }

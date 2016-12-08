@@ -18,9 +18,11 @@ import com.lakeel.altla.vision.builder.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.vision.builder.presentation.di.component.ActivityComponent;
 import com.lakeel.altla.vision.builder.presentation.di.module.ActivityModule;
 import com.lakeel.altla.vision.builder.presentation.view.NavigationViewHost;
+import com.lakeel.altla.vision.builder.presentation.view.fragment.AreaDescriptionListFragment;
 import com.lakeel.altla.vision.builder.presentation.view.fragment.MainFragment;
 import com.lakeel.altla.vision.builder.presentation.view.fragment.RegisterTextureFragment;
 import com.lakeel.altla.vision.builder.presentation.view.fragment.SignInFragment;
+import com.lakeel.altla.vision.builder.presentation.view.fragment.TangoPermissionFragment;
 import com.projecttango.tangosupport.TangoSupport;
 import com.squareup.picasso.Picasso;
 
@@ -48,8 +50,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public final class MainActivity extends AppCompatActivity
-        implements ActivityScopeContext, NavigationViewHost,
+        implements ActivityScopeContext,
+                   NavigationViewHost,
                    SignInFragment.OnShowMainFragmentListener,
+                   TangoPermissionFragment.InteractionListener,
                    MainFragment.InteractionListener,
                    RegisterTextureFragment.InteractionListener,
                    NavigationView.OnNavigationItemSelectedListener {
@@ -170,10 +174,18 @@ public final class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.nav_sign_out) {
-            FirebaseAuth.getInstance().signOut();
-            showSignInFragment();
+
+        switch (item.getItemId()) {
+            case R.id.nav_scene_builder:
+                showMainFragment();
+                break;
+            case R.id.nav_area_description_list:
+                showAreaDescriptionListFragment();
+                break;
+            case R.id.nav_sign_out:
+                FirebaseAuth.getInstance().signOut();
+                showSignInFragment();
+                break;
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -186,13 +198,13 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onShowMainFragment() {
-        materialMenu.setVisible(true);
+    public void onShowTangoPermissionFragment() {
+        showTangoPermissionFragment();
+    }
 
-        MainFragment fragment = MainFragment.newInstance();
-        getSupportFragmentManager().beginTransaction()
-                                   .replace(R.id.fragment_container, fragment)
-                                   .commit();
+    @Override
+    public void onShowMainFragment() {
+        showMainFragment();
     }
 
     @Override
@@ -226,6 +238,31 @@ public final class MainActivity extends AppCompatActivity
         materialMenu.setVisible(false);
 
         SignInFragment fragment = SignInFragment.newInstance();
+        getSupportFragmentManager().beginTransaction()
+                                   .replace(R.id.fragment_container, fragment)
+                                   .commit();
+    }
+
+    private void showTangoPermissionFragment() {
+        materialMenu.setVisible(false);
+
+        TangoPermissionFragment fragment = TangoPermissionFragment.newInstance();
+        getSupportFragmentManager().beginTransaction()
+                                   .replace(R.id.fragment_container, fragment)
+                                   .commit();
+    }
+
+    private void showMainFragment() {
+        materialMenu.setVisible(true);
+
+        MainFragment fragment = MainFragment.newInstance();
+        getSupportFragmentManager().beginTransaction()
+                                   .replace(R.id.fragment_container, fragment)
+                                   .commit();
+    }
+
+    private void showAreaDescriptionListFragment() {
+        AreaDescriptionListFragment fragment = AreaDescriptionListFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
                                    .replace(R.id.fragment_container, fragment)
                                    .commit();
