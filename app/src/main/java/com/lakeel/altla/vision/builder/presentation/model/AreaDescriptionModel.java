@@ -8,11 +8,10 @@ public final class AreaDescriptionModel {
 
     public final String name;
 
-    public final boolean synced;
+    public boolean synced;
 
-    public AreaDescriptionModel(@NonNull String id, @NonNull String name, boolean synced) {
+    public AreaDescriptionModel(@NonNull String id, @NonNull String name) {
         this.id = id;
         this.name = name;
-        this.synced = synced;
     }
 }

@@ -1,7 +1,9 @@
 package com.lakeel.altla.vision.builder.presentation.di.module;
 
 import com.google.atap.tangoservice.Tango;
+import com.google.firebase.auth.FirebaseAuth;
 
+import com.lakeel.altla.vision.data.repository.android.AreaDescriptionCacheRepositoryImpl;
 import com.lakeel.altla.vision.data.repository.android.DocumentBitmapRepositoryImpl;
 import com.lakeel.altla.vision.data.repository.android.DocumentFilenameRepositoryImpl;
 import com.lakeel.altla.vision.data.repository.android.DocumentRepositoryImpl;
@@ -9,6 +11,7 @@ import com.lakeel.altla.vision.data.repository.android.FileBitmapRepositoryImpl;
 import com.lakeel.altla.vision.data.repository.android.TangoAreaDescriptionMetadataRepositoryImpl;
 import com.lakeel.altla.vision.data.repository.android.TextureCacheRepositoryImpl;
 import com.lakeel.altla.vision.di.ActivityScope;
+import com.lakeel.altla.vision.domain.repository.AreaDescriptionCacheRepository;
 import com.lakeel.altla.vision.domain.repository.DocumentBitmapRepository;
 import com.lakeel.altla.vision.domain.repository.DocumentFilenameRepository;
 import com.lakeel.altla.vision.domain.repository.DocumentRepository;
@@ -18,6 +21,8 @@ import com.lakeel.altla.vision.domain.repository.TextureCacheRepository;
 
 import android.content.ContentResolver;
 import android.content.Context;
+
+import java.io.File;
 
 import javax.inject.Named;
 
@@ -61,5 +66,12 @@ public final class AndroidRepositoryModule {
     @Provides
     public TangoAreaDescriptionMetadataRepository provideTangoMetadataRepository(Tango tango) {
         return new TangoAreaDescriptionMetadataRepositoryImpl(tango);
+    }
+
+    @ActivityScope
+    @Provides
+    public AreaDescriptionCacheRepository provideAreaDescriptionCacheRepository(
+            @Named(Names.EXTERNAL_STORAGE_ROOT) File rootDirectory, FirebaseAuth auth) {
+        return new AreaDescriptionCacheRepositoryImpl(rootDirectory, auth);
     }
 }

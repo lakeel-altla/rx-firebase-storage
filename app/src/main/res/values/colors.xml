@@ -9,7 +9,9 @@
     <color name="theme_accent">#ff6347</color>
 
     <!-- white -->
-    <color name="tint_image_button">#ffffff</color>
+    <color name="tint_image_button_texture_pane">#ffffff</color>
+    <!-- royalblue -->
+    <color name="tint_image_button_area_description_model">#4169e1</color>
 
     <!-- black (50%) -->
     <color name="background_model_pane">#88000000</color>
