@@ -3,8 +3,6 @@ apply plugin: 'com.android.library'
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.1"
-
-    // http://blog.hikware.com/article/174972847.html
     publishNonDefault true
 
     defaultConfig {
@@ -29,7 +27,7 @@ repositories {
 
 dependencies {
     compile 'com.android.support:appcompat-v7:25.0.1'
-    compile 'com.google.atap:tango:1.46'
-    compile 'com.google.atap:tango-ux:1.46'
-    compile 'com.projecttango:tango-support:1.46'
+    compile 'com.google.atap:tango:1.47'
+    compile 'com.google.atap:tango-ux:1.47'
+    compile 'com.projecttango:tango-support:1.47'
 }
