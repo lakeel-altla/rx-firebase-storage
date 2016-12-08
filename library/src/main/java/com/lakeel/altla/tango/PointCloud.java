@@ -47,7 +47,8 @@ public final class PointCloud implements OnPointCloudAvailableListener {
                 TangoPoseData.COORDINATE_FRAME_AREA_DESCRIPTION,
                 TangoPoseData.COORDINATE_FRAME_CAMERA_DEPTH,
                 TangoSupport.TANGO_SUPPORT_ENGINE_OPENGL,
-                TangoSupport.TANGO_SUPPORT_ENGINE_TANGO);
+                TangoSupport.TANGO_SUPPORT_ENGINE_TANGO,
+                0);
 
         if (transform.statusCode == TangoPoseData.POSE_VALID) {
             return calculateOpenGlPlane(intersectionPointPlaneModelPair, transform.matrix);
