@@ -3,7 +3,6 @@ package com.lakeel.altla.vision.data.repository.firebase;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
@@ -60,9 +59,9 @@ public final class AreaDescriptionEntryRepositoryImpl implements AreaDescription
                                      .equalTo(id);
 
         return RxFirebaseQuery.asObservableForSingleValueEvent(query)
+                              .flatMap(snapshot -> Observable.from(snapshot.getChildren()))
                               .map(snapshot -> {
-                                  DataSnapshot child = snapshot.getChildren().iterator().next();
-                                  String name = child.getValue(String.class);
+                                  String name = snapshot.getValue(String.class);
                                   return new AreaDescriptionEntry(id, name);
                               });
     }
