@@ -1,15 +1,15 @@
 package com.lakeel.altla.vision.builder.presentation.di.module;
 
-import com.lakeel.altla.vision.builder.data.repository.android.DocumentBitmapRepositoryImpl;
-import com.lakeel.altla.vision.builder.data.repository.android.DocumentFilenameRepositoryImpl;
-import com.lakeel.altla.vision.builder.data.repository.android.DocumentRepositoryImpl;
-import com.lakeel.altla.vision.builder.data.repository.android.FileBitmapRepositoryImpl;
-import com.lakeel.altla.vision.builder.data.repository.android.TextureCacheRepositoryImpl;
-import com.lakeel.altla.vision.builder.domain.repository.DocumentBitmapRepository;
-import com.lakeel.altla.vision.builder.domain.repository.DocumentFilenameRepository;
-import com.lakeel.altla.vision.builder.domain.repository.DocumentRepository;
-import com.lakeel.altla.vision.builder.domain.repository.FileBitmapRepository;
-import com.lakeel.altla.vision.builder.domain.repository.TextureCacheRepository;
+import com.lakeel.altla.vision.data.repository.android.DocumentBitmapRepositoryImpl;
+import com.lakeel.altla.vision.data.repository.android.DocumentFilenameRepositoryImpl;
+import com.lakeel.altla.vision.data.repository.android.DocumentRepositoryImpl;
+import com.lakeel.altla.vision.data.repository.android.FileBitmapRepositoryImpl;
+import com.lakeel.altla.vision.data.repository.android.TextureCacheRepositoryImpl;
+import com.lakeel.altla.vision.domain.repository.DocumentBitmapRepository;
+import com.lakeel.altla.vision.domain.repository.DocumentFilenameRepository;
+import com.lakeel.altla.vision.domain.repository.DocumentRepository;
+import com.lakeel.altla.vision.domain.repository.FileBitmapRepository;
+import com.lakeel.altla.vision.domain.repository.TextureCacheRepository;
 import com.lakeel.altla.vision.builder.presentation.di.ActivityScope;
 
 import android.content.ContentResolver;
