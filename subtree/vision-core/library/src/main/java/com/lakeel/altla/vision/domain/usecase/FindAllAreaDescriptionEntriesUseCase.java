@@ -1,7 +1,7 @@
 package com.lakeel.altla.vision.domain.usecase;
 
-import com.lakeel.altla.vision.domain.model.AreaDescriptionEntry;
-import com.lakeel.altla.vision.domain.repository.AreaDescriptionEntryRepository;
+import com.lakeel.altla.vision.domain.model.UserAreaDescription;
+import com.lakeel.altla.vision.domain.repository.UserAreaDescriptionRepository;
 
 import javax.inject.Inject;
 
@@ -11,14 +11,14 @@ import rx.schedulers.Schedulers;
 public final class FindAllAreaDescriptionEntriesUseCase {
 
     @Inject
-    AreaDescriptionEntryRepository areaDescriptionEntryRepository;
+    UserAreaDescriptionRepository userAreaDescriptionRepository;
 
     @Inject
     public FindAllAreaDescriptionEntriesUseCase() {
     }
 
-    public Observable<AreaDescriptionEntry> execute() {
-        return areaDescriptionEntryRepository.findAllEntries()
-                                             .subscribeOn(Schedulers.io());
+    public Observable<UserAreaDescription> execute() {
+        return userAreaDescriptionRepository.findAll()
+                                            .subscribeOn(Schedulers.io());
     }
 }

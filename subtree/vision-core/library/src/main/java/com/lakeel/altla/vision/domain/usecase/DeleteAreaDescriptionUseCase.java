@@ -1,8 +1,8 @@
 package com.lakeel.altla.vision.domain.usecase;
 
 import com.lakeel.altla.vision.ArgumentNullException;
-import com.lakeel.altla.vision.domain.repository.AreaDescriptionEntryRepository;
-import com.lakeel.altla.vision.domain.repository.AreaDescriptionFileRepository;
+import com.lakeel.altla.vision.domain.repository.UserAreaDescriptionFileRepository;
+import com.lakeel.altla.vision.domain.repository.UserAreaDescriptionRepository;
 
 import javax.inject.Inject;
 
@@ -12,10 +12,10 @@ import rx.schedulers.Schedulers;
 public final class DeleteAreaDescriptionUseCase {
 
     @Inject
-    AreaDescriptionEntryRepository areaDescriptionEntryRepository;
+    UserAreaDescriptionRepository userAreaDescriptionRepository;
 
     @Inject
-    AreaDescriptionFileRepository areaDescriptionFileRepository;
+    UserAreaDescriptionFileRepository userAreaDescriptionFileRepository;
 
     @Inject
     public DeleteAreaDescriptionUseCase() {
@@ -24,8 +24,8 @@ public final class DeleteAreaDescriptionUseCase {
     public Single<String> execute(String id) {
         if (id == null) throw new ArgumentNullException("id");
 
-        return areaDescriptionFileRepository.delete(id)
-                                            .flatMap(areaDescriptionEntryRepository::delete)
-                                            .subscribeOn(Schedulers.io());
+        return userAreaDescriptionFileRepository.delete(id)
+                                                .flatMap(userAreaDescriptionRepository::delete)
+                                                .subscribeOn(Schedulers.io());
     }
 }

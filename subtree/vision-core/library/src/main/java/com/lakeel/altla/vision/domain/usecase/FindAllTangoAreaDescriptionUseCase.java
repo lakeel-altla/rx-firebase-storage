@@ -1,7 +1,7 @@
 package com.lakeel.altla.vision.domain.usecase;
 
-import com.lakeel.altla.tango.TangoAreaDescriptionMetaDataHelper;
-import com.lakeel.altla.vision.domain.model.AreaDescriptionEntry;
+import com.lakeel.altla.vision.domain.mapper.UserAreaDescriptionMapper;
+import com.lakeel.altla.vision.domain.model.UserAreaDescription;
 import com.lakeel.altla.vision.domain.repository.TangoAreaDescriptionMetadataRepository;
 
 import javax.inject.Inject;
@@ -18,14 +18,9 @@ public final class FindAllTangoAreaDescriptionUseCase {
     public FindAllTangoAreaDescriptionUseCase() {
     }
 
-    public Observable<AreaDescriptionEntry> execute() {
-        return tangoAreaDescriptionMetadataRepository
-                .findAll()
-                .map(tangoAreaDescriptionMetaData -> {
-                    String id = TangoAreaDescriptionMetaDataHelper.getUuid(tangoAreaDescriptionMetaData);
-                    String name = TangoAreaDescriptionMetaDataHelper.getName(tangoAreaDescriptionMetaData);
-                    return new AreaDescriptionEntry(id, name);
-                })
-                .subscribeOn(Schedulers.io());
+    public Observable<UserAreaDescription> execute() {
+        return tangoAreaDescriptionMetadataRepository.findAll()
+                                                     .map(UserAreaDescriptionMapper::map)
+                                                     .subscribeOn(Schedulers.io());
     }
 }

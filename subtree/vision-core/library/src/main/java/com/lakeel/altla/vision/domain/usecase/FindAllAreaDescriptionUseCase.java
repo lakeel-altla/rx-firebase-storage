@@ -1,11 +1,10 @@
 package com.lakeel.altla.vision.domain.usecase;
 
-import com.google.atap.tangoservice.TangoAreaDescriptionMetaData;
-
-import com.lakeel.altla.tango.TangoAreaDescriptionMetaDataHelper;
+import com.lakeel.altla.vision.domain.mapper.UserAreaDescriptionMapper;
 import com.lakeel.altla.vision.domain.model.AreaDescription;
-import com.lakeel.altla.vision.domain.repository.AreaDescriptionEntryRepository;
+import com.lakeel.altla.vision.domain.model.UserAreaDescription;
 import com.lakeel.altla.vision.domain.repository.TangoAreaDescriptionMetadataRepository;
+import com.lakeel.altla.vision.domain.repository.UserAreaDescriptionRepository;
 
 import javax.inject.Inject;
 
@@ -18,35 +17,30 @@ public final class FindAllAreaDescriptionUseCase {
     TangoAreaDescriptionMetadataRepository tangoAreaDescriptionMetadataRepository;
 
     @Inject
-    AreaDescriptionEntryRepository areaDescriptionEntryRepository;
+    UserAreaDescriptionRepository userAreaDescriptionRepository;
 
     @Inject
     public FindAllAreaDescriptionUseCase() {
     }
 
     public Observable<AreaDescription> execute() {
-        return tangoAreaDescriptionMetadataRepository
-                // Find all area descriptions that are stored in Tango.
-                .findAll()
-                // Map it to a model for internal use.
-                .map(this::toModel)
-                // Check whether it is synchronized with the server.
-                .flatMap(this::resolveAreaDescription)
-                .subscribeOn(Schedulers.io());
+        // Find all area descriptions that are stored in Tango.
+        return tangoAreaDescriptionMetadataRepository.findAll()
+                                                     // Map it to a model for internal use.
+                                                     .map(UserAreaDescriptionMapper::map)
+                                                     // Check whether it is synchronized with the server.
+                                                     .flatMap(this::resolveAreaDescription)
+                                                     .subscribeOn(Schedulers.io());
     }
 
-    private Observable<AreaDescription> resolveAreaDescription(Model model) {
-        return areaDescriptionEntryRepository
-                .findEntry(model.id)
-                .map(entry -> new AreaDescription(model.id, model.name, true))
-                .defaultIfEmpty(new AreaDescription(model.id, model.name, false));
-    }
-
-    private Model toModel(TangoAreaDescriptionMetaData metaData) {
-        Model model = new Model();
-        model.id = TangoAreaDescriptionMetaDataHelper.getUuid(metaData);
-        model.name = TangoAreaDescriptionMetaDataHelper.getName(metaData);
-        return model;
+    private Observable<AreaDescription> resolveAreaDescription(UserAreaDescription tangoAreaDescroption) {
+        return userAreaDescriptionRepository.find(tangoAreaDescroption.id)
+                                            .map(userAreaDescription -> new AreaDescription(userAreaDescription.id,
+                                                                                            userAreaDescription.name,
+                                                                                            true))
+                                            .defaultIfEmpty(new AreaDescription(tangoAreaDescroption.id,
+                                                                                tangoAreaDescroption.name,
+                                                                                false));
     }
 
     /**

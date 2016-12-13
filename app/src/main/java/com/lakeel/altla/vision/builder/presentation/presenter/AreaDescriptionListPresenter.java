@@ -6,7 +6,7 @@ import com.lakeel.altla.vision.builder.R;
 import com.lakeel.altla.vision.builder.presentation.model.AreaDescriptionModel;
 import com.lakeel.altla.vision.builder.presentation.view.AreaDescriptionListItemView;
 import com.lakeel.altla.vision.builder.presentation.view.AreaDescriptionListView;
-import com.lakeel.altla.vision.domain.usecase.AddAreaDescriptionUseCase;
+import com.lakeel.altla.vision.domain.usecase.SaveAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.DeleteAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindAllAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheDirectoryUseCase;
@@ -33,7 +33,7 @@ public final class AreaDescriptionListPresenter {
     GetAreaDescriptionCacheDirectoryUseCase getAreaDescriptionCacheDirectoryUseCase;
 
     @Inject
-    AddAreaDescriptionUseCase addAreaDescriptionUseCase;
+    SaveAreaDescriptionUseCase saveAreaDescriptionUseCase;
 
     @Inject
     DeleteAreaDescriptionUseCase deleteAreaDescriptionUseCase;
@@ -110,7 +110,7 @@ public final class AreaDescriptionListPresenter {
         prevBytesTransferred = 0;
         view.showUploadProgressDialog();
 
-        Subscription subscription = addAreaDescriptionUseCase
+        Subscription subscription = saveAreaDescriptionUseCase
                 .execute(exportingId, (totalBytes, bytesTransferred) -> {
                     long increment = bytesTransferred - prevBytesTransferred;
                     prevBytesTransferred = bytesTransferred;

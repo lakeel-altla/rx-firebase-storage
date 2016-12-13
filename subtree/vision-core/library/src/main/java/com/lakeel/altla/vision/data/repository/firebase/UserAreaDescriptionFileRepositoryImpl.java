@@ -10,20 +10,20 @@ import com.google.firebase.storage.UploadTask;
 import com.lakeel.altla.rx.firebase.storage.RxFirebaseStorageTask;
 import com.lakeel.altla.rx.tasks.RxGmsTask;
 import com.lakeel.altla.vision.ArgumentNullException;
-import com.lakeel.altla.vision.domain.repository.AreaDescriptionFileRepository;
+import com.lakeel.altla.vision.domain.repository.UserAreaDescriptionFileRepository;
 
 import java.io.File;
 import java.io.InputStream;
 
 import rx.Single;
 
-public final class AreaDescriptionFileRepositoryImpl implements AreaDescriptionFileRepository {
+public final class UserAreaDescriptionFileRepositoryImpl implements UserAreaDescriptionFileRepository {
 
     private static final String PATH_USER_AREA_DESCRIPTIONS = "userAreaDescriptions";
 
     private final StorageReference rootReference;
 
-    public AreaDescriptionFileRepositoryImpl(StorageReference rootReference) {
+    public UserAreaDescriptionFileRepositoryImpl(StorageReference rootReference) {
         if (rootReference == null) throw new ArgumentNullException("rootReference");
 
         this.rootReference = rootReference;

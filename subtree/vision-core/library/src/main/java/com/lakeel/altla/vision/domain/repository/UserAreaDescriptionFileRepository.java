@@ -5,7 +5,7 @@ import java.io.InputStream;
 
 import rx.Single;
 
-public interface AreaDescriptionFileRepository {
+public interface UserAreaDescriptionFileRepository {
 
     Single<String> upload(String id, InputStream stream, OnProgressListener onProgressListener);
 
