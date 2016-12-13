@@ -1,7 +1,6 @@
 package com.lakeel.altla.vision.builder.presentation.di.module;
 
 import com.google.atap.tangoservice.Tango;
-import com.google.firebase.auth.FirebaseAuth;
 
 import com.lakeel.altla.vision.data.repository.android.AreaDescriptionCacheRepositoryImpl;
 import com.lakeel.altla.vision.data.repository.android.DocumentBitmapRepositoryImpl;
@@ -71,7 +70,7 @@ public final class AndroidRepositoryModule {
     @ActivityScope
     @Provides
     public AreaDescriptionCacheRepository provideAreaDescriptionCacheRepository(
-            @Named(Names.EXTERNAL_STORAGE_ROOT) File rootDirectory, FirebaseAuth auth) {
-        return new AreaDescriptionCacheRepositoryImpl(rootDirectory, auth);
+            @Named(Names.EXTERNAL_STORAGE_ROOT) File rootDirectory) {
+        return new AreaDescriptionCacheRepositoryImpl(rootDirectory);
     }
 }

@@ -23,14 +23,10 @@ public final class AreaDescriptionFileRepositoryImpl implements AreaDescriptionF
 
     private final StorageReference rootReference;
 
-    private final FirebaseAuth auth;
-
-    public AreaDescriptionFileRepositoryImpl(StorageReference rootReference, FirebaseAuth auth) {
+    public AreaDescriptionFileRepositoryImpl(StorageReference rootReference) {
         if (rootReference == null) throw new ArgumentNullException("rootReference");
-        if (auth == null) throw new ArgumentNullException("auth");
 
         this.rootReference = rootReference;
-        this.auth = auth;
     }
 
     @Override
@@ -45,7 +41,7 @@ public final class AreaDescriptionFileRepositoryImpl implements AreaDescriptionF
         // Note that a subsequent stream processing is also handled by its thread.
 
         StorageReference reference = rootReference.child(PATH_USER_AREA_DESCRIPTIONS)
-                                                  .child(resolveUserId())
+                                                  .child(resolveCurrentUserId())
                                                   .child(id);
         UploadTask task = reference.putStream(stream);
 
@@ -59,7 +55,7 @@ public final class AreaDescriptionFileRepositoryImpl implements AreaDescriptionF
         if (destination == null) throw new ArgumentNullException("destination");
 
         StorageReference reference = rootReference.child(PATH_USER_AREA_DESCRIPTIONS)
-                                                  .child(resolveUserId())
+                                                  .child(resolveCurrentUserId())
                                                   .child(id);
         FileDownloadTask task = reference.getFile(destination);
 
@@ -71,16 +67,16 @@ public final class AreaDescriptionFileRepositoryImpl implements AreaDescriptionF
     public Single<String> delete(String id) {
         if (id == null) throw new ArgumentNullException("id");
 
-        StorageReference reference = rootReference.child(resolveUserId())
-                                                  .child(PATH_USER_AREA_DESCRIPTIONS)
+        StorageReference reference = rootReference.child(PATH_USER_AREA_DESCRIPTIONS)
+                                                  .child(resolveCurrentUserId())
                                                   .child(id);
         Task<Void> task = reference.delete();
 
         return RxGmsTask.asObservable(task).map(aVoid -> id).toSingle();
     }
 
-    private String resolveUserId() {
-        FirebaseUser user = auth.getCurrentUser();
+    private String resolveCurrentUserId() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             throw new IllegalStateException("The current user could not be resolved.");
         }

@@ -19,14 +19,10 @@ public final class TextureFileMetadataRepositoryImpl implements TextureFileMetad
 
     private final StorageReference rootReference;
 
-    private final FirebaseAuth auth;
-
-    public TextureFileMetadataRepositoryImpl(StorageReference rootReference, FirebaseAuth auth) {
+    public TextureFileMetadataRepositoryImpl(StorageReference rootReference) {
         if (rootReference == null) throw new ArgumentNullException("rootReference");
-        if (auth == null) throw new ArgumentNullException("auth");
 
         this.rootReference = rootReference;
-        this.auth = auth;
     }
 
     @Override
@@ -34,7 +30,7 @@ public final class TextureFileMetadataRepositoryImpl implements TextureFileMetad
         if (fileId == null) throw new ArgumentNullException("fileId");
 
         Task<StorageMetadata> task = rootReference.child(PATH_USER_TEXTURES)
-                                                  .child(resolveUserId())
+                                                  .child(resolveCurrentUserId())
                                                   .child(fileId)
                                                   .getMetadata();
 
@@ -47,8 +43,8 @@ public final class TextureFileMetadataRepositoryImpl implements TextureFileMetad
                         });
     }
 
-    private String resolveUserId() {
-        FirebaseUser user = auth.getCurrentUser();
+    private String resolveCurrentUserId() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             throw new IllegalStateException("The current user could not be resolved.");
         }

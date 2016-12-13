@@ -4,7 +4,6 @@ import com.lakeel.altla.vision.builder.presentation.di.module.ActivityModule;
 import com.lakeel.altla.vision.builder.presentation.di.module.ApplicationModule;
 import com.lakeel.altla.vision.builder.presentation.di.module.ConfigModule;
 import com.lakeel.altla.vision.builder.presentation.di.module.ExternalStorageModule;
-import com.lakeel.altla.vision.builder.presentation.di.module.FirebaseAuthModule;
 import com.lakeel.altla.vision.builder.presentation.di.module.FirebaseDatabaseModule;
 import com.lakeel.altla.vision.builder.presentation.di.module.FirebaseStorageModule;
 import com.lakeel.altla.vision.builder.presentation.di.module.GoogleSignInModule;
@@ -23,7 +22,6 @@ import dagger.Component;
                        ConfigModule.class,
                        ExternalStorageModule.class,
                        GoogleSignInModule.class,
-                       FirebaseAuthModule.class,
                        FirebaseDatabaseModule.class,
                        FirebaseStorageModule.class })
 public interface ApplicationComponent {

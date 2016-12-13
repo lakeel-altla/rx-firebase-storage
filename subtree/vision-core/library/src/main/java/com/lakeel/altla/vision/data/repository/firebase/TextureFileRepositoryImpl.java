@@ -23,14 +23,10 @@ public final class TextureFileRepositoryImpl implements TextureFileRepository {
 
     private final StorageReference rootReference;
 
-    private final FirebaseAuth auth;
-
-    public TextureFileRepositoryImpl(StorageReference rootReference, FirebaseAuth auth) {
+    public TextureFileRepositoryImpl(StorageReference rootReference) {
         if (rootReference == null) throw new ArgumentNullException("rootReference");
-        if (auth == null) throw new ArgumentNullException("auth");
 
         this.rootReference = rootReference;
-        this.auth = auth;
     }
 
     @Override
@@ -42,7 +38,7 @@ public final class TextureFileRepositoryImpl implements TextureFileRepository {
         // Note that a subsequent stream processing is also handled by its thread.
 
         StorageReference reference = rootReference.child(PATH_USER_TEXTURES)
-                                                  .child(resolveUserId())
+                                                  .child(resolveCurrentUserId())
                                                   .child(fileId);
         UploadTask task = reference.putStream(stream);
 
@@ -54,7 +50,7 @@ public final class TextureFileRepositoryImpl implements TextureFileRepository {
     public Single<String> delete(String fileId) {
 
         StorageReference reference = rootReference.child(PATH_USER_TEXTURES)
-                                                  .child(resolveUserId())
+                                                  .child(resolveCurrentUserId())
                                                   .child(fileId);
         Task<Void> task = reference.delete();
 
@@ -65,7 +61,7 @@ public final class TextureFileRepositoryImpl implements TextureFileRepository {
     public Single<String> download(String fileId, File destination, OnProgressListener onProgressListener) {
 
         StorageReference reference = rootReference.child(PATH_USER_TEXTURES)
-                                                  .child(resolveUserId())
+                                                  .child(resolveCurrentUserId())
                                                   .child(fileId);
         FileDownloadTask task = reference.getFile(destination);
 
@@ -73,8 +69,8 @@ public final class TextureFileRepositoryImpl implements TextureFileRepository {
                                     .map(snapshot -> fileId);
     }
 
-    private String resolveUserId() {
-        FirebaseUser user = auth.getCurrentUser();
+    private String resolveCurrentUserId() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             throw new IllegalStateException("The current user could not be resolved.");
         }

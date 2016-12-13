@@ -31,20 +31,16 @@ public final class TextureEntryRepositoryImpl implements TextureEntryRepository 
 
     private final DatabaseReference rootReference;
 
-    private final FirebaseAuth auth;
-
-    public TextureEntryRepositoryImpl(DatabaseReference rootReference, FirebaseAuth auth) {
+    public TextureEntryRepositoryImpl(DatabaseReference rootReference) {
         if (rootReference == null) throw new ArgumentNullException("rootReference");
-        if (auth == null) throw new ArgumentNullException("auth");
 
         this.rootReference = rootReference;
-        this.auth = auth;
     }
 
     @Override
     public Single<String> save(String id, String name, String fileId, TextureMetadata metadata) {
 
-        String userId = resolveUserId();
+        String userId = resolveCurrentUserId();
 
         Map<String, Object> updates = new HashMap<>();
         updates.put(PATH_USER_TEXTURE_ENTRIES + "/" + userId + "/" + id, name);
@@ -58,7 +54,7 @@ public final class TextureEntryRepositoryImpl implements TextureEntryRepository 
     @Override
     public Observable<TextureEntry> findEntry(String id) {
         Query query = rootReference.child(PATH_USER_TEXTURE_ENTRIES)
-                                   .child(resolveUserId())
+                                   .child(resolveCurrentUserId())
                                    .orderByKey()
                                    .equalTo(id);
 
@@ -73,7 +69,7 @@ public final class TextureEntryRepositoryImpl implements TextureEntryRepository 
     @Override
     public Observable<TextureEntry> findAllEntries() {
         Query query = rootReference.child(PATH_USER_TEXTURE_ENTRIES)
-                                   .child(resolveUserId())
+                                   .child(resolveCurrentUserId())
                                    .orderByValue();
 
         return RxFirebaseQuery.asObservableForSingleValueEvent(query)
@@ -88,7 +84,7 @@ public final class TextureEntryRepositoryImpl implements TextureEntryRepository 
     @Override
     public Observable<TextureReference> findReference(String id) {
         Query query = rootReference.child(PATH_USER_TEXTURE_REFERENCES)
-                                   .child(resolveUserId())
+                                   .child(resolveCurrentUserId())
                                    .orderByKey()
                                    .equalTo(id);
 
@@ -109,7 +105,7 @@ public final class TextureEntryRepositoryImpl implements TextureEntryRepository 
     @Override
     public Single<String> delete(String id) {
 
-        String userId = resolveUserId();
+        String userId = resolveCurrentUserId();
 
         // Use updateChildren(...) to atomize multiple reference deletes,
         Map<String, Object> updates = new HashMap<>();
@@ -121,8 +117,8 @@ public final class TextureEntryRepositoryImpl implements TextureEntryRepository 
         return RxGmsTask.asSingle(task).map(aVoid -> id);
     }
 
-    private String resolveUserId() {
-        FirebaseUser user = auth.getCurrentUser();
+    private String resolveCurrentUserId() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             throw new IllegalStateException("The current user could not be resolved.");
         }

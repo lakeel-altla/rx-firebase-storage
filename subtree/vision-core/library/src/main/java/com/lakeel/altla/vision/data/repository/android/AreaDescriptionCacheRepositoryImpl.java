@@ -1,8 +1,5 @@
 package com.lakeel.altla.vision.data.repository.android;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.repository.AreaDescriptionCacheRepository;
 
@@ -16,14 +13,10 @@ public final class AreaDescriptionCacheRepositoryImpl implements AreaDescription
 
     private final File rootDirectory;
 
-    private final FirebaseAuth auth;
-
-    public AreaDescriptionCacheRepositoryImpl(File rootDirectory, FirebaseAuth auth) {
+    public AreaDescriptionCacheRepositoryImpl(File rootDirectory) {
         if (rootDirectory == null) throw new ArgumentNullException("rootDirectory");
-        if (auth == null) throw new ArgumentNullException("auth");
 
         this.rootDirectory = rootDirectory;
-        this.auth = auth;
     }
 
     @Override
@@ -39,8 +32,7 @@ public final class AreaDescriptionCacheRepositoryImpl implements AreaDescription
     }
 
     private File ensureCacheDirectory() {
-        File userDirectory = new File(rootDirectory, resolveUserId());
-        File directory = new File(userDirectory, PATH);
+        File directory = new File(rootDirectory, PATH);
         if (!directory.exists()) {
             directory.mkdirs();
         }
@@ -50,13 +42,5 @@ public final class AreaDescriptionCacheRepositoryImpl implements AreaDescription
     private File resolveCacheFile(String id) {
         File directory = ensureCacheDirectory();
         return new File(directory, id);
-    }
-
-    private String resolveUserId() {
-        FirebaseUser user = auth.getCurrentUser();
-        if (user == null) {
-            throw new IllegalStateException("The current user could not be resolved.");
-        }
-        return user.getUid();
     }
 }

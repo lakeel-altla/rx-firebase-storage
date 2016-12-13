@@ -27,14 +27,10 @@ public final class AreaDescriptionEntryRepositoryImpl implements AreaDescription
 
     private final DatabaseReference rootReference;
 
-    private final FirebaseAuth auth;
-
-    public AreaDescriptionEntryRepositoryImpl(DatabaseReference rootReference, FirebaseAuth auth) {
+    public AreaDescriptionEntryRepositoryImpl(DatabaseReference rootReference) {
         if (rootReference == null) throw new ArgumentNullException("rootReference");
-        if (auth == null) throw new ArgumentNullException("auth");
 
         this.rootReference = rootReference;
-        this.auth = auth;
     }
 
     @Override
@@ -42,7 +38,7 @@ public final class AreaDescriptionEntryRepositoryImpl implements AreaDescription
         if (entry == null) throw new ArgumentNullException("entry");
         if (metadata == null) throw new ArgumentNullException("metadata");
 
-        String userId = resolveUserId();
+        String userId = resolveCurrentUserId();
 
         Map<String, Object> updates = new HashMap<>();
         updates.put(PATH_USER_AREA_DESCRIPTIONS_ENTRIES + "/" + userId + "/" + entry.id, entry.name);
@@ -57,7 +53,7 @@ public final class AreaDescriptionEntryRepositoryImpl implements AreaDescription
         if (id == null) throw new ArgumentNullException("id");
 
         Query query = rootReference.child(PATH_USER_AREA_DESCRIPTIONS_ENTRIES)
-                                   .child(resolveUserId())
+                                   .child(resolveCurrentUserId())
                                    .orderByKey()
                                    .equalTo(id);
 
@@ -72,7 +68,7 @@ public final class AreaDescriptionEntryRepositoryImpl implements AreaDescription
     @Override
     public Observable<AreaDescriptionEntry> findAllEntries() {
         Query query = rootReference.child(PATH_USER_AREA_DESCRIPTIONS_ENTRIES)
-                                   .child(resolveUserId())
+                                   .child(resolveCurrentUserId())
                                    .orderByValue();
 
         return RxFirebaseQuery.asObservableForSingleValueEvent(query)
@@ -86,7 +82,7 @@ public final class AreaDescriptionEntryRepositoryImpl implements AreaDescription
 
     @Override
     public Single<String> delete(String id) {
-        String userId = resolveUserId();
+        String userId = resolveCurrentUserId();
 
         // Use updateChildren(...) to atomize multiple reference deletes,
         Map<String, Object> updates = new HashMap<>();
@@ -97,8 +93,8 @@ public final class AreaDescriptionEntryRepositoryImpl implements AreaDescription
         return RxGmsTask.asSingle(task).map(aVoid -> id);
     }
 
-    private String resolveUserId() {
-        FirebaseUser user = auth.getCurrentUser();
+    private String resolveCurrentUserId() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             throw new IllegalStateException("The current user could not be resolved.");
         }
