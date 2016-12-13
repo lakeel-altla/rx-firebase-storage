@@ -115,9 +115,12 @@ public final class SaveAreaDescriptionUseCase {
     }
 
     private Single<Model> saveUserAreaDescription(Model model) {
-        return userAreaDescriptionRepository
-                .save(model.userAreaDescription)
-                .map(entry -> model);
+        return userAreaDescriptionRepository.save(model.userAreaDescription)
+                                            .map(userAreaDescription -> {
+                                                // Mark as synced.
+                                                model.userAreaDescription.synced = true;
+                                                return model;
+                                            });
     }
 
     public interface OnProgressListener {

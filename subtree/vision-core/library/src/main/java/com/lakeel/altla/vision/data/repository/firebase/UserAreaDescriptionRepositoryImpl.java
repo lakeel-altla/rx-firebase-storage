@@ -2,6 +2,7 @@ package com.lakeel.altla.vision.data.repository.firebase;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
@@ -49,13 +50,19 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
                                                    .child(resolveCurrentUserId())
                                                    .child(id);
 
-        return RxFirebaseQuery
-                .asObservableForSingleValueEvent(reference)
-                .flatMap(snapshot -> Observable.from(snapshot.getChildren()))
-                .map(snapshot -> {
-                    UserAreaDescriptionValue value = snapshot.getValue(UserAreaDescriptionValue.class);
-                    return new UserAreaDescription(id, value.name, value.creationTime);
-                });
+        return RxFirebaseQuery.asObservableForSingleValueEvent(reference)
+                              .flatMap(this::parseUserAreaDescriptionValue)
+                              .map(value -> new UserAreaDescription(id, value.name, value.creationTime));
+    }
+
+    private Observable<UserAreaDescriptionValue> parseUserAreaDescriptionValue(DataSnapshot snapshot) {
+        return Observable.create(subscriber -> {
+            if (snapshot.exists()) {
+                UserAreaDescriptionValue value = snapshot.getValue(UserAreaDescriptionValue.class);
+                subscriber.onNext(value);
+            }
+            subscriber.onCompleted();
+        });
     }
 
     @Override
@@ -92,7 +99,7 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
         return user.getUid();
     }
 
-    public final class UserAreaDescriptionValue {
+    public static final class UserAreaDescriptionValue {
 
         public String name;
 

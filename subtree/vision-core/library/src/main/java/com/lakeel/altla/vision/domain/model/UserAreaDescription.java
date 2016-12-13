@@ -10,6 +10,8 @@ public final class UserAreaDescription {
 
     public final long creationTime;
 
+    public boolean synced;
+
     public UserAreaDescription(String id, String name, long creationTime) {
         if (id == null) throw new ArgumentNullException("id");
         if (name == null) throw new ArgumentNullException("name");

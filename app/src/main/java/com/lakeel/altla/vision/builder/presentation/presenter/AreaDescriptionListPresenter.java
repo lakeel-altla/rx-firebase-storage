@@ -6,10 +6,10 @@ import com.lakeel.altla.vision.builder.R;
 import com.lakeel.altla.vision.builder.presentation.model.AreaDescriptionModel;
 import com.lakeel.altla.vision.builder.presentation.view.AreaDescriptionListItemView;
 import com.lakeel.altla.vision.builder.presentation.view.AreaDescriptionListView;
-import com.lakeel.altla.vision.domain.usecase.SaveAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.DeleteAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindAllAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheDirectoryUseCase;
+import com.lakeel.altla.vision.domain.usecase.SaveAreaDescriptionUseCase;
 
 import android.support.annotation.NonNull;
 
@@ -117,7 +117,7 @@ public final class AreaDescriptionListPresenter {
                     view.setUploadProgressDialogProgress(totalBytes, increment);
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(entry -> {
+                .subscribe(userAreaDescription -> {
                     LOG.d("Synced the area description.");
 
                     // Mark as synced.
