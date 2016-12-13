@@ -19,17 +19,17 @@ import rx.Single;
 
 public final class AreaDescriptionFileRepositoryImpl implements AreaDescriptionFileRepository {
 
-    private static final String PATH_AREA_DESCRIPTIONS = "areaDescriptions";
+    private static final String PATH_USER_AREA_DESCRIPTIONS = "userAreaDescriptions";
 
-    private final StorageReference baseDirectory;
+    private final StorageReference rootReference;
 
     private final FirebaseAuth auth;
 
-    public AreaDescriptionFileRepositoryImpl(StorageReference baseDirectory, FirebaseAuth auth) {
-        if (baseDirectory == null) throw new ArgumentNullException("baseDirectory");
+    public AreaDescriptionFileRepositoryImpl(StorageReference rootReference, FirebaseAuth auth) {
+        if (rootReference == null) throw new ArgumentNullException("rootReference");
         if (auth == null) throw new ArgumentNullException("auth");
 
-        this.baseDirectory = baseDirectory;
+        this.rootReference = rootReference;
         this.auth = auth;
     }
 
@@ -44,8 +44,8 @@ public final class AreaDescriptionFileRepositoryImpl implements AreaDescriptionF
         // Calling RxJava methods from them will be also called by its thread.
         // Note that a subsequent stream processing is also handled by its thread.
 
-        StorageReference reference = baseDirectory.child(resolveUserId())
-                                                  .child(PATH_AREA_DESCRIPTIONS)
+        StorageReference reference = rootReference.child(PATH_USER_AREA_DESCRIPTIONS)
+                                                  .child(resolveUserId())
                                                   .child(id);
         UploadTask task = reference.putStream(stream);
 
@@ -58,8 +58,8 @@ public final class AreaDescriptionFileRepositoryImpl implements AreaDescriptionF
         if (id == null) throw new ArgumentNullException("id");
         if (destination == null) throw new ArgumentNullException("destination");
 
-        StorageReference reference = baseDirectory.child(resolveUserId())
-                                                  .child(PATH_AREA_DESCRIPTIONS)
+        StorageReference reference = rootReference.child(PATH_USER_AREA_DESCRIPTIONS)
+                                                  .child(resolveUserId())
                                                   .child(id);
         FileDownloadTask task = reference.getFile(destination);
 
@@ -71,8 +71,8 @@ public final class AreaDescriptionFileRepositoryImpl implements AreaDescriptionF
     public Single<String> delete(String id) {
         if (id == null) throw new ArgumentNullException("id");
 
-        StorageReference reference = baseDirectory.child(resolveUserId())
-                                                  .child(PATH_AREA_DESCRIPTIONS)
+        StorageReference reference = rootReference.child(resolveUserId())
+                                                  .child(PATH_USER_AREA_DESCRIPTIONS)
                                                   .child(id);
         Task<Void> task = reference.delete();
 

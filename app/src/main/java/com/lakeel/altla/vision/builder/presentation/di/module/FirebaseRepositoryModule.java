@@ -29,7 +29,7 @@ public final class FirebaseRepositoryModule {
     @ActivityScope
     @Provides
     public UserProfileRepository provideUserProfileRepository(
-            @Named(Names.FIREBASE_DATABASE_REFERENCE_APP_ROOT) DatabaseReference reference) {
+            @Named(Names.FIREBASE_DATABASE_REFERENCE_ROOT) DatabaseReference reference) {
         return new UserProfileRepositoryImpl(reference);
     }
 
@@ -37,35 +37,35 @@ public final class FirebaseRepositoryModule {
     @ActivityScope
     @Provides
     public TextureEntryRepository provideTextureEntryRepository(
-            @Named(Names.FIREBASE_DATABASE_REFERENCE_APP_ROOT) DatabaseReference reference, FirebaseAuth auth) {
+            @Named(Names.FIREBASE_DATABASE_REFERENCE_ROOT) DatabaseReference reference, FirebaseAuth auth) {
         return new TextureEntryRepositoryImpl(reference, auth);
     }
 
     @ActivityScope
     @Provides
     public TextureFileRepository provideTextureFileRepository(
-            @Named(Names.FIREBASE_STORAGE_REFERENCE_APP_ROOT) StorageReference reference, FirebaseAuth auth) {
+            @Named(Names.FIREBASE_STORAGE_REFERENCE_ROOT) StorageReference reference, FirebaseAuth auth) {
         return new TextureFileRepositoryImpl(reference, auth);
     }
 
     @ActivityScope
     @Provides
     public TextureFileMetadataRepository provideTextureFileMetadataRepository(
-            @Named(Names.FIREBASE_STORAGE_REFERENCE_APP_ROOT) StorageReference reference, FirebaseAuth auth) {
+            @Named(Names.FIREBASE_STORAGE_REFERENCE_ROOT) StorageReference reference, FirebaseAuth auth) {
         return new TextureFileMetadataRepositoryImpl(reference, auth);
     }
 
     @ActivityScope
     @Provides
     public AreaDescriptionEntryRepository provideAreaDescriptionEntryRepository(
-            @Named(Names.FIREBASE_DATABASE_REFERENCE_APP_ROOT) DatabaseReference reference, FirebaseAuth auth) {
+            @Named(Names.FIREBASE_DATABASE_REFERENCE_ROOT) DatabaseReference reference, FirebaseAuth auth) {
         return new AreaDescriptionEntryRepositoryImpl(reference, auth);
     }
 
     @ActivityScope
     @Provides
     public AreaDescriptionFileRepository provideAreaDescriptionFileRepository(
-            @Named(Names.FIREBASE_STORAGE_REFERENCE_APP_ROOT) StorageReference reference, FirebaseAuth auth) {
+            @Named(Names.FIREBASE_STORAGE_REFERENCE_ROOT) StorageReference reference, FirebaseAuth auth) {
         return new AreaDescriptionFileRepositoryImpl(reference, auth);
     }
 }

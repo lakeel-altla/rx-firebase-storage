@@ -15,17 +15,17 @@ import rx.Observable;
 
 public final class TextureFileMetadataRepositoryImpl implements TextureFileMetadataRepository {
 
-    private static final String PATH_TEXTURES = "textures";
+    private static final String PATH_USER_TEXTURES = "userTextures";
 
-    private final StorageReference baseDirectory;
+    private final StorageReference rootReference;
 
     private final FirebaseAuth auth;
 
-    public TextureFileMetadataRepositoryImpl(StorageReference baseDirectory, FirebaseAuth auth) {
-        if (baseDirectory == null) throw new ArgumentNullException("baseDirectory");
+    public TextureFileMetadataRepositoryImpl(StorageReference rootReference, FirebaseAuth auth) {
+        if (rootReference == null) throw new ArgumentNullException("rootReference");
         if (auth == null) throw new ArgumentNullException("auth");
 
-        this.baseDirectory = baseDirectory;
+        this.rootReference = rootReference;
         this.auth = auth;
     }
 
@@ -33,8 +33,8 @@ public final class TextureFileMetadataRepositoryImpl implements TextureFileMetad
     public Observable<TextureFileMetadata> find(String fileId) {
         if (fileId == null) throw new ArgumentNullException("fileId");
 
-        Task<StorageMetadata> task = baseDirectory.child(resolveUserId())
-                                                  .child(PATH_TEXTURES)
+        Task<StorageMetadata> task = rootReference.child(PATH_USER_TEXTURES)
+                                                  .child(resolveUserId())
                                                   .child(fileId)
                                                   .getMetadata();
 

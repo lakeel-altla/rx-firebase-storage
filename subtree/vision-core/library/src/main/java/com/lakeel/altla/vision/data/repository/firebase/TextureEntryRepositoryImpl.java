@@ -23,41 +23,44 @@ import rx.Single;
 
 public final class TextureEntryRepositoryImpl implements TextureEntryRepository {
 
-    private static final String PATH_TEXTURE_ENTRIES = "textureEntries";
+    private static final String PATH_USER_TEXTURE_ENTRIES = "userTextureEntries";
 
-    private static final String PATH_TEXTURE_REFERENCES = "textureReferences";
+    private static final String PATH_USER_TEXTURE_REFERENCES = "userTextureReferences";
 
-    private static final String PATH_TEXTURE_METADATAS = "textureMetadatas";
+    private static final String PATH_USER_TEXTURE_METADATAS = "userTextureMetadatas";
 
-    private final DatabaseReference reference;
+    private final DatabaseReference rootReference;
 
     private final FirebaseAuth auth;
 
-    public TextureEntryRepositoryImpl(DatabaseReference reference, FirebaseAuth auth) {
-        if (reference == null) throw new ArgumentNullException("reference");
+    public TextureEntryRepositoryImpl(DatabaseReference rootReference, FirebaseAuth auth) {
+        if (rootReference == null) throw new ArgumentNullException("rootReference");
         if (auth == null) throw new ArgumentNullException("auth");
 
-        this.reference = reference;
+        this.rootReference = rootReference;
         this.auth = auth;
     }
 
     @Override
     public Single<String> save(String id, String name, String fileId, TextureMetadata metadata) {
 
-        Map<String, Object> updates = new HashMap<>();
-        updates.put(PATH_TEXTURE_ENTRIES + "/" + id, name);
-        updates.put(PATH_TEXTURE_REFERENCES + "/" + id, fileId);
-        updates.put(PATH_TEXTURE_METADATAS + "/" + id, metadata);
+        String userId = resolveUserId();
 
-        Task<Void> task = getUserFolder().updateChildren(updates);
+        Map<String, Object> updates = new HashMap<>();
+        updates.put(PATH_USER_TEXTURE_ENTRIES + "/" + userId + "/" + id, name);
+        updates.put(PATH_USER_TEXTURE_REFERENCES + "/" + userId + "/" + id, fileId);
+        updates.put(PATH_USER_TEXTURE_METADATAS + "/" + userId + "/" + id, metadata);
+
+        Task<Void> task = rootReference.updateChildren(updates);
         return RxGmsTask.asSingle(task).map(aVoid -> id);
     }
 
     @Override
     public Observable<TextureEntry> findEntry(String id) {
-        Query query = getUserFolder().child(PATH_TEXTURE_ENTRIES)
-                                     .orderByKey()
-                                     .equalTo(id);
+        Query query = rootReference.child(PATH_USER_TEXTURE_ENTRIES)
+                                   .child(resolveUserId())
+                                   .orderByKey()
+                                   .equalTo(id);
 
         return RxFirebaseQuery.asObservableForSingleValueEvent(query)
                               .map(snapshot -> {
@@ -69,8 +72,9 @@ public final class TextureEntryRepositoryImpl implements TextureEntryRepository 
 
     @Override
     public Observable<TextureEntry> findAllEntries() {
-        Query query = getUserFolder().child(PATH_TEXTURE_ENTRIES)
-                                     .orderByValue();
+        Query query = rootReference.child(PATH_USER_TEXTURE_ENTRIES)
+                                   .child(resolveUserId())
+                                   .orderByValue();
 
         return RxFirebaseQuery.asObservableForSingleValueEvent(query)
                               .flatMap(snapshot -> Observable.from(snapshot.getChildren()))
@@ -83,9 +87,10 @@ public final class TextureEntryRepositoryImpl implements TextureEntryRepository 
 
     @Override
     public Observable<TextureReference> findReference(String id) {
-        Query query = getUserFolder().child(PATH_TEXTURE_REFERENCES)
-                                     .orderByKey()
-                                     .equalTo(id);
+        Query query = rootReference.child(PATH_USER_TEXTURE_REFERENCES)
+                                   .child(resolveUserId())
+                                   .orderByKey()
+                                   .equalTo(id);
 
         return RxFirebaseQuery.asObservableForSingleValueEvent(query)
                               .flatMap(snapshot -> Observable.create(subscriber -> {
@@ -103,19 +108,17 @@ public final class TextureEntryRepositoryImpl implements TextureEntryRepository 
 
     @Override
     public Single<String> delete(String id) {
+
+        String userId = resolveUserId();
+
         // Use updateChildren(...) to atomize multiple reference deletes,
         Map<String, Object> updates = new HashMap<>();
-        updates.put(PATH_TEXTURE_ENTRIES + "/" + id, null);
-        updates.put(PATH_TEXTURE_REFERENCES + "/" + id, null);
-        updates.put(PATH_TEXTURE_METADATAS + "/" + id, null);
+        updates.put(PATH_USER_TEXTURE_ENTRIES + "/" + userId + "/" + id, null);
+        updates.put(PATH_USER_TEXTURE_REFERENCES + "/" + userId + "/" + id, null);
+        updates.put(PATH_USER_TEXTURE_METADATAS + "/" + userId + "/" + id, null);
 
-        Task<Void> task = getUserFolder().updateChildren(updates);
+        Task<Void> task = rootReference.updateChildren(updates);
         return RxGmsTask.asSingle(task).map(aVoid -> id);
-    }
-
-    private DatabaseReference getUserFolder() {
-        String userId = resolveUserId();
-        return reference.child(userId);
     }
 
     private String resolveUserId() {
@@ -123,6 +126,7 @@ public final class TextureEntryRepositoryImpl implements TextureEntryRepository 
         if (user == null) {
             throw new IllegalStateException("The current user could not be resolved.");
         }
+
         return user.getUid();
     }
 }

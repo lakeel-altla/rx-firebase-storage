@@ -19,17 +19,17 @@ import rx.Single;
 
 public final class TextureFileRepositoryImpl implements TextureFileRepository {
 
-    private static final String PATH_TEXTURES = "textures";
+    private static final String PATH_USER_TEXTURES = "userTextures";
 
-    private final StorageReference baseDirectory;
+    private final StorageReference rootReference;
 
     private final FirebaseAuth auth;
 
-    public TextureFileRepositoryImpl(StorageReference baseDirectory, FirebaseAuth auth) {
-        if (baseDirectory == null) throw new ArgumentNullException("baseDirectory");
+    public TextureFileRepositoryImpl(StorageReference rootReference, FirebaseAuth auth) {
+        if (rootReference == null) throw new ArgumentNullException("rootReference");
         if (auth == null) throw new ArgumentNullException("auth");
 
-        this.baseDirectory = baseDirectory;
+        this.rootReference = rootReference;
         this.auth = auth;
     }
 
@@ -41,8 +41,8 @@ public final class TextureFileRepositoryImpl implements TextureFileRepository {
         // Calling RxJava methods from them will be also called by its thread.
         // Note that a subsequent stream processing is also handled by its thread.
 
-        StorageReference reference = baseDirectory.child(resolveUserId())
-                                                  .child(PATH_TEXTURES)
+        StorageReference reference = rootReference.child(PATH_USER_TEXTURES)
+                                                  .child(resolveUserId())
                                                   .child(fileId);
         UploadTask task = reference.putStream(stream);
 
@@ -53,8 +53,8 @@ public final class TextureFileRepositoryImpl implements TextureFileRepository {
     @Override
     public Single<String> delete(String fileId) {
 
-        StorageReference reference = baseDirectory.child(resolveUserId())
-                                                  .child(PATH_TEXTURES)
+        StorageReference reference = rootReference.child(PATH_USER_TEXTURES)
+                                                  .child(resolveUserId())
                                                   .child(fileId);
         Task<Void> task = reference.delete();
 
@@ -64,8 +64,8 @@ public final class TextureFileRepositoryImpl implements TextureFileRepository {
     @Override
     public Single<String> download(String fileId, File destination, OnProgressListener onProgressListener) {
 
-        StorageReference reference = baseDirectory.child(resolveUserId())
-                                                  .child(PATH_TEXTURES)
+        StorageReference reference = rootReference.child(PATH_USER_TEXTURES)
+                                                  .child(resolveUserId())
                                                   .child(fileId);
         FileDownloadTask task = reference.getFile(destination);
 

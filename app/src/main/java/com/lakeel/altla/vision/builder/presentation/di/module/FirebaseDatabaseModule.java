@@ -12,8 +12,6 @@ import dagger.Provides;
 @Module
 public final class FirebaseDatabaseModule {
 
-    private static final String PATH_APP_ROOT = "builder";
-
     @Singleton
     @Provides
     public FirebaseDatabase provideFirebaseDatabase() {
@@ -25,13 +23,5 @@ public final class FirebaseDatabaseModule {
     @Provides
     public DatabaseReference provideRootReference(FirebaseDatabase database) {
         return database.getReference();
-    }
-
-    @Named(Names.FIREBASE_DATABASE_REFERENCE_APP_ROOT)
-    @Singleton
-    @Provides
-    public DatabaseReference provideAppRootReference(
-            @Named(Names.FIREBASE_DATABASE_REFERENCE_ROOT) DatabaseReference root) {
-        return root.child(PATH_APP_ROOT);
     }
 }

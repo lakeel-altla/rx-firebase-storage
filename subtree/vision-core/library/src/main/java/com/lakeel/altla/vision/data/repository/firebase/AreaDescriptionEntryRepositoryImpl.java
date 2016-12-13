@@ -21,19 +21,19 @@ import rx.Single;
 
 public final class AreaDescriptionEntryRepositoryImpl implements AreaDescriptionEntryRepository {
 
-    private static final String PATH_AREA_DESCRIPTIONS_ENTRIES = "areaDescriptionEntries";
+    private static final String PATH_USER_AREA_DESCRIPTIONS_ENTRIES = "userAreaDescriptionEntries";
 
-    private static final String PATH_AREA_DESCRIPTIONS_METADATAS = "areaDescriptionMetadatas";
+    private static final String PATH_USER_AREA_DESCRIPTIONS_METADATAS = "userAreaDescriptionMetadatas";
 
-    private final DatabaseReference reference;
+    private final DatabaseReference rootReference;
 
     private final FirebaseAuth auth;
 
-    public AreaDescriptionEntryRepositoryImpl(DatabaseReference reference, FirebaseAuth auth) {
-        if (reference == null) throw new ArgumentNullException("reference");
+    public AreaDescriptionEntryRepositoryImpl(DatabaseReference rootReference, FirebaseAuth auth) {
+        if (rootReference == null) throw new ArgumentNullException("rootReference");
         if (auth == null) throw new ArgumentNullException("auth");
 
-        this.reference = reference;
+        this.rootReference = rootReference;
         this.auth = auth;
     }
 
@@ -42,11 +42,13 @@ public final class AreaDescriptionEntryRepositoryImpl implements AreaDescription
         if (entry == null) throw new ArgumentNullException("entry");
         if (metadata == null) throw new ArgumentNullException("metadata");
 
-        Map<String, Object> updates = new HashMap<>();
-        updates.put(PATH_AREA_DESCRIPTIONS_ENTRIES + "/" + entry.id, entry.name);
-        updates.put(PATH_AREA_DESCRIPTIONS_METADATAS + "/" + entry.id, metadata);
+        String userId = resolveUserId();
 
-        Task<Void> task = getUserFolder().updateChildren(updates);
+        Map<String, Object> updates = new HashMap<>();
+        updates.put(PATH_USER_AREA_DESCRIPTIONS_ENTRIES + "/" + userId + "/" + entry.id, entry.name);
+        updates.put(PATH_USER_AREA_DESCRIPTIONS_METADATAS + "/" + userId + "/" + entry.id, metadata);
+
+        Task<Void> task = rootReference.updateChildren(updates);
         return RxGmsTask.asSingle(task).map(aVoid -> entry);
     }
 
@@ -54,9 +56,10 @@ public final class AreaDescriptionEntryRepositoryImpl implements AreaDescription
     public Observable<AreaDescriptionEntry> findEntry(String id) {
         if (id == null) throw new ArgumentNullException("id");
 
-        Query query = getUserFolder().child(PATH_AREA_DESCRIPTIONS_ENTRIES)
-                                     .orderByKey()
-                                     .equalTo(id);
+        Query query = rootReference.child(PATH_USER_AREA_DESCRIPTIONS_ENTRIES)
+                                   .child(resolveUserId())
+                                   .orderByKey()
+                                   .equalTo(id);
 
         return RxFirebaseQuery.asObservableForSingleValueEvent(query)
                               .flatMap(snapshot -> Observable.from(snapshot.getChildren()))
@@ -68,8 +71,9 @@ public final class AreaDescriptionEntryRepositoryImpl implements AreaDescription
 
     @Override
     public Observable<AreaDescriptionEntry> findAllEntries() {
-        Query query = getUserFolder().child(PATH_AREA_DESCRIPTIONS_ENTRIES)
-                                     .orderByValue();
+        Query query = rootReference.child(PATH_USER_AREA_DESCRIPTIONS_ENTRIES)
+                                   .child(resolveUserId())
+                                   .orderByValue();
 
         return RxFirebaseQuery.asObservableForSingleValueEvent(query)
                               .flatMap(snapshot -> Observable.from(snapshot.getChildren()))
@@ -82,18 +86,15 @@ public final class AreaDescriptionEntryRepositoryImpl implements AreaDescription
 
     @Override
     public Single<String> delete(String id) {
+        String userId = resolveUserId();
+
         // Use updateChildren(...) to atomize multiple reference deletes,
         Map<String, Object> updates = new HashMap<>();
-        updates.put(PATH_AREA_DESCRIPTIONS_ENTRIES + "/" + id, null);
-        updates.put(PATH_AREA_DESCRIPTIONS_METADATAS + "/" + id, null);
+        updates.put(PATH_USER_AREA_DESCRIPTIONS_ENTRIES + "/" + userId + "/" + id, null);
+        updates.put(PATH_USER_AREA_DESCRIPTIONS_METADATAS + "/" + userId + "/" + id, null);
 
-        Task<Void> task = getUserFolder().updateChildren(updates);
+        Task<Void> task = rootReference.updateChildren(updates);
         return RxGmsTask.asSingle(task).map(aVoid -> id);
-    }
-
-    private DatabaseReference getUserFolder() {
-        String userId = resolveUserId();
-        return reference.child(userId);
     }
 
     private String resolveUserId() {
