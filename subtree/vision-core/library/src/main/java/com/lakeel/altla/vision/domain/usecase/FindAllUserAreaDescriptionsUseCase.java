@@ -8,13 +8,13 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
-public final class FindAllAreaDescriptionEntriesUseCase {
+public final class FindAllUserAreaDescriptionsUseCase {
 
     @Inject
     UserAreaDescriptionRepository userAreaDescriptionRepository;
 
     @Inject
-    public FindAllAreaDescriptionEntriesUseCase() {
+    public FindAllUserAreaDescriptionsUseCase() {
     }
 
     public Observable<UserAreaDescription> execute() {

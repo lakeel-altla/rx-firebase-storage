@@ -19,7 +19,7 @@ import rx.Single;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
-public final class SaveAreaDescriptionUseCase {
+public final class SaveUserAreaDescriptionUseCase {
 
     @Inject
     TangoAreaDescriptionMetadataRepository tangoAreaDescriptionMetadataRepository;
@@ -43,7 +43,7 @@ public final class SaveAreaDescriptionUseCase {
     };
 
     @Inject
-    public SaveAreaDescriptionUseCase() {
+    public SaveUserAreaDescriptionUseCase() {
     }
 
     public Single<UserAreaDescription> execute(String id, OnProgressListener onProgressListener) {

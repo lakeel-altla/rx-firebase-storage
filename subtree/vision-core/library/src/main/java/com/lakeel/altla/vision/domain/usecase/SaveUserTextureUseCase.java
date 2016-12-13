@@ -1,53 +1,50 @@
 package com.lakeel.altla.vision.domain.usecase;
 
 import com.lakeel.altla.vision.ArgumentNullException;
-import com.lakeel.altla.vision.domain.model.TextureMetadata;
+import com.lakeel.altla.vision.domain.model.UserTexture;
 import com.lakeel.altla.vision.domain.repository.DocumentRepository;
-import com.lakeel.altla.vision.domain.repository.TextureEntryRepository;
-import com.lakeel.altla.vision.domain.repository.TextureFileRepository;
+import com.lakeel.altla.vision.domain.repository.UserTextureFileRepository;
+import com.lakeel.altla.vision.domain.repository.UserTextureRepository;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.UUID;
 
 import javax.inject.Inject;
 
 import rx.Single;
 import rx.schedulers.Schedulers;
 
-public final class AddTextureUseCase {
+public final class SaveUserTextureUseCase {
 
     @Inject
     DocumentRepository documentRepository;
 
     @Inject
-    TextureEntryRepository textureEntryRepository;
+    UserTextureRepository userTextureRepository;
 
     @Inject
-    TextureFileRepository textureFileRepository;
+    UserTextureFileRepository userTextureFileRepository;
 
     @Inject
-    public AddTextureUseCase() {
+    public SaveUserTextureUseCase() {
     }
 
-    public Single<String> execute(String name, String localUri, TextureMetadata metadata,
-                                  OnProgressListener onProgressListener) {
-        if (name == null) throw new ArgumentNullException("name");
+    public Single<UserTexture> execute(UserTexture userTexture, String localUri,
+                                       OnProgressListener onProgressListener) {
+        if (userTexture == null) throw new ArgumentNullException("userTexture");
         if (localUri == null) throw new ArgumentNullException("localUri");
-        if (metadata == null) throw new ArgumentNullException("metadata");
 
-        // Create a internal model.
-        return Single.just(new Model(name, localUri, metadata, onProgressListener))
+        return Single.just(new Model(userTexture, localUri, onProgressListener))
                      // Open the stream to the android local file.
                      .flatMap(this::openStream)
                      // Get total bytes of the stream.
                      .flatMap(this::getTotalBytes)
                      // Upload its file to Firebase Storage.
-                     .flatMap(this::uploadTexture)
-                     // Save the entry to Firebase Database.
-                     .flatMap(this::saveTextureEntry)
+                     .flatMap(this::uploadUserTextureFile)
+                     // Save the user texture to Firebase Database.
+                     .flatMap(this::saveUserTexture)
                      // Return the id.
-                     .map(model -> model.id)
+                     .map(model -> model.userTexture)
                      .subscribeOn(Schedulers.io());
     }
 
@@ -73,19 +70,20 @@ public final class AddTextureUseCase {
         });
     }
 
-    private Single<Model> uploadTexture(Model model) {
+    private Single<Model> uploadUserTextureFile(Model model) {
         // Use the value obtained from the stream, because totalBytes returned by Firebase is always -1.
-        return textureFileRepository.save(model.fileId, model.stream,
-                                          (totalBytes, bytesTransferred) ->
-                                                  model.onProgressListener
-                                                          .onProgress(model.totalBytes, bytesTransferred)
-        )
-                                    .map(fileId -> model);
+        return userTextureFileRepository
+                .save(model.userTexture.id,
+                      model.stream,
+                      (totalBytes, bytesTransferred) ->
+                              model.onProgressListener.onProgress(model.totalBytes, bytesTransferred)
+                )
+                .map(fileId -> model);
     }
 
-    private Single<Model> saveTextureEntry(Model model) {
-        return textureEntryRepository.save(model.id, model.name, model.fileId, model.metadata)
-                                     .map(id -> model);
+    private Single<Model> saveUserTexture(Model model) {
+        return userTextureRepository.save(model.userTexture)
+                                    .map(id -> model);
     }
 
     public interface OnProgressListener {
@@ -95,30 +93,20 @@ public final class AddTextureUseCase {
 
     private final class Model {
 
-        final String id;
-
-        final String name;
+        final UserTexture userTexture;
 
         final String localUri;
 
-        final TextureMetadata metadata;
-
         final OnProgressListener onProgressListener;
-
-        final String fileId;
 
         InputStream stream;
 
         long totalBytes;
 
-        Model(String name, String localUri, TextureMetadata metadata, OnProgressListener onProgressListener) {
-            this.name = name;
+        Model(UserTexture userTexture, String localUri, OnProgressListener onProgressListener) {
+            this.userTexture = userTexture;
             this.localUri = localUri;
-            this.metadata = metadata;
             this.onProgressListener = onProgressListener;
-
-            id = UUID.randomUUID().toString();
-            fileId = UUID.randomUUID().toString();
         }
     }
 }

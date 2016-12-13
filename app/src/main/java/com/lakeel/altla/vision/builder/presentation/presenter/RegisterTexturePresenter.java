@@ -3,16 +3,15 @@ package com.lakeel.altla.vision.builder.presentation.presenter;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.builder.R;
-import com.lakeel.altla.vision.domain.model.TextureMetadata;
-import com.lakeel.altla.vision.domain.usecase.AddTextureUseCase;
+import com.lakeel.altla.vision.builder.presentation.model.EditTextureModel;
+import com.lakeel.altla.vision.builder.presentation.view.RegisterTextureView;
+import com.lakeel.altla.vision.domain.model.UserTexture;
 import com.lakeel.altla.vision.domain.usecase.EnsureTextureCacheUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindDocumentBitmapUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindDocumentFilenameUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindFileBitmapUseCase;
-import com.lakeel.altla.vision.domain.usecase.FindTextureEntryUseCase;
-import com.lakeel.altla.vision.domain.usecase.UpdateTextureUseCase;
-import com.lakeel.altla.vision.builder.presentation.model.EditTextureModel;
-import com.lakeel.altla.vision.builder.presentation.view.RegisterTextureView;
+import com.lakeel.altla.vision.domain.usecase.FindUserTextureUseCase;
+import com.lakeel.altla.vision.domain.usecase.SaveUserTextureUseCase;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -21,6 +20,7 @@ import android.support.annotation.Nullable;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -34,7 +34,7 @@ public final class RegisterTexturePresenter {
     private static final Log LOG = LogFactory.getLog(RegisterTexturePresenter.class);
 
     @Inject
-    FindTextureEntryUseCase findTextureEntryUseCase;
+    FindUserTextureUseCase findUserTextureUseCase;
 
     @Inject
     EnsureTextureCacheUseCase ensureTextureCacheUseCase;
@@ -49,10 +49,7 @@ public final class RegisterTexturePresenter {
     FindDocumentFilenameUseCase findDocumentFilenameUseCase;
 
     @Inject
-    AddTextureUseCase addTextureUseCase;
-
-    @Inject
-    UpdateTextureUseCase updateTextureUseCase;
+    SaveUserTextureUseCase saveUserTextureUseCase;
 
     private final CompositeSubscription compositeSubscription = new CompositeSubscription();
 
@@ -102,7 +99,7 @@ public final class RegisterTexturePresenter {
             // Load the texture information.
             LOG.d("Loading the texture: id = %s", model.id);
 
-            Subscription subscription = findTextureEntryUseCase
+            Subscription subscription = findUserTextureUseCase
                     // Find the texture entry to get its name.
                     .execute(model.id)
                     .toSingle()
@@ -267,63 +264,41 @@ public final class RegisterTexturePresenter {
     public void onClickButtonRegister() {
         view.showUploadProgressDialog();
 
-        TextureMetadata metadata = new TextureMetadata();
+        String id = model.id;
 
-        if (model.id == null) {
-            LOG.i("Adding the texture.");
-
-            Subscription subscription = addTextureUseCase
-                    .execute(model.name, model.localUri.toString(), metadata, (totalBytes, bytesTransferred) -> {
-                        // The progress status.
-                        long increment = bytesTransferred - prevBytesTransferred;
-                        prevBytesTransferred = bytesTransferred;
-                        view.setUploadProgressDialogProgress(totalBytes, increment);
-                    })
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(id -> {
-                        // Done.
-                        LOG.i("Added the texture: id = %s", id);
-
-                        // Store the id into the model.
-                        model.id = id;
-
-                        view.hideUploadProgressDialog();
-                        view.showSnackbar(R.string.snackbar_done);
-                    }, e -> {
-                        // Failed.
-                        LOG.e("Failed to add the texture.", e);
-
-                        view.hideUploadProgressDialog();
-                        view.showSnackbar(R.string.snackbar_failed);
-                    });
-            compositeSubscription.add(subscription);
-        } else {
-            LOG.i("Updating the texture: id = %s", model.id);
-
-            Subscription subscription = updateTextureUseCase
-                    .execute(model.id, model.name, model.localUri.toString(), metadata,
-                             (totalBytes, bytesTransferred) -> {
-                                 // The progress status.
-                                 long increment = bytesTransferred - prevBytesTransferred;
-                                 prevBytesTransferred = bytesTransferred;
-                                 view.setUploadProgressDialogProgress(totalBytes, increment);
-                             })
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(id -> {
-                        // Done.
-                        LOG.i("Updated the texture.");
-
-                        view.hideUploadProgressDialog();
-                        view.showSnackbar(R.string.snackbar_done);
-                    }, e -> {
-                        // Failed.
-                        LOG.e("Failed to update the texture.", e);
-
-                        view.hideUploadProgressDialog();
-                        view.showSnackbar(R.string.snackbar_failed);
-                    });
-            compositeSubscription.add(subscription);
+        if (id == null) {
+            id = UUID.randomUUID().toString();
         }
+
+        LOG.i("Saving the texture: id = %s", id);
+
+        UserTexture userTexture = new UserTexture(id, model.name);
+
+        Subscription subscription = saveUserTextureUseCase
+                .execute(userTexture, model.localUri.toString(), (totalBytes, bytesTransferred) -> {
+                    // The progress status.
+                    long increment = bytesTransferred - prevBytesTransferred;
+                    prevBytesTransferred = bytesTransferred;
+                    view.setUploadProgressDialogProgress(totalBytes, increment);
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(_userTexture -> {
+                    // Done.
+                    LOG.i("Saved the texture.");
+
+                    // Update ID of the model.
+                    model.id = _userTexture.id;
+
+                    view.hideUploadProgressDialog();
+                    view.showSnackbar(R.string.snackbar_done);
+                }, e -> {
+                    // Failed.
+                    LOG.e("Failed to save the texture.", e);
+
+                    view.hideUploadProgressDialog();
+                    view.showSnackbar(R.string.snackbar_failed);
+                });
+        compositeSubscription.add(subscription);
     }
 
     public void afterNameChanged(String filename) {

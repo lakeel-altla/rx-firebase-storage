@@ -9,13 +9,13 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
-public final class FindAllTangoAreaDescriptionUseCase {
+public final class FindAllTangoAreaDescriptionsUseCase {
 
     @Inject
     TangoAreaDescriptionMetadataRepository tangoAreaDescriptionMetadataRepository;
 
     @Inject
-    public FindAllTangoAreaDescriptionUseCase() {
+    public FindAllTangoAreaDescriptionsUseCase() {
     }
 
     public Observable<UserAreaDescription> execute() {

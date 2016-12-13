@@ -5,16 +5,16 @@ import com.google.firebase.storage.StorageReference;
 
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionRepositoryImpl;
 import com.lakeel.altla.vision.data.repository.firebase.UserAreaDescriptionFileRepositoryImpl;
-import com.lakeel.altla.vision.data.repository.firebase.TextureEntryRepositoryImpl;
-import com.lakeel.altla.vision.data.repository.firebase.TextureFileMetadataRepositoryImpl;
-import com.lakeel.altla.vision.data.repository.firebase.TextureFileRepositoryImpl;
+import com.lakeel.altla.vision.data.repository.firebase.UserTextureFileRepositoryImpl;
+import com.lakeel.altla.vision.data.repository.firebase.UserTextureRepositoryImpl;
+import com.lakeel.altla.vision.data.repository.firebase.UserTextureFileMetadataRepositoryImpl;
 import com.lakeel.altla.vision.data.repository.firebase.UserProfileRepositoryImpl;
 import com.lakeel.altla.vision.di.ActivityScope;
 import com.lakeel.altla.vision.domain.repository.UserAreaDescriptionFileRepository;
 import com.lakeel.altla.vision.domain.repository.UserAreaDescriptionRepository;
-import com.lakeel.altla.vision.domain.repository.TextureEntryRepository;
-import com.lakeel.altla.vision.domain.repository.TextureFileMetadataRepository;
-import com.lakeel.altla.vision.domain.repository.TextureFileRepository;
+import com.lakeel.altla.vision.domain.repository.UserTextureFileMetadataRepository;
+import com.lakeel.altla.vision.domain.repository.UserTextureFileRepository;
+import com.lakeel.altla.vision.domain.repository.UserTextureRepository;
 import com.lakeel.altla.vision.domain.repository.UserProfileRepository;
 
 import javax.inject.Named;
@@ -35,23 +35,23 @@ public final class FirebaseRepositoryModule {
 
     @ActivityScope
     @Provides
-    public TextureEntryRepository provideTextureEntryRepository(
+    public UserTextureRepository provideTextureEntryRepository(
             @Named(Names.FIREBASE_DATABASE_REFERENCE_ROOT) DatabaseReference reference) {
-        return new TextureEntryRepositoryImpl(reference);
+        return new UserTextureRepositoryImpl(reference);
     }
 
     @ActivityScope
     @Provides
-    public TextureFileRepository provideTextureFileRepository(
+    public UserTextureFileRepository provideTextureFileRepository(
             @Named(Names.FIREBASE_STORAGE_REFERENCE_ROOT) StorageReference reference) {
-        return new TextureFileRepositoryImpl(reference);
+        return new UserTextureFileRepositoryImpl(reference);
     }
 
     @ActivityScope
     @Provides
-    public TextureFileMetadataRepository provideTextureFileMetadataRepository(
+    public UserTextureFileMetadataRepository provideTextureFileMetadataRepository(
             @Named(Names.FIREBASE_STORAGE_REFERENCE_ROOT) StorageReference reference) {
-        return new TextureFileMetadataRepositoryImpl(reference);
+        return new UserTextureFileMetadataRepositoryImpl(reference);
     }
 
     @ActivityScope

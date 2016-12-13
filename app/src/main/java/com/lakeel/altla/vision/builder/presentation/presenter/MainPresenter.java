@@ -11,7 +11,7 @@ import com.lakeel.altla.tango.TangoUpdateDispatcher;
 import com.lakeel.altla.vision.builder.R;
 import com.lakeel.altla.vision.domain.usecase.DeleteTextureUseCase;
 import com.lakeel.altla.vision.domain.usecase.EnsureTextureCacheUseCase;
-import com.lakeel.altla.vision.domain.usecase.FindAllTextureEntriesUseCase;
+import com.lakeel.altla.vision.domain.usecase.FindAllUserTexturesUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindFileBitmapUseCase;
 import com.lakeel.altla.vision.builder.presentation.di.module.Names;
 import com.lakeel.altla.vision.builder.presentation.model.Axis;
@@ -59,7 +59,7 @@ public final class MainPresenter
     TangoUpdateDispatcher tangoUpdateDispatcher;
 
     @Inject
-    FindAllTextureEntriesUseCase findAllTextureEntriesUseCase;
+    FindAllUserTexturesUseCase findAllUserTexturesUseCase;
 
     @Inject
     EnsureTextureCacheUseCase ensureTextureCacheUseCase;
@@ -118,7 +118,7 @@ public final class MainPresenter
 
         LOG.d("Find all texture entries.");
 
-        Subscription subscription = findAllTextureEntriesUseCase
+        Subscription subscription = findAllUserTexturesUseCase
                 .execute()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(entry -> {
@@ -135,7 +135,7 @@ public final class MainPresenter
         compositeSubscription.add(subscription);
     }
 //
-//    private void downloadTexture(TextureEntry entry) {
+//    private void downloadTexture(UserTexture entry) {
 //        LOG.d("Downloading the texture: entry = %s", entry);
 //
 //        Subscription subscription = ensureTextureCacheUseCase

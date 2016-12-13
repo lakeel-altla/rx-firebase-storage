@@ -2,8 +2,8 @@ package com.lakeel.altla.vision.domain.usecase;
 
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.repository.TextureCacheRepository;
-import com.lakeel.altla.vision.domain.repository.TextureEntryRepository;
-import com.lakeel.altla.vision.domain.repository.TextureFileRepository;
+import com.lakeel.altla.vision.domain.repository.UserTextureFileRepository;
+import com.lakeel.altla.vision.domain.repository.UserTextureRepository;
 
 import javax.inject.Inject;
 
@@ -13,10 +13,10 @@ import rx.schedulers.Schedulers;
 public final class DeleteTextureUseCase {
 
     @Inject
-    TextureEntryRepository textureEntryRepository;
+    UserTextureRepository userTextureRepository;
 
     @Inject
-    TextureFileRepository textureFileRepository;
+    UserTextureFileRepository userTextureFileRepository;
 
     @Inject
     TextureCacheRepository textureCacheRepository;
@@ -28,18 +28,12 @@ public final class DeleteTextureUseCase {
     public Single<String> execute(String id) {
         if (id == null) throw new ArgumentNullException("id");
 
-        // Search TextureReference in advance.
-        return textureEntryRepository.findReference(id)
-                                     .toSingle()
-                                     // Delete the texture data in Firebase Database.
-                                     .flatMap(reference -> textureEntryRepository.delete(id)
-                                                                                 .map(_id -> reference))
-                                     // Delete the texture file in Firebase Storage.
-                                     .flatMap(reference -> textureFileRepository.delete(reference.fileId)
-                                                                                .map(_id -> reference))
-                                     // Delete the local cache of the texture.
-                                     .flatMap(reference -> textureCacheRepository.delete(reference.fileId))
-                                     .map(fileId -> id)
-                                     .subscribeOn(Schedulers.io());
+        // Delete the user texture in Firebase Database.
+        return userTextureRepository.delete(id)
+                                    // Delete the user texture file in Firebase Storage.
+                                    .flatMap(_id -> userTextureFileRepository.delete(id))
+                                    // Delete the local cache of the user texture.
+                                    .flatMap(_id -> textureCacheRepository.delete(id))
+                                    .subscribeOn(Schedulers.io());
     }
 }

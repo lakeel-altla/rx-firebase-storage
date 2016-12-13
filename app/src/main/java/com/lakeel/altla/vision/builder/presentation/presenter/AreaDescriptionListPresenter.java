@@ -6,10 +6,10 @@ import com.lakeel.altla.vision.builder.R;
 import com.lakeel.altla.vision.builder.presentation.model.AreaDescriptionModel;
 import com.lakeel.altla.vision.builder.presentation.view.AreaDescriptionListItemView;
 import com.lakeel.altla.vision.builder.presentation.view.AreaDescriptionListView;
-import com.lakeel.altla.vision.domain.usecase.DeleteAreaDescriptionUseCase;
+import com.lakeel.altla.vision.domain.usecase.DeleteUserAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.FindAllAreaDescriptionUseCase;
 import com.lakeel.altla.vision.domain.usecase.GetAreaDescriptionCacheDirectoryUseCase;
-import com.lakeel.altla.vision.domain.usecase.SaveAreaDescriptionUseCase;
+import com.lakeel.altla.vision.domain.usecase.SaveUserAreaDescriptionUseCase;
 
 import android.support.annotation.NonNull;
 
@@ -33,10 +33,10 @@ public final class AreaDescriptionListPresenter {
     GetAreaDescriptionCacheDirectoryUseCase getAreaDescriptionCacheDirectoryUseCase;
 
     @Inject
-    SaveAreaDescriptionUseCase saveAreaDescriptionUseCase;
+    SaveUserAreaDescriptionUseCase saveUserAreaDescriptionUseCase;
 
     @Inject
-    DeleteAreaDescriptionUseCase deleteAreaDescriptionUseCase;
+    DeleteUserAreaDescriptionUseCase deleteUserAreaDescriptionUseCase;
 
     private final CompositeSubscription compositeSubscription = new CompositeSubscription();
 
@@ -110,7 +110,7 @@ public final class AreaDescriptionListPresenter {
         prevBytesTransferred = 0;
         view.showUploadProgressDialog();
 
-        Subscription subscription = saveAreaDescriptionUseCase
+        Subscription subscription = saveUserAreaDescriptionUseCase
                 .execute(exportingId, (totalBytes, bytesTransferred) -> {
                     long increment = bytesTransferred - prevBytesTransferred;
                     prevBytesTransferred = bytesTransferred;
@@ -162,7 +162,7 @@ public final class AreaDescriptionListPresenter {
 
             view.showDesyncProgressDialog();
 
-            Subscription subscription = deleteAreaDescriptionUseCase
+            Subscription subscription = deleteUserAreaDescriptionUseCase
                     .execute(model.id)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(s -> {

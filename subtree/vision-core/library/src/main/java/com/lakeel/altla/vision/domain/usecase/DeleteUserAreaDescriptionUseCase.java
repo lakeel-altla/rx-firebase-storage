@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import rx.Single;
 import rx.schedulers.Schedulers;
 
-public final class DeleteAreaDescriptionUseCase {
+public final class DeleteUserAreaDescriptionUseCase {
 
     @Inject
     UserAreaDescriptionRepository userAreaDescriptionRepository;
@@ -18,7 +18,7 @@ public final class DeleteAreaDescriptionUseCase {
     UserAreaDescriptionFileRepository userAreaDescriptionFileRepository;
 
     @Inject
-    public DeleteAreaDescriptionUseCase() {
+    public DeleteUserAreaDescriptionUseCase() {
     }
 
     public Single<String> execute(String id) {
