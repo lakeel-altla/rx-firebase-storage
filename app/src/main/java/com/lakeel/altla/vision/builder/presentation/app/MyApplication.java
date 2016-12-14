@@ -1,5 +1,7 @@
 package com.lakeel.altla.vision.builder.presentation.app;
 
+import com.google.firebase.database.FirebaseDatabase;
+
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.builder.BuildConfig;
 import com.lakeel.altla.vision.builder.presentation.di.component.ApplicationComponent;
@@ -38,6 +40,9 @@ public final class MyApplication extends MultiDexApplication {
                 .builder()
                 .applicationModule(new ApplicationModule(this))
                 .build();
+
+        // Enable the offline feature of Firebase Database.
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         // Rajawali
 //        RajLog.setDebugEnabled(true);
