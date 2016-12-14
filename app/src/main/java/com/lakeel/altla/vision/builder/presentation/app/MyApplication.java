@@ -7,8 +7,6 @@ import com.lakeel.altla.vision.builder.presentation.di.component.DaggerApplicati
 import com.lakeel.altla.vision.builder.presentation.di.module.ApplicationModule;
 import com.squareup.leakcanary.LeakCanary;
 
-import org.rajawali3d.util.RajLog;
-
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -42,7 +40,7 @@ public final class MyApplication extends MultiDexApplication {
                 .build();
 
         // Rajawali
-        RajLog.setDebugEnabled(true);
+//        RajLog.setDebugEnabled(true);
 
         // Altla Log
         LogFactory.setDebug(BuildConfig.DEBUG);
