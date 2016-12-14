@@ -50,18 +50,8 @@ public final class UserTextureRepositoryImpl implements UserTextureRepository {
                                                    .child(id);
 
         return RxFirebaseQuery.asObservableForSingleValueEvent(reference)
-                              .flatMap(this::parseUserTextureValue)
-                              .map(value -> new UserTexture(id, value.name));
-    }
-
-    private Observable<UserTextureValue> parseUserTextureValue(DataSnapshot snapshot) {
-        return Observable.create(subscriber -> {
-            if (snapshot.exists()) {
-                UserTextureValue value = snapshot.getValue(UserTextureValue.class);
-                subscriber.onNext(value);
-            }
-            subscriber.onCompleted();
-        });
+                              .filter(DataSnapshot::exists)
+                              .map(this::map);
     }
 
     @Override
@@ -72,11 +62,7 @@ public final class UserTextureRepositoryImpl implements UserTextureRepository {
 
         return RxFirebaseQuery.asObservableForSingleValueEvent(query)
                               .flatMap(snapshot -> Observable.from(snapshot.getChildren()))
-                              .map(snapshot -> {
-                                  String id = snapshot.getKey();
-                                  UserTextureValue value = snapshot.getValue(UserTextureValue.class);
-                                  return new UserTexture(id, value.name);
-                              });
+                              .map(this::map);
     }
 
     @Override
@@ -89,6 +75,13 @@ public final class UserTextureRepositoryImpl implements UserTextureRepository {
                      .removeValue();
 
         return Single.just(id);
+    }
+
+    private UserTexture map(DataSnapshot snapshot) {
+        String id = snapshot.getKey();
+        UserTextureValue value = snapshot.getValue(UserTextureValue.class);
+
+        return new UserTexture(id, value.name);
     }
 
     private String resolveCurrentUserId() {

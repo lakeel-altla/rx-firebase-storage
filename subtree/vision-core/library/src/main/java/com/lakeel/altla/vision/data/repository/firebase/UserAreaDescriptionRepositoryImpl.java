@@ -51,18 +51,8 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
                                                    .child(id);
 
         return RxFirebaseQuery.asObservableForSingleValueEvent(reference)
-                              .flatMap(this::parseUserAreaDescriptionValue)
-                              .map(value -> new UserAreaDescription(id, value.name, value.creationTime));
-    }
-
-    private Observable<UserAreaDescriptionValue> parseUserAreaDescriptionValue(DataSnapshot snapshot) {
-        return Observable.create(subscriber -> {
-            if (snapshot.exists()) {
-                UserAreaDescriptionValue value = snapshot.getValue(UserAreaDescriptionValue.class);
-                subscriber.onNext(value);
-            }
-            subscriber.onCompleted();
-        });
+                              .filter(DataSnapshot::exists)
+                              .map(this::map);
     }
 
     @Override
@@ -71,14 +61,9 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
                                    .child(resolveCurrentUserId())
                                    .orderByValue();
 
-        return RxFirebaseQuery
-                .asObservableForSingleValueEvent(query)
-                .flatMap(snapshot -> Observable.from(snapshot.getChildren()))
-                .map(snapshot -> {
-                    String id = snapshot.getKey();
-                    UserAreaDescriptionValue value = snapshot.getValue(UserAreaDescriptionValue.class);
-                    return new UserAreaDescription(id, value.name, value.creationTime);
-                });
+        return RxFirebaseQuery.asObservableForSingleValueEvent(query)
+                              .flatMap(snapshot -> Observable.from(snapshot.getChildren()))
+                              .map(this::map);
     }
 
     @Override
@@ -89,6 +74,12 @@ public final class UserAreaDescriptionRepositoryImpl implements UserAreaDescript
                      .removeValue();
 
         return Single.just(id);
+    }
+
+    private UserAreaDescription map(DataSnapshot snapshot) {
+        String id = snapshot.getKey();
+        UserAreaDescriptionValue value = snapshot.getValue(UserAreaDescriptionValue.class);
+        return new UserAreaDescription(id, value.name, value.creationTime);
     }
 
     private String resolveCurrentUserId() {

@@ -54,23 +54,19 @@ public final class UserProfileRepositoryImpl implements UserProfileRepository {
         DatabaseReference reference = rootReference.child(PATH_USER_PROFILES).child(id);
 
         return RxFirebaseQuery.asObservableForSingleValueEvent(reference)
-                              .flatMap(this::parseUserProfile);
+                              .filter(DataSnapshot::exists)
+                              .map(this::map);
     }
 
-    private Observable<UserProfile> parseUserProfile(DataSnapshot snapshot) {
-        return Observable.create(subscriber -> {
-            if (snapshot.exists()) {
-                String id = snapshot.getKey();
-                UserProfileValue value = snapshot.getValue(UserProfileValue.class);
+    private UserProfile map(DataSnapshot snapshot) {
+        String id = snapshot.getKey();
+        UserProfileValue value = snapshot.getValue(UserProfileValue.class);
 
-                UserProfile userProfile = new UserProfile(id);
-                userProfile.displayName = value.displayName;
-                userProfile.photoUri = value.photoUri;
+        UserProfile userProfile = new UserProfile(id);
+        userProfile.displayName = value.displayName;
+        userProfile.photoUri = value.photoUri;
 
-                subscriber.onNext(userProfile);
-            }
-            subscriber.onCompleted();
-        });
+        return userProfile;
     }
 
     public static final class UserProfileValue {
