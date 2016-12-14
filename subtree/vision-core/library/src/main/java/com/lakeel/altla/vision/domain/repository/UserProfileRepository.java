@@ -7,7 +7,7 @@ import rx.Single;
 
 public interface UserProfileRepository {
 
-    Single<UserProfile> save(String id, UserProfile userProfile);
+    Single<UserProfile> save(UserProfile userProfile);
 
     Observable<UserProfile> find(String id);
 }

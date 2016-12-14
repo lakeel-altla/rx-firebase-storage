@@ -64,15 +64,13 @@ public final class SignInToFirebaseUseCase {
             throw new IllegalStateException("FirebaseUser is null.");
         }
 
-        String id = firebaseUser.getUid();
-
-        UserProfile userProfile = new UserProfile();
+        UserProfile userProfile = new UserProfile(firebaseUser.getUid());
         userProfile.displayName = firebaseUser.getDisplayName();
         if (firebaseUser.getPhotoUrl() != null) {
             userProfile.photoUri = firebaseUser.getPhotoUrl().toString();
         }
 
-        return userProfileRepository.save(id, userProfile)
+        return userProfileRepository.save(userProfile)
                                     .map(_userProfile -> model);
     }
 
