@@ -8,6 +8,8 @@ public final class UserProfile {
 
     public String displayName;
 
+    public String email;
+
     public String photoUri;
 
     public UserProfile(String id) {

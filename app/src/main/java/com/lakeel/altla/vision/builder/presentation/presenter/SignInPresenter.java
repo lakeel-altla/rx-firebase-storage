@@ -10,8 +10,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.vision.builder.R;
-import com.lakeel.altla.vision.domain.usecase.SignInToFirebaseUseCase;
 import com.lakeel.altla.vision.builder.presentation.view.SignInView;
+import com.lakeel.altla.vision.domain.usecase.SignInWithGoogleUseCase;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -40,7 +40,7 @@ public final class SignInPresenter {
     AppCompatActivity activity;
 
     @Inject
-    SignInToFirebaseUseCase signInToFirebaseUseCase;
+    SignInWithGoogleUseCase signInWithGoogleUseCase;
 
     private final CompositeSubscription compositeSubscription = new CompositeSubscription();
 
@@ -116,10 +116,10 @@ public final class SignInPresenter {
         // so that the dialog is closed with Firebase's callback.
         view.showProgressDialog();
 
-        Subscription subscription = signInToFirebaseUseCase
+        Subscription subscription = signInWithGoogleUseCase
                 .execute(googleSignInAccount)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(authResult -> {
+                .subscribe(userId -> {
                     // As the main thread is called first, the fragments are discarded in Firebase's callback,
                     // so the RX processing is also canceled and will not be called here.
                 }, e -> {

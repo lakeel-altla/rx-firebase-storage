@@ -33,6 +33,7 @@ public final class UserProfileRepositoryImpl implements UserProfileRepository {
 
         UserProfileValue value = new UserProfileValue();
         value.displayName = userProfile.displayName;
+        value.email = userProfile.email;
         value.photoUri = userProfile.photoUri;
 
         rootReference.child(PATH_USER_PROFILES)
@@ -63,6 +64,7 @@ public final class UserProfileRepositoryImpl implements UserProfileRepository {
 
         UserProfile userProfile = new UserProfile(id);
         userProfile.displayName = value.displayName;
+        userProfile.email = value.email;
         userProfile.photoUri = value.photoUri;
 
         return userProfile;
@@ -71,6 +73,8 @@ public final class UserProfileRepositoryImpl implements UserProfileRepository {
     public static final class UserProfileValue {
 
         public String displayName;
+
+        public String email;
 
         public String photoUri;
     }
