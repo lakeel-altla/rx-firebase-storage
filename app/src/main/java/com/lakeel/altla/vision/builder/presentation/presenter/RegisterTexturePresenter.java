@@ -270,12 +270,14 @@ public final class RegisterTexturePresenter {
             id = UUID.randomUUID().toString();
         }
 
-        LOG.i("Saving the texture: id = %s", id);
+        LOG.i("Saving the user texture: id = %s", id);
 
         UserTexture userTexture = new UserTexture(id, model.name);
 
+        String localUri = (model.localUri != null) ? model.localUri.toString() : null;
+
         Subscription subscription = saveUserTextureUseCase
-                .execute(userTexture, model.localUri.toString(), (totalBytes, bytesTransferred) -> {
+                .execute(userTexture, localUri, (totalBytes, bytesTransferred) -> {
                     // The progress status.
                     long increment = bytesTransferred - prevBytesTransferred;
                     prevBytesTransferred = bytesTransferred;
@@ -284,7 +286,7 @@ public final class RegisterTexturePresenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(_userTexture -> {
                     // Done.
-                    LOG.i("Saved the texture.");
+                    LOG.i("Saved the user texture.");
 
                     // Update ID of the model.
                     model.id = _userTexture.id;
@@ -293,7 +295,7 @@ public final class RegisterTexturePresenter {
                     view.showSnackbar(R.string.snackbar_done);
                 }, e -> {
                     // Failed.
-                    LOG.e("Failed to save the texture.", e);
+                    LOG.e("Failed to save the user texture.", e);
 
                     view.hideUploadProgressDialog();
                     view.showSnackbar(R.string.snackbar_failed);

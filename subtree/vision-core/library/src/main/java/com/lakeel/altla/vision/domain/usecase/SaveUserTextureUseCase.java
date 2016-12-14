@@ -32,20 +32,28 @@ public final class SaveUserTextureUseCase {
     public Single<UserTexture> execute(UserTexture userTexture, String localUri,
                                        OnProgressListener onProgressListener) {
         if (userTexture == null) throw new ArgumentNullException("userTexture");
-        if (localUri == null) throw new ArgumentNullException("localUri");
 
-        return Single.just(new Model(userTexture, localUri, onProgressListener))
-                     // Open the stream to the android local file.
-                     .flatMap(this::openStream)
-                     // Get total bytes of the stream.
-                     .flatMap(this::getTotalBytes)
-                     // Upload its file to Firebase Storage.
-                     .flatMap(this::uploadUserTextureFile)
-                     // Save the user texture to Firebase Database.
-                     .flatMap(this::saveUserTexture)
-                     // Return the id.
-                     .map(model -> model.userTexture)
-                     .subscribeOn(Schedulers.io());
+        Single<Model> single = Single.just(new Model(userTexture, localUri, onProgressListener));
+
+        if (localUri == null) {
+            // Save the user texture to Firebase Database.
+            return single.flatMap(this::saveUserTexture)
+                         // Return the id.
+                         .map(model -> model.userTexture)
+                         .subscribeOn(Schedulers.io());
+        } else {
+            // Open the stream to the android local file.
+            return single.flatMap(this::openStream)
+                         // Get total bytes of the stream.
+                         .flatMap(this::getTotalBytes)
+                         // Upload its file to Firebase Storage.
+                         .flatMap(this::uploadUserTextureFile)
+                         // Save the user texture to Firebase Database.
+                         .flatMap(this::saveUserTexture)
+                         // Return the id.
+                         .map(model -> model.userTexture)
+                         .subscribeOn(Schedulers.io());
+        }
     }
 
     private Single<Model> openStream(Model model) {
@@ -78,7 +86,7 @@ public final class SaveUserTextureUseCase {
                       (totalBytes, bytesTransferred) ->
                               model.onProgressListener.onProgress(model.totalBytes, bytesTransferred)
                 )
-                .map(fileId -> model);
+                .map(id -> model);
     }
 
     private Single<Model> saveUserTexture(Model model) {
