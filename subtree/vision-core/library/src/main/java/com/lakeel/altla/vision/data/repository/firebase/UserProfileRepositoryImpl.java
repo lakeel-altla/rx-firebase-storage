@@ -58,6 +58,17 @@ public final class UserProfileRepositoryImpl implements UserProfileRepository {
                               .map(this::map);
     }
 
+    @Override
+    public Observable<UserProfile> observe(String id) {
+        if (id == null) throw new ArgumentNullException("id");
+
+        DatabaseReference reference = rootReference.child(PATH_USER_PROFILES).child(id);
+
+        return RxFirebaseQuery.asObservable(reference)
+                              .filter(DataSnapshot::exists)
+                              .map(this::map);
+    }
+
     private UserProfile map(DataSnapshot snapshot) {
         String id = snapshot.getKey();
         UserProfileValue value = snapshot.getValue(UserProfileValue.class);

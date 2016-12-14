@@ -23,6 +23,7 @@ import com.lakeel.altla.vision.builder.presentation.view.fragment.MainFragment;
 import com.lakeel.altla.vision.builder.presentation.view.fragment.RegisterTextureFragment;
 import com.lakeel.altla.vision.builder.presentation.view.fragment.SignInFragment;
 import com.lakeel.altla.vision.builder.presentation.view.fragment.TangoPermissionFragment;
+import com.lakeel.altla.vision.domain.usecase.ObserveUserProfileUseCase;
 import com.projecttango.tangosupport.TangoSupport;
 import com.squareup.picasso.Picasso;
 
@@ -48,6 +49,9 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.subscriptions.CompositeSubscription;
 
 public final class MainActivity extends AppCompatActivity
         implements ActivityScopeContext,
@@ -74,6 +78,9 @@ public final class MainActivity extends AppCompatActivity
     @Inject
     TangoConfig tangoConfig;
 
+    @Inject
+    ObserveUserProfileUseCase observeUserProfileUseCase;
+
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -83,11 +90,15 @@ public final class MainActivity extends AppCompatActivity
     @BindView(R.id.navigation_view)
     NavigationView navigationView;
 
+    private final CompositeSubscription compositeSubscription = new CompositeSubscription();
+
     private ActivityComponent activityComponent;
 
     private NavigationViewHeader navigationViewHeader;
 
     private MaterialMenuDrawable materialMenu;
+
+    private Subscription subscriptionObserveUserProfile;
 
     static {
         FRAME_PAIRS = new ArrayList<>();
@@ -135,6 +146,11 @@ public final class MainActivity extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
+
+        if (subscriptionObserveUserProfile != null) {
+            subscriptionObserveUserProfile.unsubscribe();
+        }
+
         FirebaseAuth.getInstance().removeAuthStateListener(navigationViewHeader);
     }
 
@@ -286,14 +302,29 @@ public final class MainActivity extends AppCompatActivity
         @Override
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
             FirebaseUser user = firebaseAuth.getCurrentUser();
-            if (user != null) {
-                Uri photoUri = user.getPhotoUrl();
-                if (photoUri != null) {
-                    Picasso.with(MainActivity.this).load(photoUri).into(imageViewUserPhoto);
-                }
-                textViewUserName.setText(user.getDisplayName());
-                textViewUserEmail.setText(user.getEmail());
+
+            if (user != null && subscriptionObserveUserProfile == null) {
+                // Subscribe the user profile.
+                subscriptionObserveUserProfile = observeUserProfileUseCase
+                        .execute(user.getUid())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(userProfile -> {
+                            // Update UI each time the user profile is updated.
+                            if (userProfile.photoUri != null) {
+                                Uri photoUri = Uri.parse(userProfile.photoUri);
+                                Picasso.with(MainActivity.this).load(photoUri).into(imageViewUserPhoto);
+                            }
+                            textViewUserName.setText(userProfile.displayName);
+                            textViewUserEmail.setText(userProfile.email);
+                        });
             } else {
+                // Unsubscribe the user profile.
+                if (subscriptionObserveUserProfile != null) {
+                    subscriptionObserveUserProfile.unsubscribe();
+                    subscriptionObserveUserProfile = null;
+                }
+
+                // Clear UI.
                 imageViewUserPhoto.setImageBitmap(null);
                 textViewUserName.setText(null);
                 textViewUserEmail.setText(null);
