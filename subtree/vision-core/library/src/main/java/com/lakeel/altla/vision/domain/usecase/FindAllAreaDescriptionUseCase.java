@@ -39,8 +39,6 @@ public final class FindAllAreaDescriptionUseCase {
                                                 userAreaDescription.synced = true;
                                                 return userAreaDescription;
                                             })
-                                            .defaultIfEmpty(new UserAreaDescription(tangoAreaDescroption.id,
-                                                                                    tangoAreaDescroption.name,
-                                                                                    tangoAreaDescroption.creationTime));
+                                            .defaultIfEmpty(tangoAreaDescroption);
     }
 }
