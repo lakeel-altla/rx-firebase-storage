@@ -6,6 +6,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
+import com.lakeel.altla.android.log.Log;
+import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.rx.firebase.database.RxFirebaseQuery;
 import com.lakeel.altla.vision.ArgumentNullException;
 import com.lakeel.altla.vision.domain.model.UserTexture;
@@ -15,6 +17,8 @@ import rx.Observable;
 import rx.Single;
 
 public final class UserTextureRepositoryImpl implements UserTextureRepository {
+
+    private static final Log LOG = LogFactory.getLog(UserTextureRepositoryImpl.class);
 
     private static final String PATH_USER_TEXTURES = "userTextures";
 
@@ -36,7 +40,11 @@ public final class UserTextureRepositoryImpl implements UserTextureRepository {
         rootReference.child(PATH_USER_TEXTURES)
                      .child(resolveCurrentUserId())
                      .child(userTexture.id)
-                     .setValue(value);
+                     .setValue(value, (error, reference) -> {
+                         if (error != null) {
+                             LOG.e(String.format("Failed to save: reference = %s", reference), error.toException());
+                         }
+                     });
 
         return Single.just(userTexture);
     }
@@ -72,7 +80,11 @@ public final class UserTextureRepositoryImpl implements UserTextureRepository {
         rootReference.child(PATH_USER_TEXTURES)
                      .child(resolveCurrentUserId())
                      .child(id)
-                     .removeValue();
+                     .removeValue((error, reference) -> {
+                         if (error != null) {
+                             LOG.e(String.format("Failed to remove: reference = %s", reference), error.toException());
+                         }
+                     });
 
         return Single.just(id);
     }

@@ -39,8 +39,7 @@ public final class UserProfileRepositoryImpl implements UserProfileRepository {
                      .child(userProfile.id)
                      .setValue(value, (error, reference) -> {
                          if (error != null) {
-                             LOG.e(String.format("Failed to save the user profile: id = %s", userProfile.id),
-                                   error.toException());
+                             LOG.e(String.format("Failed to save: reference = %s", reference), error.toException());
                          }
                      });
 
