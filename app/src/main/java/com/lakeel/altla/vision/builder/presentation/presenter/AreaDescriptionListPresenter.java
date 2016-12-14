@@ -66,9 +66,10 @@ public final class AreaDescriptionListPresenter {
         Subscription subscription = findAllAreaDescriptionUseCase
                 .execute()
                 // Map it to the model for the view.
-                .map(areaDescription -> {
-                    AreaDescriptionModel model = new AreaDescriptionModel(areaDescription.id, areaDescription.name);
-                    model.synced = areaDescription.synced;
+                .map(userAreaDescription -> {
+                    AreaDescriptionModel model =
+                            new AreaDescriptionModel(userAreaDescription.id, userAreaDescription.name);
+                    model.synced = userAreaDescription.synced;
                     return model;
                 })
                 .toList()

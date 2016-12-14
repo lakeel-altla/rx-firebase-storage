@@ -9,10 +9,6 @@ import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.tango.OnFrameAvailableListener;
 import com.lakeel.altla.tango.TangoUpdateDispatcher;
 import com.lakeel.altla.vision.builder.R;
-import com.lakeel.altla.vision.domain.usecase.DeleteTextureUseCase;
-import com.lakeel.altla.vision.domain.usecase.EnsureTextureCacheUseCase;
-import com.lakeel.altla.vision.domain.usecase.FindAllUserTexturesUseCase;
-import com.lakeel.altla.vision.domain.usecase.FindFileBitmapUseCase;
 import com.lakeel.altla.vision.builder.presentation.di.module.Names;
 import com.lakeel.altla.vision.builder.presentation.model.Axis;
 import com.lakeel.altla.vision.builder.presentation.model.ObjectEditMode;
@@ -20,6 +16,10 @@ import com.lakeel.altla.vision.builder.presentation.model.TextureModel;
 import com.lakeel.altla.vision.builder.presentation.view.MainView;
 import com.lakeel.altla.vision.builder.presentation.view.TextureModelListItemView;
 import com.lakeel.altla.vision.builder.presentation.view.renderer.MainRenderer;
+import com.lakeel.altla.vision.domain.usecase.DeleteTextureUseCase;
+import com.lakeel.altla.vision.domain.usecase.EnsureTextureCacheUseCase;
+import com.lakeel.altla.vision.domain.usecase.FindAllUserTexturesUseCase;
+import com.lakeel.altla.vision.domain.usecase.FindFileBitmapUseCase;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -116,21 +116,21 @@ public final class MainPresenter
     public void onStart() {
         models.clear();
 
-        LOG.d("Find all texture entries.");
+        LOG.d("Find all user textures.");
 
         Subscription subscription = findAllUserTexturesUseCase
                 .execute()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(entry -> {
-                    LOG.d("Found the entry: entry = %s", entry);
+                .subscribe(userTexture -> {
+                    LOG.d("Found the user texture: userTexture = %s", userTexture);
 
-                    TextureModel model = new TextureModel(entry.id, entry.name);
+                    TextureModel model = new TextureModel(userTexture.id, userTexture.name);
                     models.add(model);
                     view.updateTextureModelPane();
                 }, e -> {
-                    LOG.e("Failed to find all entries.", e);
+                    LOG.e("Failed to find all user textures.", e);
                 }, () -> {
-                    LOG.d("Found all entries.");
+                    LOG.d("Found all user textures.");
                 });
         compositeSubscription.add(subscription);
     }
