@@ -12,7 +12,7 @@ import rx.Single;
 
 public final class UserDeviceRepositoryImpl implements UserDeviceRepository {
 
-    private static final Log LOG = LogFactory.getLog(UserProfileRepositoryImpl.class);
+    private static final Log LOG = LogFactory.getLog(UserDeviceRepositoryImpl.class);
 
     private static final String PATH_USER_DEVICES = "userDevices";
 
