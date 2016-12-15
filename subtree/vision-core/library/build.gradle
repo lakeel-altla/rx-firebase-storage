@@ -39,6 +39,7 @@ dependencies {
     compile 'com.google.dagger:dagger:2.7'
     compile 'com.google.android.gms:play-services-auth:10.0.0'
     compile 'com.google.firebase:firebase-auth:10.0.0'
+    compile 'com.google.firebase:firebase-iid:10.0.0'
     compile 'com.lakeel.altla:android-log:0.0.2'
     compile 'com.lakeel.altla:rx-gms-tasks:1.0.2'
     compile 'com.lakeel.altla:rx-firebase-database:1.0.2'

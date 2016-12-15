@@ -7,9 +7,12 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import com.lakeel.altla.rx.tasks.RxGmsTask;
+import com.lakeel.altla.vision.domain.model.UserDevice;
 import com.lakeel.altla.vision.domain.model.UserProfile;
+import com.lakeel.altla.vision.domain.repository.UserDeviceRepository;
 import com.lakeel.altla.vision.domain.repository.UserProfileRepository;
 
 import javax.inject.Inject;
@@ -24,6 +27,9 @@ public final class SignInWithGoogleUseCase {
     UserProfileRepository userProfileRepository;
 
     @Inject
+    UserDeviceRepository userDeviceRepository;
+
+    @Inject
     public SignInWithGoogleUseCase() {
     }
 
@@ -32,6 +38,7 @@ public final class SignInWithGoogleUseCase {
                      .flatMap(this::signIn)
                      .flatMap(this::ensureUserProfile)
                      .map(userProfile -> userProfile.id)
+                     .flatMap(this::saveUserDevice)
                      .subscribeOn(Schedulers.io());
     }
 
@@ -65,5 +72,15 @@ public final class SignInWithGoogleUseCase {
                 })
                 .flatMap(userProfileRepository::save)
                 .toObservable();
+    }
+
+    private Single<String> saveUserDevice(String userId) {
+        String instanceId = FirebaseInstanceId.getInstance().getId();
+        long creationTime = FirebaseInstanceId.getInstance().getCreationTime();
+
+        UserDevice userDevice = new UserDevice(userId, instanceId, creationTime);
+
+        return userDeviceRepository.save(userDevice)
+                                   .map(_userDevice -> userId);
     }
 }
