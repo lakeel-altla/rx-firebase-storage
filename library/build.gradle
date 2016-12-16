@@ -44,7 +44,7 @@ uploadArchives {
     repositories {
         mavenDeployer {
             repository url: "file://${uploadRepo}"
-            pom.version = '1.0.3'
+            pom.version = '1.0.4'
             pom.groupId = 'com.lakeel.altla'
             pom.artifactId = 'rx-firebase-database'
         }
