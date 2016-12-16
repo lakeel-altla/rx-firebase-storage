@@ -15,6 +15,7 @@ import rx.Observable;
 import rx.Single;
 import rx.SingleSubscriber;
 import rx.Subscriber;
+import rx.functions.Action0;
 
 /**
  * Provides methods to wrap a task for Firebase Storage in a Rx object.
@@ -62,6 +63,11 @@ public final class RxFirebaseStorageTask {
                             });
                 }
             }
+        }).doOnUnsubscribe(new Action0() {
+            @Override
+            public void call() {
+                task.cancel();
+            }
         });
     }
 
@@ -106,6 +112,11 @@ public final class RxFirebaseStorageTask {
                             });
                 }
             }
+        }).doOnUnsubscribe(new Action0() {
+            @Override
+            public void call() {
+                task.cancel();
+            }
         });
     }
 
@@ -148,6 +159,11 @@ public final class RxFirebaseStorageTask {
                                 }
                             });
                 }
+            }
+        }).doOnUnsubscribe(new Action0() {
+            @Override
+            public void call() {
+                task.cancel();
             }
         });
     }
@@ -193,6 +209,11 @@ public final class RxFirebaseStorageTask {
                             });
                 }
             }
+        }).doOnUnsubscribe(new Action0() {
+            @Override
+            public void call() {
+                task.cancel();
+            }
         });
     }
 
@@ -237,6 +258,11 @@ public final class RxFirebaseStorageTask {
                             });
                 }
             }
+        }).doOnUnsubscribe(new Action0() {
+            @Override
+            public void call() {
+                task.cancel();
+            }
         });
     }
 
@@ -279,6 +305,11 @@ public final class RxFirebaseStorageTask {
                                 }
                             });
                 }
+            }
+        }).doOnUnsubscribe(new Action0() {
+            @Override
+            public void call() {
+                task.cancel();
             }
         });
     }
@@ -324,6 +355,11 @@ public final class RxFirebaseStorageTask {
                             });
                 }
             }
+        }).doOnUnsubscribe(new Action0() {
+            @Override
+            public void call() {
+                task.cancel();
+            }
         });
     }
 
@@ -368,6 +404,11 @@ public final class RxFirebaseStorageTask {
                             });
                 }
             }
+        }).doOnUnsubscribe(new Action0() {
+            @Override
+            public void call() {
+                task.cancel();
+            }
         });
     }
 
@@ -410,6 +451,11 @@ public final class RxFirebaseStorageTask {
                                 }
                             });
                 }
+            }
+        }).doOnUnsubscribe(new Action0() {
+            @Override
+            public void call() {
+                task.cancel();
             }
         });
     }
