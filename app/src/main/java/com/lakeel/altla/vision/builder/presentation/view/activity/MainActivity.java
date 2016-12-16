@@ -23,7 +23,9 @@ import com.lakeel.altla.vision.builder.presentation.view.fragment.MainFragment;
 import com.lakeel.altla.vision.builder.presentation.view.fragment.RegisterTextureFragment;
 import com.lakeel.altla.vision.builder.presentation.view.fragment.SignInFragment;
 import com.lakeel.altla.vision.builder.presentation.view.fragment.TangoPermissionFragment;
+import com.lakeel.altla.vision.domain.usecase.ObserveConnectionUseCase;
 import com.lakeel.altla.vision.domain.usecase.ObserveUserProfileUseCase;
+import com.lakeel.altla.vision.domain.usecase.SignOutUseCase;
 import com.projecttango.tangosupport.TangoSupport;
 import com.squareup.picasso.Picasso;
 
@@ -81,6 +83,12 @@ public final class MainActivity extends AppCompatActivity
     @Inject
     ObserveUserProfileUseCase observeUserProfileUseCase;
 
+    @Inject
+    ObserveConnectionUseCase observeConnectionUseCase;
+
+    @Inject
+    SignOutUseCase signOutUseCase;
+
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -99,6 +107,8 @@ public final class MainActivity extends AppCompatActivity
     private MaterialMenuDrawable materialMenu;
 
     private Subscription subscriptionObserveUserProfile;
+
+    private Subscription subscriptionObserveConnection;
 
     static {
         FRAME_PAIRS = new ArrayList<>();
@@ -147,9 +157,19 @@ public final class MainActivity extends AppCompatActivity
     protected void onStop() {
         super.onStop();
 
+        // Unsubscribe the connection.
+        if (subscriptionObserveConnection != null) {
+            subscriptionObserveConnection.unsubscribe();
+            subscriptionObserveConnection = null;
+        }
+
+        // Unsubscribe the user profile.
         if (subscriptionObserveUserProfile != null) {
             subscriptionObserveUserProfile.unsubscribe();
+            subscriptionObserveUserProfile = null;
         }
+
+        compositeSubscription.clear();
 
         FirebaseAuth.getInstance().removeAuthStateListener(navigationViewHeader);
     }
@@ -193,14 +213,13 @@ public final class MainActivity extends AppCompatActivity
 
         switch (item.getItemId()) {
             case R.id.nav_scene_builder:
-                showMainFragment();
+                onShowMainFragment();
                 break;
             case R.id.nav_area_description_list:
-                showAreaDescriptionListFragment();
+                onShowAreaDescriptionListFragment();
                 break;
             case R.id.nav_sign_out:
-                FirebaseAuth.getInstance().signOut();
-                showSignInFragment();
+                onSignOut();
                 break;
         }
 
@@ -248,6 +267,19 @@ public final class MainActivity extends AppCompatActivity
     @Override
     public void openDrawer() {
         drawerLayout.openDrawer(GravityCompat.START);
+    }
+
+    private void onShowAreaDescriptionListFragment() {
+        showAreaDescriptionListFragment();
+    }
+
+    private void onSignOut() {
+        Subscription subscription = signOutUseCase.execute()
+                                                  .observeOn(AndroidSchedulers.mainThread())
+                                                  .subscribe();
+        compositeSubscription.add(subscription);
+
+        showSignInFragment();
     }
 
     private void showSignInFragment() {
@@ -303,21 +335,37 @@ public final class MainActivity extends AppCompatActivity
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
             FirebaseUser user = firebaseAuth.getCurrentUser();
 
-            if (user != null && subscriptionObserveUserProfile == null) {
+            if (user != null) {
+                // Subscribe the connection.
+                if (subscriptionObserveConnection == null) {
+                    subscriptionObserveConnection = observeConnectionUseCase
+                            .execute(user.getUid())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe();
+                }
+
                 // Subscribe the user profile.
-                subscriptionObserveUserProfile = observeUserProfileUseCase
-                        .execute(user.getUid())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(userProfile -> {
-                            // Update UI each time the user profile is updated.
-                            if (userProfile.photoUri != null) {
-                                Uri photoUri = Uri.parse(userProfile.photoUri);
-                                Picasso.with(MainActivity.this).load(photoUri).into(imageViewUserPhoto);
-                            }
-                            textViewUserName.setText(userProfile.displayName);
-                            textViewUserEmail.setText(userProfile.email);
-                        });
+                if (subscriptionObserveUserProfile == null) {
+                    subscriptionObserveUserProfile = observeUserProfileUseCase
+                            .execute(user.getUid())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(userProfile -> {
+                                // Update UI each time the user profile is updated.
+                                if (userProfile.photoUri != null) {
+                                    Uri photoUri = Uri.parse(userProfile.photoUri);
+                                    Picasso.with(MainActivity.this).load(photoUri).into(imageViewUserPhoto);
+                                }
+                                textViewUserName.setText(userProfile.displayName);
+                                textViewUserEmail.setText(userProfile.email);
+                            });
+                }
             } else {
+                // Unsubscribe the connection.
+                if (subscriptionObserveConnection != null) {
+                    subscriptionObserveConnection.unsubscribe();
+                    subscriptionObserveConnection = null;
+                }
+
                 // Unsubscribe the user profile.
                 if (subscriptionObserveUserProfile != null) {
                     subscriptionObserveUserProfile.unsubscribe();
