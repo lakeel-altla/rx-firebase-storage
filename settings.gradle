@@ -1,5 +1,7 @@
-include ':app', ':vision-core', ':tango-helper', ':tango-rajawali', ':rajawali-pool'
+include ':app', ':vision-core', ':tango-helper', ':tango-rajawali', ':rajawali-pool', ':rx-firebase-database'
 project(':vision-core').projectDir = new File(settingsDir, './subtree/vision-core/library')
 project(':tango-helper').projectDir = new File(settingsDir, './subtree/tango-helper/library')
 project(':tango-rajawali').projectDir = new File(settingsDir, './subtree/tango-rajawali/library')
 project(':rajawali-pool').projectDir = new File(settingsDir, './subtree/rajawali-pool/library')
+
+project(':rx-firebase-database').projectDir = new File(settingsDir, './subtree/rx-firebase-database/library')
